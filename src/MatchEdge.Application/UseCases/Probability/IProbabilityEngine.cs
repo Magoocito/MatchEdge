@@ -18,4 +18,13 @@ public interface IProbabilityEngine
     /// <param name="over">true para Over, false para Under</param>
     /// <returns>Probabilidad entre 0 y 1</returns>
     double GetOverUnderProbability(double lambdaTotal, double line, bool over);
+
+    /// <summary>
+    /// Calcula las probabilidades de resultado de un partido (victoria local, empate, victoria visitante) utilizando la distribución de Poisson.
+    /// </summary>
+    /// <param name="lambdaHome">Promedio esperado de goles del equipo local</param>
+    /// <param name="lambdaAway">Promedio esperado de goles del equipo visitante</param>
+    /// <param name="maxGoals">Número máximo de goles a considerar para el cálculo</param>
+    /// <returns>Objeto MatchResultProbabilities con las probabilidades de cada resultado</returns>
+    MatchResultProbabilities GetMatchResultProbabilities(double lambdaHome, double lambdaAway, int maxGoals = 10);
 }
