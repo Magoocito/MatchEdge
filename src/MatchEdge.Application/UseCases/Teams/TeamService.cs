@@ -1,7 +1,8 @@
 using MatchEdge.Application.Clients;
+using MatchEdge.Application.Services;
 using MatchEdge.Domain.Teams;
 
-namespace MatchEdge.Application.Services;
+namespace MatchEdge.Application.UseCases.Teams;
 
 public class TeamService : ITeamService
 {
