@@ -17,10 +17,9 @@ namespace MatchEdge.Api.Controllers
         [HttpGet]
         public async Task<IActionResult> GetTeamStatistics(
             [FromQuery] int teamId,
-            [FromQuery] int tournamentId,
-            [FromQuery] int seasonId)
+            [FromQuery] int tournamentId)
         {
-            var result = await _statisticsService.GetTeamStatisticsAsync(teamId, tournamentId, seasonId);
+            var result = await _statisticsService.GetTeamStatisticsAsync(teamId, tournamentId);
 
             if (result == null)
             {

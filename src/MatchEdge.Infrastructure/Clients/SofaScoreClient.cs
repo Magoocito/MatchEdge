@@ -1,5 +1,6 @@
 ﻿using MatchEdge.Application.Clients;
 using MatchEdge.Domain.Models;
+using MatchEdge.Domain.Teams;
 using MatchEdge.Infrastructure.Configuration;
 using Microsoft.Extensions.Options;
 using System.Diagnostics;
@@ -31,5 +32,26 @@ namespace MatchEdge.Infrastructure.Clients
                     PropertyNameCaseInsensitive = true
                 });
         }
+
+        public async Task<List<Team>?> GetTeamsAsync(int tournamentId, int seasonId)
+        {
+            var url = $"{_baseUrl}unique-tournament/{tournamentId}/season/{seasonId}/teams";
+
+            var body = await _http.ExecuteCurlAsync(url);
+
+            var response = JsonSerializer.Deserialize<TeamsResponse>(
+                body,
+                new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true
+                });
+
+            return response?.Teams;
+        }
+    }
+
+    internal class TeamsResponse
+    {
+        public List<Team>? Teams { get; set; }
     }
 }

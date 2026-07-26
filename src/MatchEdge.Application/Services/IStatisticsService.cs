@@ -4,7 +4,6 @@ namespace MatchEdge.Application.Services
 {
     public interface IStatisticsService
     {
-        Task<TeamStatistics?> GetTeamStatisticsAsync(
-        int teamId, int tournamentId, int seasonId);
+        Task<TeamStatistics?> GetTeamStatisticsAsync(int teamId, int tournamentId);
     }
 }
