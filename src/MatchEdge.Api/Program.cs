@@ -2,6 +2,7 @@ using MatchEdge.Application.Clients;
 using MatchEdge.Application.Services;
 using MatchEdge.Infrastructure.Clients;
 using MatchEdge.Infrastructure.Configuration;
+using MatchEdge.Infrastructure.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -9,16 +10,17 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+
+builder.Services.AddMemoryCache();
+builder.Services.AddScoped<ISeasonService, SofaScoreSeasonService>();
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddScoped<ISofaScoreClient, SofaScoreClient>();
-
 builder.Services.AddScoped<IStatisticsService, StatisticsService>();
-
+builder.Services.AddScoped<ITeamService, TeamService>();
 builder.Services.AddScoped<IHttpRequestExecutor, HttpRequestExecutor>();
-
-
 
 builder.Services.Configure<SofaScoreOptions>(
     builder.Configuration.GetSection("SofaScore"));
