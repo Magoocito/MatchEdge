@@ -1,4 +1,4 @@
-﻿using MatchEdge.Application.Services;
+﻿using MatchEdge.Application.UseCases.Statistics;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 

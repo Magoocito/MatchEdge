@@ -1,6 +1,6 @@
 using MatchEdge.Domain.Teams;
 
-namespace MatchEdge.Application.Services;
+namespace MatchEdge.Application.UseCases.Teams;
 
 public interface ITeamService
 {

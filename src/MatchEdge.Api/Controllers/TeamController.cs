@@ -1,4 +1,4 @@
-using MatchEdge.Application.Services;
+using MatchEdge.Application.UseCases.Teams;
 using MatchEdge.Domain.Teams;
 using MatchEdge.Domain.Tournaments;
 using Microsoft.AspNetCore.Mvc;
