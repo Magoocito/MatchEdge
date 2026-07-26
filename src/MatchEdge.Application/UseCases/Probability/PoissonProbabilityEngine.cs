@@ -45,4 +45,34 @@ public class PoissonProbabilityEngine : IProbabilityEngine
         }
         return result;
     }
+
+    public MatchResultProbabilities GetMatchResultProbabilities(double lambdaHome, double lambdaAway, int maxGoals = 10)
+    {
+        double homeWin = 0;
+        double draw = 0;
+        double awayWin = 0;
+
+        for (int x = 0; x <= maxGoals; x++)
+        {
+            for (int y = 0; y <= maxGoals; y++)
+            {
+                double prob = PoissonProbability(lambdaHome, x) * PoissonProbability(lambdaAway, y);
+
+                if (x > y)
+                    homeWin += prob;
+
+                else if (x == y)
+                    draw += prob;
+
+                else
+                    awayWin += prob;
+            }
+        }
+        return new MatchResultProbabilities
+        {
+            HomeWin = homeWin,
+            Draw = draw,
+            AwayWin = awayWin
+        };
+    }
 }
