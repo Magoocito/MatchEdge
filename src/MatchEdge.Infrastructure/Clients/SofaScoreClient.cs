@@ -1,4 +1,5 @@
 ﻿using MatchEdge.Application.Clients;
+using MatchEdge.Domain.Matches;
 using MatchEdge.Domain.Models;
 using MatchEdge.Domain.Teams;
 using MatchEdge.Infrastructure.Configuration;
@@ -47,6 +48,24 @@ namespace MatchEdge.Infrastructure.Clients
                 });
 
             return response?.Teams;
+        }
+
+        public async Task<MatchEventsResponse?> GetMatchEventsByRoundAsync(
+            int tournamentId,
+            int seasonId,
+            int round,
+            string prefix)
+        {
+            var url = $"{_baseUrl}unique-tournament/{tournamentId}/season/{seasonId}/events/round/{round}/prefix/{prefix}";
+
+            var body = await _http.ExecuteCurlAsync(url);
+
+            return JsonSerializer.Deserialize<MatchEventsResponse>(
+                body,
+                new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true
+                });
         }
     }
 

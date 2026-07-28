@@ -1,4 +1,4 @@
-﻿namespace MatchEdge.Application.UseCases
+﻿namespace MatchEdge.Application.UseCases.Probability
 {
     public record MatchResultProbabilities
     {

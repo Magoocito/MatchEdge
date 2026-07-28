@@ -1,4 +1,5 @@
 ﻿using MatchEdge.Domain.Models;
+using MatchEdge.Domain.Matches;
 using MatchEdge.Domain.Teams;
 
 namespace MatchEdge.Application.Clients
@@ -9,5 +10,11 @@ namespace MatchEdge.Application.Clients
         int teamId, int tournamentId, int seasonId);
 
         Task<List<Team>?> GetTeamsAsync(int tournamentId, int seasonId);
+
+        Task<MatchEventsResponse?> GetMatchEventsByRoundAsync(
+            int tournamentId,
+            int seasonId,
+            int round,
+            string prefix);
     }
 }
