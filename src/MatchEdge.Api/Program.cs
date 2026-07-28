@@ -1,5 +1,8 @@
 using MatchEdge.Application.Clients;
+using MatchEdge.Application.Configuration;
 using MatchEdge.Application.Services;
+using MatchEdge.Application.UseCases.Calibration;
+using MatchEdge.Application.UseCases.Lambda;
 using MatchEdge.Application.UseCases.Statistics;
 using MatchEdge.Application.UseCases.Teams;
 using MatchEdge.Infrastructure.Clients;
@@ -22,10 +25,15 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<ISofaScoreClient, SofaScoreClient>();
 builder.Services.AddScoped<IStatisticsService, StatisticsService>();
 builder.Services.AddScoped<ITeamService, TeamService>();
+builder.Services.AddScoped<IHomeAdvantageCalibrationService, HomeAdvantageCalibrationService>();
+builder.Services.AddScoped<IMatchLambdaCalculator, MatchLambdaCalculator>();
 builder.Services.AddScoped<IHttpRequestExecutor, HttpRequestExecutor>();
 
 builder.Services.Configure<SofaScoreOptions>(
     builder.Configuration.GetSection("SofaScore"));
+
+builder.Services.Configure<MatchModelOptions>(
+    builder.Configuration.GetSection("MatchModel"));
 
 var app = builder.Build();
 
