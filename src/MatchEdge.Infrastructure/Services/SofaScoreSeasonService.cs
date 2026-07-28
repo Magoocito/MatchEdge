@@ -44,6 +44,61 @@ public class SofaScoreSeasonService : ISeasonService
 
         return currentSeason.Id;
     }
+
+    public async Task<List<int>> GetRecentSeasonIdsAsync(int tournamentId, int count)
+    {
+        if (count <= 0)
+            throw new ArgumentException("Count must be greater than zero", nameof(count));
+
+        var cacheKey = $"Seasons:{tournamentId}:{count}";
+
+        if (_cache.TryGetValue(cacheKey, out List<int> cachedSeasonIds))
+        {
+            return cachedSeasonIds;
+        }
+
+        var url = $"{_baseUrl}unique-tournament/{tournamentId}/seasons";
+        var json = await _http.ExecuteCurlAsync(url);
+
+        var response = JsonSerializer.Deserialize<SeasonResponse>(json,
+            new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+
+        var recentSeasonIds = response?.Seasons?
+            .OrderByDescending(s => s.Year)
+            .Take(count)
+            .Select(s => s.Id)
+            .ToList() ?? [];
+
+        if (recentSeasonIds.Count == 0)
+            throw new Exception($"No seasons found for tournament {tournamentId}");
+
+        _cache.Set(cacheKey, recentSeasonIds, TimeSpan.FromHours(12));
+
+        return recentSeasonIds;
+    }
+
+    public async Task<string> GetSeasonNameAsync(int tournamentId, int seasonId)
+    {
+        var cacheKey = $"SeasonName:{tournamentId}:{seasonId}";
+
+        if (_cache.TryGetValue(cacheKey, out string cachedName))
+        {
+            return cachedName;
+        }
+
+        var url = $"{_baseUrl}unique-tournament/{tournamentId}/seasons";
+        var json = await _http.ExecuteCurlAsync(url);
+
+        var response = JsonSerializer.Deserialize<SeasonResponse>(json,
+            new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+
+        var season = response?.Seasons?.FirstOrDefault(s => s.Id == seasonId);
+        var name = season?.Name ?? seasonId.ToString();
+
+        _cache.Set(cacheKey, name, TimeSpan.FromHours(12));
+
+        return name;
+    }
 }
 
 public class SeasonResponse
