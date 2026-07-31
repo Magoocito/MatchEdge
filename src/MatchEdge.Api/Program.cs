@@ -7,6 +7,7 @@ using MatchEdge.Application.UseCases.Predictions;
 using MatchEdge.Application.UseCases.Probability;
 using MatchEdge.Application.UseCases.Statistics;
 using MatchEdge.Application.UseCases.Teams;
+using MatchEdge.Application.UseCases.ValueBetting;
 using MatchEdge.Infrastructure.Clients;
 using MatchEdge.Infrastructure.Configuration;
 using MatchEdge.Infrastructure.Services;
@@ -33,6 +34,7 @@ builder.Services.AddScoped<IMatchLambdaCalculator, MatchLambdaCalculator>();
 builder.Services.AddScoped<IProbabilityEngine, PoissonProbabilityEngine>();
 builder.Services.AddScoped<IMatchPredictionService, MatchPredictionService>();
 builder.Services.AddScoped<IHttpRequestExecutor, HttpRequestExecutor>();
+builder.Services.AddScoped<IValueBetCalculator, ValueBetCalculator>();
 
 builder.Services.Configure<SofaScoreOptions>(
     builder.Configuration.GetSection("SofaScore"));
