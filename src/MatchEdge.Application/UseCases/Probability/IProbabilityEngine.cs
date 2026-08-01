@@ -27,4 +27,12 @@ public interface IProbabilityEngine
     /// <param name="maxGoals">Número máximo de goles a considerar para el cálculo</param>
     /// <returns>Objeto MatchResultProbabilities con las probabilidades de cada resultado</returns>
     MatchResultProbabilities GetMatchResultProbabilities(double lambdaHome, double lambdaAway, int maxGoals = 10);
+
+    /// <summary>
+    /// Calcula la probabilidad de que ambos equipos anoten al menos 1 gol (BTTS Sí).
+    /// </summary>
+    /// <param name="lambdaHome">Promedio esperado de goles del local</param>
+    /// <param name="lambdaAway">Promedio esperado de goles del visitante</param>
+    /// <returns>Probabilidad entre 0 y 1</returns>
+    double GetBttsYesProbability(double lambdaHome, double lambdaAway);
 }

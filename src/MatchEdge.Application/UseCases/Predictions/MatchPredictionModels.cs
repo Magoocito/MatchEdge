@@ -12,4 +12,6 @@ public record OverUnderProbabilities(
     double Over3_5,
     double Under3_5);
 
+public record BttsProbabilities(double Yes, double No);
+
 public record ScoreProbability(string Score, double Probability);
