@@ -88,7 +88,12 @@ public class MatchPredictionService : IMatchPredictionService
             Over3_5: Math.Round(_probabilityEngine.GetOverUnderProbability(lambdaTotal, 3.5, true), 4),
             Under3_5: Math.Round(_probabilityEngine.GetOverUnderProbability(lambdaTotal, 3.5, false), 4));
 
-        // 6. Calcular marcadores exactos más probables (Top 5)
+        // 6. Calcular BTTS
+        double bttsYes = Math.Round(_probabilityEngine.GetBttsYesProbability(lambdaHome, lambdaAway), 4);
+        double bttsNo = Math.Round(1.0 - bttsYes, 4);
+        var btts = new BttsProbabilities(bttsYes, bttsNo);
+
+        // 7. Calcular marcadores exactos más probables (Top 5)
         var scoresList = new List<ScoreProbability>();
         for (int x = 0; x <= 6; x++)
         {
@@ -106,7 +111,7 @@ public class MatchPredictionService : IMatchPredictionService
             .Take(5)
             .ToList();
 
-        // 7. Retornar DTO consolidado
+        // 8. Retornar DTO consolidado
         return new MatchPredictionResult(
             tournamentId,
             homeTeamSummary,
@@ -114,6 +119,7 @@ public class MatchPredictionService : IMatchPredictionService
             expectedGoals,
             matchResultProbabilities,
             overUnder,
+            btts,
             mostLikelyScores);
     }
 }

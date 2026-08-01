@@ -10,5 +10,6 @@ public record MatchPredictionResult(
     ExpectedGoalsResult ExpectedGoals,
     MatchResultProbabilities MatchResultProbabilities,
     OverUnderProbabilities OverUnderProbabilities,
+    BttsProbabilities BttsProbabilities,
     IReadOnlyList<ScoreProbability> MostLikelyScores,
     IReadOnlyList<ValueBetAnalysis>? ValueBets = null);

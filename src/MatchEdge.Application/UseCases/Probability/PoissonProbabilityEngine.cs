@@ -75,4 +75,17 @@ public class PoissonProbabilityEngine : IProbabilityEngine
             AwayWin = awayWin
         };
     }
+
+    public double GetBttsYesProbability(double lambdaHome, double lambdaAway)
+    {
+        if (lambdaHome < 0)
+            throw new ArgumentException("Lambda must be non-negative", nameof(lambdaHome));
+        if (lambdaAway < 0)
+            throw new ArgumentException("Lambda must be non-negative", nameof(lambdaAway));
+
+        double pHomeScores = 1.0 - PoissonProbability(lambdaHome, 0);
+        double pAwayScores = 1.0 - PoissonProbability(lambdaAway, 0);
+
+        return pHomeScores * pAwayScores;
+    }
 }
