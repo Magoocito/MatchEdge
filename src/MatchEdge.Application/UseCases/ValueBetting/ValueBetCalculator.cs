@@ -9,7 +9,7 @@ public class ValueBetCalculator : IValueBetCalculator
 
         double impliedProbability = 1.0 / odds;
         double edge = estimatedProbability - impliedProbability;
-        double expectedValue = (estimatedProbability * odds) - 1.0;
+        double expectedValue = Math.Round((estimatedProbability * odds) - 1.0, 4);
 
         string classification = ClassifyExpectedValue(expectedValue);
 
@@ -19,7 +19,7 @@ public class ValueBetCalculator : IValueBetCalculator
             Math.Round(impliedProbability, 4),
             Math.Round(estimatedProbability, 4),
             Math.Round(edge, 4),
-            Math.Round(expectedValue, 4),
+            expectedValue,
             classification);
     }
 
