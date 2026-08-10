@@ -46,11 +46,15 @@ public class SofaScoreSeasonService : ISeasonService
     }
 
     public async Task<List<int>> GetRecentSeasonIdsAsync(int tournamentId, int count)
+        => await GetRecentSeasonIdsAsOfAsync(tournamentId, count, DateTime.UtcNow);
+
+    public async Task<List<int>> GetRecentSeasonIdsAsOfAsync(int tournamentId, int count, DateTime asOfDateTime)
     {
         if (count <= 0)
             throw new ArgumentException("Count must be greater than zero", nameof(count));
 
-        var cacheKey = $"Seasons:{tournamentId}:{count}";
+        var asOfUtc = ToUtc(asOfDateTime);
+        var cacheKey = $"Seasons:{tournamentId}:{count}:{asOfUtc:yyyy-MM-dd}";
 
         if (_cache.TryGetValue(cacheKey, out List<int> cachedSeasonIds))
         {
@@ -64,18 +68,46 @@ public class SofaScoreSeasonService : ISeasonService
             new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
 
         var recentSeasonIds = response?.Seasons?
-            .OrderByDescending(s => s.Year)
+            .Where(season => TryGetSeasonStartUtc(season, out var seasonStart) && seasonStart < asOfUtc)
+            .OrderByDescending(season => season.Year)
+            .ThenByDescending(season => season.Id)
             .Take(count)
-            .Select(s => s.Id)
+            .Select(season => season.Id)
             .ToList() ?? [];
 
         if (recentSeasonIds.Count == 0)
-            throw new Exception($"No seasons found for tournament {tournamentId}");
+            throw new Exception($"No seasons found for tournament {tournamentId} as of {asOfUtc:O}");
 
         _cache.Set(cacheKey, recentSeasonIds, TimeSpan.FromHours(12));
 
         return recentSeasonIds;
     }
+
+    private static bool TryGetSeasonStartUtc(SeasonInfo season, out DateTime seasonStartUtc)
+    {
+        if (season.StartTimestamp > 0)
+        {
+            seasonStartUtc = DateTimeOffset.FromUnixTimeSeconds(season.StartTimestamp).UtcDateTime;
+            return true;
+        }
+
+        if (int.TryParse(season.Year, out var year))
+        {
+            seasonStartUtc = new DateTime(year, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+            return true;
+        }
+
+        seasonStartUtc = default;
+        return false;
+    }
+
+    private static DateTime ToUtc(DateTime value) =>
+        value.Kind switch
+        {
+            DateTimeKind.Utc => value,
+            DateTimeKind.Local => value.ToUniversalTime(),
+            _ => DateTime.SpecifyKind(value, DateTimeKind.Utc)
+        };
 
     public async Task<string> GetSeasonNameAsync(int tournamentId, int seasonId)
     {
@@ -111,4 +143,5 @@ public class SeasonInfo
     public string Name { get; set; } = string.Empty;
     public string Year { get; set; } = string.Empty;
     public int Id { get; set; }
+    public int StartTimestamp { get; set; }
 }
