@@ -18,6 +18,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\MatchEdge.Application\MatchEdge.Application.csproj" />
+    <ProjectReference Include="..\..\src\MatchEdge.Infrastructure\MatchEdge.Infrastructure.csproj" />
   </ItemGroup>
 
   <ItemGroup>

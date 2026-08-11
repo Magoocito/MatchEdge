@@ -45,6 +45,9 @@ builder.Services.Configure<SofaScoreOptions>(
 builder.Services.Configure<MatchModelOptions>(
     builder.Configuration.GetSection("MatchModel"));
 
+builder.Services.Configure<SofaScoreCacheOptions>(
+    builder.Configuration.GetSection("SofaScoreCache"));
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
