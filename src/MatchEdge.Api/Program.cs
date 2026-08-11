@@ -27,6 +27,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddScoped<ISofaScoreClient, SofaScoreClient>();
+builder.Services.AddScoped<MatchCacheTtlResolver>();
 builder.Services.AddScoped<IStatisticsService, StatisticsService>();
 builder.Services.AddScoped<ITeamService, TeamService>();
 builder.Services.AddScoped<IHomeAdvantageCalibrationService, HomeAdvantageCalibrationService>();
