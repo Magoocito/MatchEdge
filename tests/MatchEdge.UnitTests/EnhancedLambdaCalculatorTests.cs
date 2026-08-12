@@ -9,6 +9,8 @@ namespace MatchEdge.UnitTests;
 
 public class EnhancedLambdaCalculatorTests
 {
+    private static readonly DateTime AsOfDateTime = new(2025, 3, 1, 0, 0, 0, DateTimeKind.Utc);
+
     private readonly IMatchLambdaCalculator _baselineCalculator;
     private readonly MatchModelOptions _options;
 
@@ -18,10 +20,10 @@ public class EnhancedLambdaCalculatorTests
         _baselineCalculator = new MatchLambdaCalculator(Options.Create(_options));
     }
 
-    private EnhancedLambdaCalculator CreateCalculator(IStatisticsService? statsService = null)
+    private EnhancedLambdaCalculator CreateCalculator(IHistoricalTeamStatisticsProvider? historicalProvider = null)
     {
-        var mockStats = statsService ?? new FakeStatisticsService(null);
-        return new EnhancedLambdaCalculator(_baselineCalculator, mockStats, Options.Create(_options));
+        var provider = historicalProvider ?? FakeHistoricalTeamStatisticsProvider.Returning(null);
+        return new EnhancedLambdaCalculator(_baselineCalculator, provider, Options.Create(_options));
     }
 
     [Fact]
@@ -35,7 +37,7 @@ public class EnhancedLambdaCalculatorTests
             AttackHome: 1.4, DefenseHome: 1.3, AttackAway: 1.2, DefenseAway: 1.1,
             HomeMatchesCount: 10, AwayMatchesCount: 10, SkippedMatchesCount: 0);
 
-        var result = await calculator.CalculateAsync(homeContext, awayContext, 1, 2, 406);
+        var result = await calculator.CalculateAsync(homeContext, awayContext, 1, 2, 406, AsOfDateTime);
 
         // λ_home = (home.AttackHome + away.DefenseAway) / 2 = (1.8 + 1.1) / 2 = 1.45
         // λ_away = (away.AttackAway + home.DefenseHome) / 2 = (1.2 + 1.0) / 2 = 1.1
@@ -47,11 +49,11 @@ public class EnhancedLambdaCalculatorTests
     [Fact]
     public async Task CalculateAsync_InsufficientHomeData_FallsBackToBaseline()
     {
-        var fakeStats = new FakeStatisticsService(new TeamStatistics
+        var fakeProvider = FakeHistoricalTeamStatisticsProvider.Returning(new TeamStatistics
         {
             GoalsScored = 30, GoalsConceded = 15, Matches = 20
         });
-        var calculator = CreateCalculator(fakeStats);
+        var calculator = CreateCalculator(fakeProvider);
 
         var homeContext = new TeamContextStatistics(
             AttackHome: 1.8, DefenseHome: 1.0, AttackAway: 1.5, DefenseAway: 1.2,
@@ -60,7 +62,7 @@ public class EnhancedLambdaCalculatorTests
             AttackHome: 1.4, DefenseHome: 1.3, AttackAway: 1.2, DefenseAway: 1.1,
             HomeMatchesCount: 10, AwayMatchesCount: 10, SkippedMatchesCount: 0);
 
-        var result = await calculator.CalculateAsync(homeContext, awayContext, 1, 2, 406);
+        var result = await calculator.CalculateAsync(homeContext, awayContext, 1, 2, 406, AsOfDateTime);
 
         Assert.Equal("SeasonAverageWithGamma", result.CalculationMethod);
     }
@@ -68,11 +70,11 @@ public class EnhancedLambdaCalculatorTests
     [Fact]
     public async Task CalculateAsync_InsufficientAwayData_FallsBackToBaseline()
     {
-        var fakeStats = new FakeStatisticsService(new TeamStatistics
+        var fakeProvider = FakeHistoricalTeamStatisticsProvider.Returning(new TeamStatistics
         {
             GoalsScored = 25, GoalsConceded = 20, Matches = 18
         });
-        var calculator = CreateCalculator(fakeStats);
+        var calculator = CreateCalculator(fakeProvider);
 
         var homeContext = new TeamContextStatistics(
             AttackHome: 1.8, DefenseHome: 1.0, AttackAway: 1.5, DefenseAway: 1.2,
@@ -81,7 +83,7 @@ public class EnhancedLambdaCalculatorTests
             AttackHome: 1.4, DefenseHome: 1.3, AttackAway: 1.2, DefenseAway: 1.1,
             HomeMatchesCount: 10, AwayMatchesCount: 5, SkippedMatchesCount: 0);
 
-        var result = await calculator.CalculateAsync(homeContext, awayContext, 1, 2, 406);
+        var result = await calculator.CalculateAsync(homeContext, awayContext, 1, 2, 406, AsOfDateTime);
 
         Assert.Equal("SeasonAverageWithGamma", result.CalculationMethod);
     }
@@ -97,7 +99,7 @@ public class EnhancedLambdaCalculatorTests
             AttackHome: 1.4, DefenseHome: 1.3, AttackAway: 1.2, DefenseAway: 1.1,
             HomeMatchesCount: 8, AwayMatchesCount: 8, SkippedMatchesCount: 0);
 
-        var result = await calculator.CalculateAsync(homeContext, awayContext, 1, 2, 406);
+        var result = await calculator.CalculateAsync(homeContext, awayContext, 1, 2, 406, AsOfDateTime);
 
         Assert.Equal("HomeAwaySplit", result.CalculationMethod);
     }
@@ -113,7 +115,7 @@ public class EnhancedLambdaCalculatorTests
             AttackHome: 1.4, DefenseHome: 1.3, AttackAway: 1.0, DefenseAway: 1.0,
             HomeMatchesCount: 10, AwayMatchesCount: 10, SkippedMatchesCount: 0);
 
-        var result = await calculator.CalculateAsync(homeContext, awayContext, 1, 2, 406);
+        var result = await calculator.CalculateAsync(homeContext, awayContext, 1, 2, 406, AsOfDateTime);
 
         // λ_home = (2.0 + 1.0) / 2 = 1.5
         // If gamma were applied: 1.5 * 1.58 = 2.37
@@ -130,7 +132,7 @@ public class EnhancedLambdaCalculatorTests
             HomeMatchesCount: 10, AwayMatchesCount: 10, SkippedMatchesCount: 0);
 
         await Assert.ThrowsAsync<ArgumentNullException>(
-            () => calculator.CalculateAsync(null!, awayContext, 1, 2, 406));
+            () => calculator.CalculateAsync(null!, awayContext, 1, 2, 406, AsOfDateTime));
     }
 
     [Fact]
@@ -142,7 +144,7 @@ public class EnhancedLambdaCalculatorTests
             HomeMatchesCount: 10, AwayMatchesCount: 10, SkippedMatchesCount: 0);
 
         await Assert.ThrowsAsync<ArgumentNullException>(
-            () => calculator.CalculateAsync(homeContext, null!, 1, 2, 406));
+            () => calculator.CalculateAsync(homeContext, null!, 1, 2, 406, AsOfDateTime));
     }
 
     [Fact]
@@ -161,8 +163,11 @@ public class EnhancedLambdaCalculatorTests
             Matches = 20
         };
 
-        var trackingService = new TrackingStatisticsService(homeFullStats, awayFullStats);
-        var calculator = CreateCalculator(trackingService);
+        const int homeTeamId = 1;
+        const int awayTeamId = 2;
+        var trackingProvider = FakeHistoricalTeamStatisticsProvider.ReturningByTeam(
+            teamId => teamId == homeTeamId ? homeFullStats : awayFullStats);
+        var calculator = CreateCalculator(trackingProvider);
 
         var homeContext = new TeamContextStatistics(
             AttackHome: 1.8, DefenseHome: 1.0, AttackAway: 1.5, DefenseAway: 1.2,
@@ -171,23 +176,28 @@ public class EnhancedLambdaCalculatorTests
             AttackHome: 1.4, DefenseHome: 1.3, AttackAway: 1.2, DefenseAway: 1.1,
             HomeMatchesCount: 10, AwayMatchesCount: 4, SkippedMatchesCount: 0);
 
-        var result = await calculator.CalculateAsync(homeContext, awayContext, 1, 2, 406);
+        var result = await calculator.CalculateAsync(homeContext, awayContext, homeTeamId, awayTeamId, 406, AsOfDateTime);
 
         Assert.Equal("SeasonAverageWithGamma", result.CalculationMethod);
 
-        // Verify the calculator used the REAL full-season stats, not reconstructed partial data
-        Assert.Equal(1, trackingService.HomeTeamIdRequested);
-        Assert.Equal(2, trackingService.AwayTeamIdRequested);
-        Assert.Equal(406, trackingService.TournamentIdRequested);
-        Assert.Equal(22, trackingService.HomeStatsUsed!.Matches);
-        Assert.Equal(20, trackingService.AwayStatsUsed!.Matches);
+        // Verify the calculator queried the historical provider for each specific team
+        // (not swapped) with the right tournament and asOfDateTime — proof it used
+        // REAL full-season stats, not reconstructed partial data.
+        Assert.Equal(2, trackingProvider.Calls.Count);
+        Assert.Equal(homeTeamId, trackingProvider.Calls[0].TeamId);
+        Assert.Equal(awayTeamId, trackingProvider.Calls[1].TeamId);
+        Assert.All(trackingProvider.Calls, call =>
+        {
+            Assert.Equal(406, call.TournamentId);
+            Assert.Equal(AsOfDateTime, call.AsOfDateTime);
+        });
     }
 
     [Fact]
     public async Task CalculateAsync_NullStatsFromService_ThrowsInvalidOperationException()
     {
-        var fakeStats = new FakeStatisticsService(null);
-        var calculator = CreateCalculator(fakeStats);
+        var fakeProvider = FakeHistoricalTeamStatisticsProvider.Returning(null);
+        var calculator = CreateCalculator(fakeProvider);
 
         var homeContext = new TeamContextStatistics(
             AttackHome: 1.8, DefenseHome: 1.0, AttackAway: 1.5, DefenseAway: 1.2,
@@ -197,56 +207,65 @@ public class EnhancedLambdaCalculatorTests
             HomeMatchesCount: 10, AwayMatchesCount: 10, SkippedMatchesCount: 0);
 
         await Assert.ThrowsAsync<InvalidOperationException>(
-            () => calculator.CalculateAsync(homeContext, awayContext, 1, 2, 406));
+            () => calculator.CalculateAsync(homeContext, awayContext, 1, 2, 406, AsOfDateTime));
+    }
+
+    [Fact]
+    public async Task CalculateAsync_PassesSeasonLookbackThroughToFallbackProvider()
+    {
+        var homeFullStats = new TeamStatistics { GoalsScored = 40, GoalsConceded = 20, Matches = 22 };
+        var awayFullStats = new TeamStatistics { GoalsScored = 30, GoalsConceded = 25, Matches = 20 };
+        var trackingProvider = FakeHistoricalTeamStatisticsProvider.ReturningByTeam(
+            teamId => teamId == 1 ? homeFullStats : awayFullStats);
+        var calculator = CreateCalculator(trackingProvider);
+
+        var homeContext = new TeamContextStatistics(
+            AttackHome: 1.8, DefenseHome: 1.0, AttackAway: 1.5, DefenseAway: 1.2,
+            HomeMatchesCount: 5, AwayMatchesCount: 10, SkippedMatchesCount: 0);
+        var awayContext = new TeamContextStatistics(
+            AttackHome: 1.4, DefenseHome: 1.3, AttackAway: 1.2, DefenseAway: 1.1,
+            HomeMatchesCount: 10, AwayMatchesCount: 4, SkippedMatchesCount: 0);
+
+        await calculator.CalculateAsync(homeContext, awayContext, 1, 2, 406, AsOfDateTime, seasonLookback: 3);
+
+        Assert.All(trackingProvider.Calls, call => Assert.Equal(3, call.SeasonLookback));
     }
 }
 
-internal class FakeStatisticsService : IStatisticsService
+/// <summary>
+/// Fake único para IHistoricalTeamStatisticsProvider, mismo patrón que FakeHttpRequestExecutor:
+/// una respuesta configurable via Func (aquí indexada por teamId en vez de por URL) más registro
+/// de invocaciones en Calls. Antes existían dos clases separadas (una de "valor fijo" y otra de
+/// "rastreo de llamadas por equipo"); se consolidaron porque cubrían la misma necesidad.
+/// </summary>
+internal class FakeHistoricalTeamStatisticsProvider : IHistoricalTeamStatisticsProvider
 {
-    private readonly TeamStatistics? _stats;
+    private readonly Func<int, TeamStatistics?> _responseFunc;
 
-    public FakeStatisticsService(TeamStatistics? stats)
+    public List<HistoricalStatsCall> Calls { get; } = new();
+
+    private FakeHistoricalTeamStatisticsProvider(Func<int, TeamStatistics?> responseFunc)
     {
-        _stats = stats;
+        _responseFunc = responseFunc;
     }
 
-    public Task<TeamStatistics?> GetTeamStatisticsAsync(int teamId, int tournamentId)
-        => Task.FromResult(_stats);
-}
+    public static FakeHistoricalTeamStatisticsProvider Returning(TeamStatistics? stats) =>
+        new(_ => stats);
 
-internal class TrackingStatisticsService : IStatisticsService
-{
-    private readonly TeamStatistics? _homeStats;
-    private readonly TeamStatistics? _awayStats;
+    public static FakeHistoricalTeamStatisticsProvider ReturningByTeam(Func<int, TeamStatistics?> responseFunc) =>
+        new(responseFunc);
 
-    public int HomeTeamIdRequested { get; private set; }
-    public int AwayTeamIdRequested { get; private set; }
-    public int TournamentIdRequested { get; private set; }
-    public TeamStatistics? HomeStatsUsed { get; private set; }
-    public TeamStatistics? AwayStatsUsed { get; private set; }
-
-    public TrackingStatisticsService(TeamStatistics? homeStats, TeamStatistics? awayStats)
+    public Task<TeamStatistics> GetAsOfAsync(int teamId, int tournamentId, DateTime asOfDateTime, int seasonLookback = 2)
     {
-        _homeStats = homeStats;
-        _awayStats = awayStats;
-    }
+        Calls.Add(new HistoricalStatsCall(teamId, tournamentId, asOfDateTime, seasonLookback));
 
-    public Task<TeamStatistics?> GetTeamStatisticsAsync(int teamId, int tournamentId)
-    {
-        TournamentIdRequested = tournamentId;
+        var stats = _responseFunc(teamId);
+        if (stats == null)
+            throw new InvalidOperationException(
+                $"No historical matches available for team {teamId} in tournament {tournamentId} as of {asOfDateTime:O}");
 
-        // First call is home team, second is away team
-        if (HomeStatsUsed == null)
-        {
-            HomeTeamIdRequested = teamId;
-            HomeStatsUsed = _homeStats;
-            return Task.FromResult(_homeStats);
-        }
-        else
-        {
-            AwayTeamIdRequested = teamId;
-            AwayStatsUsed = _awayStats;
-            return Task.FromResult(_awayStats);
-        }
+        return Task.FromResult(stats);
     }
 }
+
+internal record HistoricalStatsCall(int TeamId, int TournamentId, DateTime AsOfDateTime, int SeasonLookback);
