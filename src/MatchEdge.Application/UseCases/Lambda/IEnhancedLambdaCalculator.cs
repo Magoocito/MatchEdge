@@ -9,7 +9,9 @@ public interface IEnhancedLambdaCalculator
         TeamContextStatistics awayContext,
         int homeTeamId,
         int awayTeamId,
-        int tournamentId);
+        int tournamentId,
+        DateTime asOfDateTime,
+        int seasonLookback = 2);
 }
 
 public record EnhancedLambdaResult(

@@ -26,24 +26,25 @@ namespace MatchEdge.Application.UseCases.Lambda;
 /// 
 /// FALLBACK DATA SOURCE:
 /// When the contextual sample is insufficient (< 8 matches per role), the fallback
-/// uses IStatisticsService.GetTeamStatisticsAsync to get REAL full-season statistics
-/// (home + away combined) instead of reconstructing partial data from TeamContextStatistics.
-/// This ensures the fallback uses the most reliable data available.
+/// uses IHistoricalTeamStatisticsProvider.GetAsOfAsync to get full-season statistics
+/// (home + away combined) derived from TeamContextStatistics, respecting asOfDateTime.
+/// This keeps the fallback temporally consistent with the split path for backtesting
+/// (no leakage from matches after asOfDateTime), unlike the live IStatisticsService.
 /// </summary>
 public class EnhancedLambdaCalculator : IEnhancedLambdaCalculator
 {
     private const int MinMatchesThreshold = 8;
     private readonly IMatchLambdaCalculator _fallbackCalculator;
-    private readonly IStatisticsService _statisticsService;
+    private readonly IHistoricalTeamStatisticsProvider _historicalStatisticsProvider;
     private readonly MatchModelOptions _options;
 
     public EnhancedLambdaCalculator(
         IMatchLambdaCalculator fallbackCalculator,
-        IStatisticsService statisticsService,
+        IHistoricalTeamStatisticsProvider historicalStatisticsProvider,
         IOptions<MatchModelOptions> options)
     {
         _fallbackCalculator = fallbackCalculator;
-        _statisticsService = statisticsService;
+        _historicalStatisticsProvider = historicalStatisticsProvider;
         _options = options.Value;
     }
 
@@ -52,7 +53,9 @@ public class EnhancedLambdaCalculator : IEnhancedLambdaCalculator
         TeamContextStatistics awayContext,
         int homeTeamId,
         int awayTeamId,
-        int tournamentId)
+        int tournamentId,
+        DateTime asOfDateTime,
+        int seasonLookback = 2)
     {
         if (homeContext == null)
             throw new ArgumentNullException(nameof(homeContext));
@@ -71,13 +74,11 @@ public class EnhancedLambdaCalculator : IEnhancedLambdaCalculator
             return new EnhancedLambdaResult(lambdaHome, lambdaAway, "HomeAwaySplit");
         }
 
-        var homeStats = await _statisticsService.GetTeamStatisticsAsync(homeTeamId, tournamentId)
-            ?? throw new InvalidOperationException(
-                $"No statistics available for home team {homeTeamId} in tournament {tournamentId}");
+        var homeStats = await _historicalStatisticsProvider.GetAsOfAsync(
+            homeTeamId, tournamentId, asOfDateTime, seasonLookback);
 
-        var awayStats = await _statisticsService.GetTeamStatisticsAsync(awayTeamId, tournamentId)
-            ?? throw new InvalidOperationException(
-                $"No statistics available for away team {awayTeamId} in tournament {tournamentId}");
+        var awayStats = await _historicalStatisticsProvider.GetAsOfAsync(
+            awayTeamId, tournamentId, asOfDateTime, seasonLookback);
 
         var fallback = _fallbackCalculator.CalculateGoalLambdas(homeStats, awayStats);
 
