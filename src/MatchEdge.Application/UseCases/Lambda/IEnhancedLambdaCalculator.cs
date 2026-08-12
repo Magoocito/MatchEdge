@@ -4,9 +4,12 @@ namespace MatchEdge.Application.UseCases.Lambda;
 
 public interface IEnhancedLambdaCalculator
 {
-    EnhancedLambdaResult Calculate(
+    Task<EnhancedLambdaResult> CalculateAsync(
         TeamContextStatistics homeContext,
-        TeamContextStatistics awayContext);
+        TeamContextStatistics awayContext,
+        int homeTeamId,
+        int awayTeamId,
+        int tournamentId);
 }
 
 public record EnhancedLambdaResult(
