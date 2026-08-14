@@ -6,5 +6,6 @@ public interface IMultiSeasonHomeAdvantageCalibrationService
         int tournamentId,
         int seasonCount = 3,
         int fromRound = 1,
-        int toRound = 17);
+        int toRound = 17,
+        DateTime? calibrationAsOf = null);
 }

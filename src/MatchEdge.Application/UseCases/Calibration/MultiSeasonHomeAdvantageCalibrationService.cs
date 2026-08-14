@@ -1,18 +1,26 @@
 using MatchEdge.Application.Clients;
 using MatchEdge.Application.Services;
+using MatchEdge.Application.UseCases.Historical;
 
 namespace MatchEdge.Application.UseCases.Calibration;
 
 public class MultiSeasonHomeAdvantageCalibrationService : IMultiSeasonHomeAdvantageCalibrationService
 {
-    private readonly ISofaScoreClient _sofaScoreClient;
     private readonly ISeasonService _seasonService;
+    private readonly IHistoricalMatchEnumerator _matchEnumerator;
 
     public MultiSeasonHomeAdvantageCalibrationService(
         ISofaScoreClient sofaScoreClient,
         ISeasonService seasonService)
+        : this(new HistoricalMatchEnumerator(sofaScoreClient), seasonService)
     {
-        _sofaScoreClient = sofaScoreClient;
+    }
+
+    public MultiSeasonHomeAdvantageCalibrationService(
+        IHistoricalMatchEnumerator matchEnumerator,
+        ISeasonService seasonService)
+    {
+        _matchEnumerator = matchEnumerator;
         _seasonService = seasonService;
     }
 
@@ -20,7 +28,8 @@ public class MultiSeasonHomeAdvantageCalibrationService : IMultiSeasonHomeAdvant
         int tournamentId,
         int seasonCount = 3,
         int fromRound = 1,
-        int toRound = 17)
+        int toRound = 17,
+        DateTime? calibrationAsOf = null)
     {
         if (seasonCount <= 0)
             throw new ArgumentException("Season count must be greater than zero", nameof(seasonCount));
@@ -32,7 +41,13 @@ public class MultiSeasonHomeAdvantageCalibrationService : IMultiSeasonHomeAdvant
             throw new ArgumentException("To round must be greater than or equal to from round", nameof(toRound));
 
         var prefixes = new[] { "Apertura", "Clausura" };
-        var seasonIds = await _seasonService.GetRecentSeasonIdsAsync(tournamentId, seasonCount);
+
+        var seasonIds = calibrationAsOf.HasValue
+            ? await _seasonService.GetRecentSeasonIdsAsOfAsync(tournamentId, seasonCount, calibrationAsOf.Value)
+            : await _seasonService.GetRecentSeasonIdsAsync(tournamentId, seasonCount);
+
+        var finishedMatches = await _matchEnumerator.GetFinishedMatchesAsync(
+            tournamentId, seasonIds, fromRound, toRound, prefixes);
 
         var allMatches = 0;
         var allHomeGoals = 0;
@@ -43,30 +58,13 @@ public class MultiSeasonHomeAdvantageCalibrationService : IMultiSeasonHomeAdvant
         {
             foreach (var prefix in prefixes)
             {
-                var matches = 0;
-                var homeGoals = 0;
-                var awayGoals = 0;
+                var seasonPrefixMatches = finishedMatches
+                    .Where(m => m.SeasonId == seasonId && m.Prefix == prefix)
+                    .ToList();
 
-                for (var round = fromRound; round <= toRound; round++)
-                {
-                    var response = await _sofaScoreClient.GetMatchEventsByRoundAsync(
-                        tournamentId,
-                        seasonId,
-                        round,
-                        prefix);
-
-                    var finishedEvents = response?.Events
-                        .Where(match => match.Status.Type == "finished")
-                        .Where(match => match.HomeScore.Current.HasValue && match.AwayScore.Current.HasValue)
-                        ?? [];
-
-                    foreach (var match in finishedEvents)
-                    {
-                        matches++;
-                        homeGoals += match.HomeScore.Current!.Value;
-                        awayGoals += match.AwayScore.Current!.Value;
-                    }
-                }
+                var matches = seasonPrefixMatches.Count;
+                var homeGoals = seasonPrefixMatches.Sum(m => m.Event.HomeScore.Current!.Value);
+                var awayGoals = seasonPrefixMatches.Sum(m => m.Event.AwayScore.Current!.Value);
 
                 if (matches > 0 && awayGoals > 0)
                 {
