@@ -37,15 +37,18 @@ public class EnhancedLambdaCalculator : IEnhancedLambdaCalculator
     private readonly IMatchLambdaCalculator _fallbackCalculator;
     private readonly IHistoricalTeamStatisticsProvider _historicalStatisticsProvider;
     private readonly MatchModelOptions _options;
+    private readonly bool _applyGammaToSplit;
 
     public EnhancedLambdaCalculator(
         IMatchLambdaCalculator fallbackCalculator,
         IHistoricalTeamStatisticsProvider historicalStatisticsProvider,
-        IOptions<MatchModelOptions> options)
+        IOptions<MatchModelOptions> options,
+        bool applyGammaToSplit = false)
     {
         _fallbackCalculator = fallbackCalculator;
         _historicalStatisticsProvider = historicalStatisticsProvider;
         _options = options.Value;
+        _applyGammaToSplit = applyGammaToSplit;
     }
 
     public async Task<EnhancedLambdaResult> CalculateAsync(
@@ -70,6 +73,11 @@ public class EnhancedLambdaCalculator : IEnhancedLambdaCalculator
         {
             double lambdaHome = (homeContext.AttackHome + awayContext.DefenseAway) / 2;
             double lambdaAway = (awayContext.AttackAway + homeContext.DefenseHome) / 2;
+
+            if (_applyGammaToSplit)
+            {
+                lambdaHome *= _options.HomeAdvantageFactor;
+            }
 
             return new EnhancedLambdaResult(lambdaHome, lambdaAway, "HomeAwaySplit");
         }

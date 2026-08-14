@@ -230,6 +230,105 @@ public class EnhancedLambdaCalculatorTests
 
         Assert.All(trackingProvider.Calls, call => Assert.Equal(3, call.SeasonLookback));
     }
+
+    [Fact]
+    public async Task CalculateAsync_ApplyGammaToSplitTrue_MultipliesLambdaHomeByGamma()
+    {
+        var options = new MatchModelOptions { HomeAdvantageFactor = 1.58 };
+        var calculator = new EnhancedLambdaCalculator(
+            _baselineCalculator,
+            FakeHistoricalTeamStatisticsProvider.Returning(null),
+            Options.Create(options),
+            applyGammaToSplit: true);
+
+        var homeContext = new TeamContextStatistics(
+            AttackHome: 2.0, DefenseHome: 1.0, AttackAway: 1.5, DefenseAway: 1.2,
+            HomeMatchesCount: 10, AwayMatchesCount: 10, SkippedMatchesCount: 0);
+        var awayContext = new TeamContextStatistics(
+            AttackHome: 1.4, DefenseHome: 1.3, AttackAway: 1.0, DefenseAway: 1.0,
+            HomeMatchesCount: 10, AwayMatchesCount: 10, SkippedMatchesCount: 0);
+
+        var result = await calculator.CalculateAsync(homeContext, awayContext, 1, 2, 406, AsOfDateTime);
+
+        // lambdaHome = (2.0 + 1.0) / 2 = 1.5, then * 1.58 = 2.37
+        Assert.Equal("HomeAwaySplit", result.CalculationMethod);
+        Assert.Equal(2.37, result.LambdaHome, 4);
+    }
+
+    [Fact]
+    public async Task CalculateAsync_ApplyGammaToSplitFalse_DoesNotApplyGamma()
+    {
+        var options = new MatchModelOptions { HomeAdvantageFactor = 1.58 };
+        var calculator = new EnhancedLambdaCalculator(
+            _baselineCalculator,
+            FakeHistoricalTeamStatisticsProvider.Returning(null),
+            Options.Create(options),
+            applyGammaToSplit: false);
+
+        var homeContext = new TeamContextStatistics(
+            AttackHome: 2.0, DefenseHome: 1.0, AttackAway: 1.5, DefenseAway: 1.2,
+            HomeMatchesCount: 10, AwayMatchesCount: 10, SkippedMatchesCount: 0);
+        var awayContext = new TeamContextStatistics(
+            AttackHome: 1.4, DefenseHome: 1.3, AttackAway: 1.0, DefenseAway: 1.0,
+            HomeMatchesCount: 10, AwayMatchesCount: 10, SkippedMatchesCount: 0);
+
+        var result = await calculator.CalculateAsync(homeContext, awayContext, 1, 2, 406, AsOfDateTime);
+
+        // lambdaHome = (2.0 + 1.0) / 2 = 1.5 (no gamma)
+        Assert.Equal("HomeAwaySplit", result.CalculationMethod);
+        Assert.Equal(1.5, result.LambdaHome, 4);
+    }
+
+    [Fact]
+    public async Task CalculateAsync_ApplyGammaToSplit_DoesNotAffectLambdaAway()
+    {
+        var options = new MatchModelOptions { HomeAdvantageFactor = 1.58 };
+        var calculatorWithGamma = new EnhancedLambdaCalculator(
+            _baselineCalculator,
+            FakeHistoricalTeamStatisticsProvider.Returning(null),
+            Options.Create(options),
+            applyGammaToSplit: true);
+
+        var homeContext = new TeamContextStatistics(
+            AttackHome: 2.0, DefenseHome: 1.0, AttackAway: 1.5, DefenseAway: 1.2,
+            HomeMatchesCount: 10, AwayMatchesCount: 10, SkippedMatchesCount: 0);
+        var awayContext = new TeamContextStatistics(
+            AttackHome: 1.4, DefenseHome: 1.3, AttackAway: 1.0, DefenseAway: 1.0,
+            HomeMatchesCount: 10, AwayMatchesCount: 10, SkippedMatchesCount: 0);
+
+        var result = await calculatorWithGamma.CalculateAsync(homeContext, awayContext, 1, 2, 406, AsOfDateTime);
+
+        // lambdaAway = (1.0 + 1.0) / 2 = 1.0 (gamma only affects lambdaHome)
+        Assert.Equal(1.0, result.LambdaAway, 4);
+    }
+
+    [Fact]
+    public async Task CalculateAsync_ApplyGammaToSplit_FallbackStillUsesBaselineWithGamma()
+    {
+        var options = new MatchModelOptions { HomeAdvantageFactor = 1.58 };
+        var fakeProvider = FakeHistoricalTeamStatisticsProvider.ReturningByTeam(
+            teamId => teamId == 1
+                ? new TeamStatistics { GoalsScored = 40, GoalsConceded = 20, Matches = 22 }
+                : new TeamStatistics { GoalsScored = 30, GoalsConceded = 25, Matches = 20 });
+
+        var calculator = new EnhancedLambdaCalculator(
+            _baselineCalculator,
+            fakeProvider,
+            Options.Create(options),
+            applyGammaToSplit: true);
+
+        var homeContext = new TeamContextStatistics(
+            AttackHome: 1.8, DefenseHome: 1.0, AttackAway: 1.5, DefenseAway: 1.2,
+            HomeMatchesCount: 5, AwayMatchesCount: 10, SkippedMatchesCount: 0);
+        var awayContext = new TeamContextStatistics(
+            AttackHome: 1.4, DefenseHome: 1.3, AttackAway: 1.2, DefenseAway: 1.1,
+            HomeMatchesCount: 10, AwayMatchesCount: 4, SkippedMatchesCount: 0);
+
+        var result = await calculator.CalculateAsync(homeContext, awayContext, 1, 2, 406, AsOfDateTime);
+
+        // Fallback path uses MatchLambdaCalculator which always applies gamma
+        Assert.Equal("SeasonAverageWithGamma", result.CalculationMethod);
+    }
 }
 
 /// <summary>
