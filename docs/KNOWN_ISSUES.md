@@ -1,6 +1,6 @@
 # Known Issues
 
-## SofaScore Anti-Bot Bypass (TEMPORARY PATCH)
+## SofaScore — Cloudflare Bot Protection (UNSOLVABLE)
 
 ### Problem
 
@@ -13,62 +13,35 @@ SofaScore's API is protected by Cloudflare bot detection. When our app tries to 
 This happens because:
 1. **JavaScript challenge** — SofaScore requires a browser to execute JS that generates a `x-captcha` JWT token.
 2. **TLS fingerprinting** — .NET HttpClient is identified as non-browser even with correct headers (documented in ADR-002).
+3. **IP binding** — The `x-captcha` JWT is bound to the IP address that generated it. Even if curl.exe receives the correct headers from a real browser, the server detects an IP mismatch and returns `challenge`.
 
-Neither `curl.exe` nor .NET `HttpClient` can solve the JavaScript challenge or bypass TLS fingerprinting.
+### Failed Approaches
 
-### Current Workaround
+| Approach | Result |
+|----------|--------|
+| HttpClient with headers | 403 — TLS fingerprinting (ADR-002) |
+| curl.exe with `-H` flags from browser | 403 — IP mismatch (challenge) |
+| Puppeteer/Playwright | Not attempted — would require separate process, fragile |
 
-We pass the **browser-generated headers** (`x-captcha` and `x-requested-with`) to `curl.exe` via the `-H` flag. These headers are obtained manually from a real browser session.
+### Decision: Do NOT Patch Further
 
-### How to Configure
-
-1. Open https://www.sofascore.com in your browser.
-2. Open DevTools (F12) → **Network** tab.
-3. Navigate to any page that triggers API calls (e.g., a team page).
-4. Find any request to `sofascore.com/api`, click on it.
-5. In **Headers** tab, copy these values:
-   - `x-captcha` (the full JWT token)
-   - `x-requested-with` (short string like `e24dd0`)
-6. Store via User Secrets:
-
-```bash
-cd src/MatchEdge.Api
-dotnet user-secrets set "SofaScore:Headers:x-captcha" "YOUR_JWT_TOKEN"
-dotnet user-secrets set "SofaScore:Headers:x-requested-with" "YOUR_VALUE"
-```
-
-Or via environment variables:
-
-```bash
-# Windows (PowerShell)
-$env:SofaScore__Headers__x-captcha = "YOUR_JWT_TOKEN"
-$env:SofaScore__Headers__x-requested-with = "YOUR_VALUE"
-```
-
-### Limitations — WHY THIS IS TEMPORAL
-
-| Limitation | Impact |
-|------------|--------|
-| **Token expires** | The x-captcha JWT expires (typically hours). Requests will fail with 403 again when expired. |
-| **IP-bound** | Token is tied to the IP that generated it. VPN/proxy changes break it. |
-| **Manual process** | Requires human intervention each time the token expires. |
-| **Not production-ready** | This is a development/local workaround only. |
-
-### When the Token Expires
-
-You'll see the same `403 challenge` error. Repeat the setup steps above to get fresh headers.
+**Do not** attempt to bypass SofaScore's Cloudflare protection. The effort is not sustainable and the approach is fundamentally broken (IP binding + JS challenge).
 
 ### Long-Term Solution
 
-If this becomes a frequent problem, the next step should be evaluating **alternative data sources** for Liga 1 Perú statistics, rather than continuing to patch around SofaScore's bot protection. Possible alternatives:
+Migrate to an alternative data source for Liga 1 Perú statistics. Possible alternatives:
 
-- Official Liga 1 API (if available)
-- Other sports data providers with API access
-- Manual data collection and local database
-- Open-source football data repositories
+- **API-Football** (api-football.com) — paid, includes Liga 1, good API
+- **Football-Data.org** — free tier available, limited Liga 1 coverage
+- **Opta / StatsBomb** — enterprise-grade, expensive
+- **Manual data collection** — local CSV/JSON database
 
 ### Related Files
 
-- `src/MatchEdge.Infrastructure/Clients/HttpRequestExecutor.cs` — implementation
-- `src/MatchEdge.Api/appsettings.json` — configuration (empty by default)
 - ADR-002 — previous HttpClient attempt (documented in project)
+
+## Backtesting Infrastructure — Ready but Blocked
+
+The backtesting infrastructure (Branch `feature/backtesting-service`, Commit `c4a82e7`) is **complete and tested** (102 tests passing). It is ready to execute but requires a working data source to run.
+
+Once a new data source is implemented, the backtesting will work without changes.

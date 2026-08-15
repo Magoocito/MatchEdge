@@ -7,10 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <InternalsVisibleTo Include="MatchEdge.UnitTests" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\MatchEdge.Domain\MatchEdge.Domain.csproj" />
 	<ProjectReference Include="..\MatchEdge.Application\MatchEdge.Application.csproj" />
   </ItemGroup>
