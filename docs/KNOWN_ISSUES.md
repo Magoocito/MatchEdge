@@ -21,27 +21,49 @@ This happens because:
 |----------|--------|
 | HttpClient with headers | 403 — TLS fingerprinting (ADR-002) |
 | curl.exe with `-H` flags from browser | 403 — IP mismatch (challenge) |
-| Puppeteer/Playwright | Not attempted — would require separate process, fragile |
 
-### Decision: Do NOT Patch Further
+### Working Approach: Playwright with Real Browser
 
-**Do not** attempt to bypass SofaScore's Cloudflare protection. The effort is not sustainable and the approach is fundamentally broken (IP binding + JS challenge).
+**Implemented and active in production** (`SofaScoreBrowserClient` + `PlaywrightBrowserManager`,
+registered as the live `ISofaScoreClient` in `Program.cs`, wrapped by `CachedSofaScoreClient` for
+caching). A real Chrome instance with a persistent profile navigates SofaScore manually once,
+inheriting Cloudflare's clearance cookie/JWT; subsequent API calls are made via `fetch()` executed
+inside that authenticated browser context (`page.EvaluateAsync`), bypassing both the TLS
+fingerprinting and IP-binding issues that blocked HttpClient/curl.exe.
 
-### Long-Term Solution
+**Known limitations (not solved, accepted trade-offs):**
+- Requires a human to navigate to SofaScore manually at least once per session (Cloudflare
+  clearance is tied to that browser instance).
+- Not headless — cannot run on a server without a display, cannot be scheduled unattended.
+- Not viable for a cloud/Docker deployment as currently built — this remains a local-development
+  workaround, not a production-ready data pipeline.
 
-Migrate to an alternative data source for Liga 1 Perú statistics. Possible alternatives:
+### Long-Term Solution (still the target, Playwright is a bridge, not the destination)
 
-- **API-Football** (api-football.com) — paid, includes Liga 1, good API
-- **Football-Data.org** — free tier available, limited Liga 1 coverage
-- **Opta / StatsBomb** — enterprise-grade, expensive
-- **Manual data collection** — local CSV/JSON database
+Migrate to an alternative data source for Liga 1 Perú statistics once budget allows. Possible
+alternatives:
+
+- **API-Football** (api-football.com) — paid, includes Liga 1, good API — confirmed as the
+  leading candidate; coverage depth for Liga 1 Perú (historical matches, per-role stats) still
+  needs verification before committing to it.
+- **Football-Data.org** — free tier available, limited Liga 1 coverage.
+- **Opta / StatsBomb** — enterprise-grade, expensive.
+- **Manual data collection** — local CSV/JSON database.
 
 ### Related Files
 
-- ADR-002 — previous HttpClient attempt (documented in project)
+- ADR-002 — previous HttpClient attempt (documented in project).
+- `SofaScoreBrowserClient.cs`, `PlaywrightBrowserManager.cs`, `CachedSofaScoreClient.cs`,
+  `SofaScoreBrowserSeasonService.cs` — current working (bridge) solution.
 
-## Backtesting Infrastructure — Ready but Blocked
+## Backtesting Infrastructure — Working (Unblocked)
 
-The backtesting infrastructure (Branch `feature/backtesting-service`, Commit `c4a82e7`) is **complete and tested** (102 tests passing). It is ready to execute but requires a working data source to run.
+The backtesting infrastructure (`BacktestingService`, `IBacktestingService`) is **complete,
+tested, and unblocked** — it now runs successfully against real SofaScore data via the Playwright
+bridge described above. 111 tests passing, including `RunAsync_UsesSameAsOfDateTimeForAllModels`
+(verifies no temporal leakage — every model uses each match's own date, never a global cutoff).
 
-Once a new data source is implemented, the backtesting will work without changes.
+Known result so far (April–July 2025, Liga 1 Perú, gamma=1.6387 calibrated on 2023+2024 only):
+Model B1 (home/away split, no gamma reapplied) outperforms both baseline Model A and Model B2
+(split + gamma) on Brier Score and Log-Loss. Preliminary — needs a larger evaluation window before
+being treated as conclusive.
