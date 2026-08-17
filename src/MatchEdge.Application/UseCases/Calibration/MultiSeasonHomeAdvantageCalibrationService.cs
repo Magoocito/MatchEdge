@@ -1,4 +1,3 @@
-using MatchEdge.Application.Clients;
 using MatchEdge.Application.Services;
 using MatchEdge.Application.UseCases.Historical;
 
@@ -8,13 +7,6 @@ public class MultiSeasonHomeAdvantageCalibrationService : IMultiSeasonHomeAdvant
 {
     private readonly ISeasonService _seasonService;
     private readonly IHistoricalMatchEnumerator _matchEnumerator;
-
-    public MultiSeasonHomeAdvantageCalibrationService(
-        ISofaScoreClient sofaScoreClient,
-        ISeasonService seasonService)
-        : this(new HistoricalMatchEnumerator(sofaScoreClient), seasonService)
-    {
-    }
 
     public MultiSeasonHomeAdvantageCalibrationService(
         IHistoricalMatchEnumerator matchEnumerator,
