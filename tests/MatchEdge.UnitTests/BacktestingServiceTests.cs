@@ -198,6 +198,42 @@ public class BacktestingServiceTests
         Assert.Equal(1, details[0].MatchId);
     }
 
+    [Fact]
+    public async Task RunAsync_ReportsProgressForEachMatch()
+    {
+        var match1 = CreateMatch(1, 100, 200, 1748736000, "H");
+        var match2 = CreateMatch(2, 300, 400, 1751328000, "D");
+        var match3 = CreateMatch(3, 500, 600, 1754006400, "A");
+
+        var fakeContextStats = new FakeBacktestingTeamContextStatisticsService();
+        var fakeHistoricalStats = new FakeHistoricalTeamStatisticsProviderForBacktest();
+        var fakeSeasonService = new FakeSeasonServiceForBacktest();
+        var fakeEnumerator = new FakeHistoricalMatchEnumeratorForBacktest(match1, match2, match3);
+        var fakeProbEngine = new FakeProbabilityEngine();
+
+        var sut = new BacktestingService(
+            fakeSeasonService, fakeEnumerator, fakeContextStats,
+            fakeHistoricalStats, fakeProbEngine);
+
+        var progressReports = new List<BacktestProgress>();
+        var progress = new SynchronousProgress<BacktestProgress>(p => progressReports.Add(p));
+
+        await sut.RunAsync(
+            TournamentId,
+            new DateTime(2025, 1, 1, 0, 0, 0, DateTimeKind.Utc),
+            new DateTime(2025, 12, 31, 23, 59, 59, DateTimeKind.Utc),
+            1.58,
+            new DateTime(2024, 12, 31, 23, 59, 59, DateTimeKind.Utc),
+            progress: progress);
+
+        Assert.Equal(3, progressReports.Count);
+        Assert.Equal(1, progressReports[0].ProcessedMatches);
+        Assert.Equal(3, progressReports[0].TotalMatches);
+        Assert.Equal(2, progressReports[1].ProcessedMatches);
+        Assert.Equal(3, progressReports[2].ProcessedMatches);
+        Assert.Contains("vs", progressReports[0].CurrentMatch);
+    }
+
     private static HistoricalMatch CreateMatch(
         int id, int homeTeamId, int awayTeamId, long startTimestamp, string result)
     {
@@ -350,6 +386,13 @@ internal class FakeSofaScoreClientForBacktest : ISofaScoreClient
 
     public Task<MatchEventsResponse?> GetMatchEventsByRoundAsync(int tournamentId, int seasonId, int round, string prefix) =>
         throw new InvalidOperationException("Real SofaScore call detected");
+}
+
+internal class SynchronousProgress<T> : IProgress<T>
+{
+    private readonly Action<T> _handler;
+    public SynchronousProgress(Action<T> handler) => _handler = handler;
+    public void Report(T value) => _handler(value);
 }
 
 #endregion

@@ -9,5 +9,6 @@ public interface IBacktestingService
         double experimentalGamma,
         DateTime calibrationAsOf,
         bool includeB2 = true,
-        int seasonLookback = 2);
+        int seasonLookback = 2,
+        IProgress<BacktestProgress>? progress = null);
 }

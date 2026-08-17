@@ -42,7 +42,8 @@ public class BacktestingService : IBacktestingService
         double experimentalGamma,
         DateTime calibrationAsOf,
         bool includeB2 = true,
-        int seasonLookback = 2)
+        int seasonLookback = 2,
+        IProgress<BacktestProgress>? progress = null)
     {
         var seasonIds = await _seasonService.GetRecentSeasonIdsAsOfAsync(
             tournamentId, seasonLookback, calibrationAsOf);
@@ -79,9 +80,11 @@ public class BacktestingService : IBacktestingService
         }
 
         var details = new List<BacktestMatchResult>();
+        var totalMatches = filteredMatches.Count;
 
-        foreach (var match in filteredMatches)
+        for (var i = 0; i < filteredMatches.Count; i++)
         {
+            var match = filteredMatches[i];
             var matchDate = DateTimeOffset.FromUnixTimeSeconds(match.Event.StartTimestamp).UtcDateTime;
             var homeTeamId = match.Event.HomeTeam.Id;
             var awayTeamId = match.Event.AwayTeam.Id;
@@ -134,6 +137,9 @@ public class BacktestingService : IBacktestingService
                 ModelB2_AwayWinProb = modelB2AwayWin,
                 CalculationMethod = modelB1Result.CalculationMethod
             });
+
+            progress?.Report(new BacktestProgress(i + 1, totalMatches,
+                $"{match.Event.HomeTeam.ShortName} vs {match.Event.AwayTeam.ShortName}"));
         }
 
         var summary = ComputeSummary(details, includeB2);

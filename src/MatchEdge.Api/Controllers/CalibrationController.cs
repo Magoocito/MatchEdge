@@ -39,13 +39,15 @@ public class CalibrationController : ControllerBase
         [FromQuery] int tournamentId,
         [FromQuery] int seasonCount = 3,
         [FromQuery] int fromRound = 1,
-        [FromQuery] int toRound = 17)
+        [FromQuery] int toRound = 17,
+        [FromQuery] DateTime? calibrationAsOf = null)
     {
         var result = await _multiSeasonHomeAdvantageCalibrationService.CalculateAsync(
             tournamentId,
             seasonCount,
             fromRound,
-            toRound);
+            toRound,
+            calibrationAsOf);
 
         return Ok(result);
     }
