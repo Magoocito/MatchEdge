@@ -15,4 +15,5 @@ public class BacktestingJob
 
     public BacktestSummary? Summary { get; set; }
     public IReadOnlyList<BacktestMatchResult>? Details { get; set; }
+    public GammaOptimizationResult? GammaResult { get; set; }
 }
