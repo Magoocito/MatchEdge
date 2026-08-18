@@ -81,6 +81,7 @@ public class BacktestingService : IBacktestingService
         var details = new List<BacktestMatchResult>();
         var totalMatches = filteredMatches.Count;
         var skippedMatches = 0;
+        var skippedMatchInfos = new List<(int MatchId, int HomeTeamId, int AwayTeamId, DateTime MatchDate, string Error)>();
 
         for (var i = 0; i < filteredMatches.Count; i++)
         {
@@ -144,6 +145,7 @@ public class BacktestingService : IBacktestingService
             catch (Exception ex)
             {
                 skippedMatches++;
+                skippedMatchInfos.Add((match.Event.Id, homeTeamId, awayTeamId, matchDate, ex.Message));
                 continue;
             }
 
@@ -153,7 +155,18 @@ public class BacktestingService : IBacktestingService
                 $"{match.Event.HomeTeam.ShortName} vs {match.Event.AwayTeam.ShortName}"));
         }
 
-        var summary = ComputeSummary(details, includeB2) with { SkippedMatches = skippedMatches };
+        var summary = ComputeSummary(details, includeB2) with
+        {
+            SkippedMatches = skippedMatches,
+            SkippedDetails = skippedMatchInfos.Select(s => new SkippedMatchInfo
+            {
+                MatchId = s.MatchId,
+                HomeTeamId = s.HomeTeamId,
+                AwayTeamId = s.AwayTeamId,
+                MatchDate = s.MatchDate,
+                Error = s.Error
+            }).ToList()
+        };
         return (summary, details);
     }
 

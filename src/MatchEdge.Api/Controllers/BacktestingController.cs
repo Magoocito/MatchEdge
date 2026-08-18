@@ -117,7 +117,7 @@ public class BacktestingController : ControllerBase
         {
             summary = job.Summary,
             matchCount = job.Details?.Count ?? 0,
-            details = job.Details?.Take(20).ToList()
+            details = job.Details
         });
     }
 
