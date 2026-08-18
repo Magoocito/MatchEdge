@@ -46,7 +46,6 @@ public class BacktestingController : ControllerBase
                     request.FromDate,
                     request.ToDate,
                     request.ExperimentalGamma,
-                    request.CalibrationAsOf,
                     request.IncludeB2,
                     request.SeasonLookback,
                     progress);
@@ -143,7 +142,6 @@ public class BacktestRequest
     public DateTime FromDate { get; set; } = DateTime.UtcNow.AddMonths(-3);
     public DateTime ToDate { get; set; } = DateTime.UtcNow;
     public double ExperimentalGamma { get; set; } = 1.58;
-    public DateTime CalibrationAsOf { get; set; } = DateTime.UtcNow;
     public bool IncludeB2 { get; set; } = true;
     public int SeasonLookback { get; set; } = 2;
 }

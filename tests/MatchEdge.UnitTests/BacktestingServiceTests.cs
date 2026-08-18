@@ -36,8 +36,7 @@ public class BacktestingServiceTests
             TournamentId,
             new DateTime(2025, 1, 1, 0, 0, 0, DateTimeKind.Utc),
             new DateTime(2025, 12, 31, 23, 59, 59, DateTimeKind.Utc),
-            1.58,
-            new DateTime(2024, 12, 31, 23, 59, 59, DateTimeKind.Utc));
+            1.58);
 
         // All asOfDateTime values should be identical (the match's start time)
         Assert.All(asOfDates, d => Assert.Equal(asOfDates[0], d));
@@ -65,8 +64,7 @@ public class BacktestingServiceTests
             TournamentId,
             new DateTime(2025, 1, 1, 0, 0, 0, DateTimeKind.Utc),
             new DateTime(2025, 12, 31, 23, 59, 59, DateTimeKind.Utc),
-            customGamma,
-            new DateTime(2024, 12, 31, 23, 59, 59, DateTimeKind.Utc));
+            customGamma);
 
         // The custom gamma should be used, not 1.58 from appsettings
         // (the exact value depends on the calculation, but it should NOT be 1.58)
@@ -92,7 +90,6 @@ public class BacktestingServiceTests
             new DateTime(2025, 1, 1, 0, 0, 0, DateTimeKind.Utc),
             new DateTime(2025, 12, 31, 23, 59, 59, DateTimeKind.Utc),
             1.58,
-            new DateTime(2024, 12, 31, 23, 59, 59, DateTimeKind.Utc),
             includeB2: false);
 
         Assert.All(details, d =>
@@ -131,8 +128,7 @@ public class BacktestingServiceTests
             TournamentId,
             new DateTime(2025, 1, 1, 0, 0, 0, DateTimeKind.Utc),
             new DateTime(2025, 12, 31, 23, 59, 59, DateTimeKind.Utc),
-            1.58,
-            new DateTime(2024, 12, 31, 23, 59, 59, DateTimeKind.Utc));
+            1.58);
 
         Assert.Equal(2, summary.TotalMatches);
         Assert.Equal("HomeAwaySplit", details[0].CalculationMethod);
@@ -163,8 +159,7 @@ public class BacktestingServiceTests
             TournamentId,
             new DateTime(2025, 1, 1, 0, 0, 0, DateTimeKind.Utc),
             new DateTime(2025, 12, 31, 23, 59, 59, DateTimeKind.Utc),
-            1.58,
-            new DateTime(2024, 12, 31, 23, 59, 59, DateTimeKind.Utc));
+            1.58);
 
         Assert.Single(details);
         Assert.Equal(1, summary.TotalMatches);
@@ -191,8 +186,7 @@ public class BacktestingServiceTests
             TournamentId,
             new DateTime(2025, 1, 1, 0, 0, 0, DateTimeKind.Utc),
             new DateTime(2025, 12, 31, 23, 59, 59, DateTimeKind.Utc),
-            1.58,
-            new DateTime(2024, 12, 31, 23, 59, 59, DateTimeKind.Utc));
+            1.58);
 
         Assert.Single(details);
         Assert.Equal(1, details[0].MatchId);
@@ -223,7 +217,6 @@ public class BacktestingServiceTests
             new DateTime(2025, 1, 1, 0, 0, 0, DateTimeKind.Utc),
             new DateTime(2025, 12, 31, 23, 59, 59, DateTimeKind.Utc),
             1.58,
-            new DateTime(2024, 12, 31, 23, 59, 59, DateTimeKind.Utc),
             progress: progress);
 
         Assert.Equal(3, progressReports.Count);
@@ -232,6 +225,32 @@ public class BacktestingServiceTests
         Assert.Equal(2, progressReports[1].ProcessedMatches);
         Assert.Equal(3, progressReports[2].ProcessedMatches);
         Assert.Contains("vs", progressReports[0].CurrentMatch);
+    }
+
+    [Fact]
+    public async Task RunAsync_UsesToDateForSeasonSelection_IncludesEvaluationMatches()
+    {
+        var match2024 = CreateMatch(1, 100, 200, 1704067200, "H"); // 2024-01-01 (calibration season)
+        var match2025 = CreateMatch(2, 300, 400, 1748736000, "D"); // 2025-06-01 (evaluation window)
+
+        var fakeContextStats = new FakeBacktestingTeamContextStatisticsService();
+        var fakeHistoricalStats = new FakeHistoricalTeamStatisticsProviderForBacktest();
+        var fakeSeasonService = new FakeSeasonServiceForBacktest();
+        var fakeEnumerator = new FakeHistoricalMatchEnumeratorForBacktest(match2024, match2025);
+        var fakeProbEngine = new FakeProbabilityEngine();
+
+        var sut = new BacktestingService(
+            fakeSeasonService, fakeEnumerator, fakeContextStats,
+            fakeHistoricalStats, fakeProbEngine);
+
+        var (summary, details) = await sut.RunAsync(
+            TournamentId,
+            new DateTime(2025, 1, 1, 0, 0, 0, DateTimeKind.Utc),
+            new DateTime(2025, 12, 31, 23, 59, 59, DateTimeKind.Utc),
+            1.58);
+
+        Assert.Equal(1, summary.TotalMatches);
+        Assert.Equal(2, details[0].MatchId);
     }
 
     private static HistoricalMatch CreateMatch(
