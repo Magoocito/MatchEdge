@@ -7,7 +7,6 @@ public interface IBacktestingService
         DateTime fromDate,
         DateTime toDate,
         double experimentalGamma,
-        DateTime calibrationAsOf,
         bool includeB2 = true,
         int seasonLookback = 2,
         IProgress<BacktestProgress>? progress = null);

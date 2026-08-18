@@ -40,13 +40,12 @@ public class BacktestingService : IBacktestingService
         DateTime fromDate,
         DateTime toDate,
         double experimentalGamma,
-        DateTime calibrationAsOf,
         bool includeB2 = true,
         int seasonLookback = 2,
         IProgress<BacktestProgress>? progress = null)
     {
         var seasonIds = await _seasonService.GetRecentSeasonIdsAsOfAsync(
-            tournamentId, seasonLookback, calibrationAsOf);
+            tournamentId, seasonLookback, toDate);
 
         var allMatches = await _matchEnumerator.GetFinishedMatchesAsync(
             tournamentId, seasonIds, FromRound, ToRound, Prefixes);
@@ -81,6 +80,8 @@ public class BacktestingService : IBacktestingService
 
         var details = new List<BacktestMatchResult>();
         var totalMatches = filteredMatches.Count;
+        var skippedMatches = 0;
+        var skippedMatchInfos = new List<(int MatchId, int HomeTeamId, int AwayTeamId, DateTime MatchDate, string Error)>();
 
         for (var i = 0; i < filteredMatches.Count; i++)
         {
@@ -89,60 +90,83 @@ public class BacktestingService : IBacktestingService
             var homeTeamId = match.Event.HomeTeam.Id;
             var awayTeamId = match.Event.AwayTeam.Id;
 
-            var actualResult = GetActualResult(match.Event);
-
-            var homeContext = await _contextStatisticsService.CalculateAsync(
-                homeTeamId, tournamentId, matchDate, seasonLookback);
-            var awayContext = await _contextStatisticsService.CalculateAsync(
-                awayTeamId, tournamentId, matchDate, seasonLookback);
-
-            var modelAResult = await CalculateModelA(
-                baselineCalculator, homeTeamId, awayTeamId, tournamentId, matchDate, seasonLookback);
-
-            var modelB1Result = await b1Calculator.CalculateAsync(
-                homeContext, awayContext, homeTeamId, awayTeamId, tournamentId, matchDate, seasonLookback);
-
-            var modelB1Probs = _probabilityEngine.GetMatchResultProbabilities(
-                modelB1Result.LambdaHome, modelB1Result.LambdaAway);
-
-            double modelB2HomeWin = 0, modelB2Draw = 0, modelB2AwayWin = 0;
-            if (includeB2 && b2Calculator != null)
+            BacktestMatchResult? result;
+            try
             {
-                var modelB2Result = await b2Calculator.CalculateAsync(
+                var actualResult = GetActualResult(match.Event);
+
+                var homeContext = await _contextStatisticsService.CalculateAsync(
+                    homeTeamId, tournamentId, matchDate, seasonLookback);
+                var awayContext = await _contextStatisticsService.CalculateAsync(
+                    awayTeamId, tournamentId, matchDate, seasonLookback);
+
+                var modelAResult = await CalculateModelA(
+                    baselineCalculator, homeTeamId, awayTeamId, tournamentId, matchDate, seasonLookback);
+
+                var modelB1Result = await b1Calculator.CalculateAsync(
                     homeContext, awayContext, homeTeamId, awayTeamId, tournamentId, matchDate, seasonLookback);
 
-                var modelB2Probs = _probabilityEngine.GetMatchResultProbabilities(
-                    modelB2Result.LambdaHome, modelB2Result.LambdaAway);
+                var modelB1Probs = _probabilityEngine.GetMatchResultProbabilities(
+                    modelB1Result.LambdaHome, modelB1Result.LambdaAway);
 
-                modelB2HomeWin = modelB2Probs.HomeWin;
-                modelB2Draw = modelB2Probs.Draw;
-                modelB2AwayWin = modelB2Probs.AwayWin;
+                double modelB2HomeWin = 0, modelB2Draw = 0, modelB2AwayWin = 0;
+                if (includeB2 && b2Calculator != null)
+                {
+                    var modelB2Result = await b2Calculator.CalculateAsync(
+                        homeContext, awayContext, homeTeamId, awayTeamId, tournamentId, matchDate, seasonLookback);
+
+                    var modelB2Probs = _probabilityEngine.GetMatchResultProbabilities(
+                        modelB2Result.LambdaHome, modelB2Result.LambdaAway);
+
+                    modelB2HomeWin = modelB2Probs.HomeWin;
+                    modelB2Draw = modelB2Probs.Draw;
+                    modelB2AwayWin = modelB2Probs.AwayWin;
+                }
+
+                result = new BacktestMatchResult
+                {
+                    MatchId = match.Event.Id,
+                    HomeTeamId = homeTeamId,
+                    AwayTeamId = awayTeamId,
+                    MatchDate = matchDate,
+                    ActualResult = actualResult,
+                    ModelA_HomeWinProb = modelAResult.Probs.HomeWin,
+                    ModelA_DrawProb = modelAResult.Probs.Draw,
+                    ModelA_AwayWinProb = modelAResult.Probs.AwayWin,
+                    ModelB1_HomeWinProb = modelB1Probs.HomeWin,
+                    ModelB1_DrawProb = modelB1Probs.Draw,
+                    ModelB1_AwayWinProb = modelB1Probs.AwayWin,
+                    ModelB2_HomeWinProb = modelB2HomeWin,
+                    ModelB2_DrawProb = modelB2Draw,
+                    ModelB2_AwayWinProb = modelB2AwayWin,
+                    CalculationMethod = modelB1Result.CalculationMethod
+                };
+            }
+            catch (Exception ex)
+            {
+                skippedMatches++;
+                skippedMatchInfos.Add((match.Event.Id, homeTeamId, awayTeamId, matchDate, ex.Message));
+                continue;
             }
 
-            details.Add(new BacktestMatchResult
-            {
-                MatchId = match.Event.Id,
-                HomeTeamId = homeTeamId,
-                AwayTeamId = awayTeamId,
-                MatchDate = matchDate,
-                ActualResult = actualResult,
-                ModelA_HomeWinProb = modelAResult.Probs.HomeWin,
-                ModelA_DrawProb = modelAResult.Probs.Draw,
-                ModelA_AwayWinProb = modelAResult.Probs.AwayWin,
-                ModelB1_HomeWinProb = modelB1Probs.HomeWin,
-                ModelB1_DrawProb = modelB1Probs.Draw,
-                ModelB1_AwayWinProb = modelB1Probs.AwayWin,
-                ModelB2_HomeWinProb = modelB2HomeWin,
-                ModelB2_DrawProb = modelB2Draw,
-                ModelB2_AwayWinProb = modelB2AwayWin,
-                CalculationMethod = modelB1Result.CalculationMethod
-            });
+            details.Add(result);
 
             progress?.Report(new BacktestProgress(i + 1, totalMatches,
                 $"{match.Event.HomeTeam.ShortName} vs {match.Event.AwayTeam.ShortName}"));
         }
 
-        var summary = ComputeSummary(details, includeB2);
+        var summary = ComputeSummary(details, includeB2) with
+        {
+            SkippedMatches = skippedMatches,
+            SkippedDetails = skippedMatchInfos.Select(s => new SkippedMatchInfo
+            {
+                MatchId = s.MatchId,
+                HomeTeamId = s.HomeTeamId,
+                AwayTeamId = s.AwayTeamId,
+                MatchDate = s.MatchDate,
+                Error = s.Error
+            }).ToList()
+        };
         return (summary, details);
     }
 
