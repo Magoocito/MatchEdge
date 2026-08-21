@@ -195,13 +195,13 @@ public class GammaOptimizerController : ControllerBase
                     progress);
 
                 job.GammaResult = result;
-                job.TotalMatches = result.GridResults.Count;
-                job.ProcessedMatches = result.GridResults.Count;
+                job.TotalMatches = result.Training.GridResults.Count + 3 + 1; // pilot + train + val
+                job.ProcessedMatches = job.TotalMatches;
                 job.Status = "Completed";
                 job.CompletedAt = DateTime.UtcNow;
 
-                _logger.LogInformation("Gamma optimization job {JobId} completed. Optimal gamma={Gamma}",
-                    job.JobId, result.OptimalGamma);
+                _logger.LogInformation("Gamma optimization job {JobId} completed. Optimal gamma={Gamma}, overfitting={Overfit}",
+                    job.JobId, result.Training.OptimalGamma, result.Validation.OverfittingDetected);
             }
             catch (Exception ex)
             {

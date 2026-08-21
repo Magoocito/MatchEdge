@@ -4,192 +4,251 @@ namespace MatchEdge.UnitTests;
 
 public class GammaOptimizerTests
 {
+    private static readonly DateTime TrainFrom = new(2025, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+    private static readonly DateTime TrainTo = new(2025, 6, 30, 23, 59, 59, DateTimeKind.Utc);
+    private static readonly DateTime ValFrom = new(2025, 7, 1, 0, 0, 0, DateTimeKind.Utc);
+    private static readonly DateTime ValTo = new(2025, 12, 31, 23, 59, 59, DateTimeKind.Utc);
+
     [Fact]
-    public async Task FindOptimalGammaAsync_ReturnsOptimalGamma()
+    public async Task FindOptimalGammaAsync_PilotConsistent_OptimalGammaFromTraining()
     {
-        // Arrange: mock BacktestingService to return different Brier scores per gamma
         var mockService = new FakeBacktestingServiceForGamma(
-            b1SplitOnlyBrier: 0.5,
-            b1SplitOnlyLogLoss: 0.9,
+            b1SplitOnlyBrier: 0.50,
+            b1SplitOnlyLogLoss: 0.90,
             brierByGamma: new Dictionary<double, (double Brier, double LogLoss)>
             {
                 [1.0] = (0.60, 1.10),
                 [1.05] = (0.58, 1.08),
                 [1.10] = (0.55, 1.05),
                 [1.15] = (0.52, 1.02),
-                [1.20] = (0.50, 1.00),  // best
+                [1.20] = (0.50, 1.00), // best train
                 [1.25] = (0.53, 1.03),
                 [1.30] = (0.56, 1.06),
+            },
+            brierValByGamma: new Dictionary<double, (double Brier, double LogLoss)>
+            {
+                [1.20] = (0.51, 1.01),
             });
 
         var sut = new GammaOptimizer(mockService);
 
-        // Act
         var result = await sut.FindOptimalGammaAsync(
-            tournamentId: 406,
-            fromDate: new DateTime(2025, 1, 1, 0, 0, 0, DateTimeKind.Utc),
-            toDate: new DateTime(2025, 12, 31, 23, 59, 59, DateTimeKind.Utc),
-            gammaMin: 1.0,
-            gammaMax: 1.30,
-            step: 0.05);
+            406, TrainFrom, ValTo, 1.0, 1.30, 0.05);
 
-        // Assert
-        Assert.Equal(1.20, result.OptimalGamma);
-        Assert.Equal(0.50, result.BestBrierScore);
-        Assert.Equal(1.00, result.BestLogLoss);
-        Assert.Equal(0.5, result.B1SplitOnlyReferenceBrier);
-        Assert.Equal(0.9, result.B1SplitOnlyReferenceLogLoss);
-        Assert.Equal(7, result.GridResults.Count);
+        Assert.True(result.PilotValidation.IsConsistent);
+        Assert.Null(result.PilotValidation.InconsistencyReason);
+        Assert.Equal(1.20, result.Training.OptimalGamma);
+        Assert.Equal(0.50, result.Training.BestBrierScore);
+        Assert.Equal(0.50, result.Training.B1SplitOnlyBrier);
+        Assert.Equal(7, result.Training.GridResults.Count);
     }
 
     [Fact]
-    public async Task FindOptimalGammaAsync_B1RunOnce_WithGamma1()
+    public async Task FindOptimalGammaAsync_ValidationOverfitting_Detected()
     {
-        // Arrange
         var mockService = new FakeBacktestingServiceForGamma(
-            b1SplitOnlyBrier: 0.5,
-            b1SplitOnlyLogLoss: 0.9,
+            b1SplitOnlyBrier: 0.50,
+            b1SplitOnlyLogLoss: 0.90,
             brierByGamma: new Dictionary<double, (double Brier, double LogLoss)>
             {
-                [1.0] = (0.60, 1.10),
-                [1.05] = (0.58, 1.08),
-            });
-
-        var sut = new GammaOptimizer(mockService);
-
-        // Act
-        await sut.FindOptimalGammaAsync(
-            tournamentId: 406,
-            fromDate: DateTime.UtcNow.AddDays(-90),
-            toDate: DateTime.UtcNow,
-            gammaMin: 1.0,
-            gammaMax: 1.05,
-            step: 0.05);
-
-        // Assert: B1 called once with gamma=1.0, then Model A called for each grid point
-        Assert.Equal(3, mockService.RunCallCount);
-        Assert.Equal(1.0, mockService.B1RunGamma);
-    }
-
-    [Fact]
-    public async Task FindOptimalGammaAsync_GridResultsHaveCorrectGammaValues()
-    {
-        // Arrange
-        var mockService = new FakeBacktestingServiceForGamma(
-            b1SplitOnlyBrier: 0.5,
-            b1SplitOnlyLogLoss: 0.9,
-            brierByGamma: new Dictionary<double, (double Brier, double LogLoss)>
-            {
-                [1.0] = (0.60, 1.10),
-                [1.05] = (0.58, 1.08),
-                [1.10] = (0.55, 1.05),
-            });
-
-        var sut = new GammaOptimizer(mockService);
-
-        // Act
-        var result = await sut.FindOptimalGammaAsync(
-            tournamentId: 406,
-            fromDate: DateTime.UtcNow.AddDays(-90),
-            toDate: DateTime.UtcNow,
-            gammaMin: 1.0,
-            gammaMax: 1.10,
-            step: 0.05);
-
-        // Assert
-        Assert.Equal(3, result.GridResults.Count);
-        Assert.Equal(1.0, result.GridResults[0].Gamma);
-        Assert.Equal(1.05, result.GridResults[1].Gamma);
-        Assert.Equal(1.1, result.GridResults[2].Gamma);
-    }
-
-    [Fact]
-    public async Task FindOptimalGammaAsync_ReportsProgress()
-    {
-        // Arrange
-        var mockService = new FakeBacktestingServiceForGamma(
-            b1SplitOnlyBrier: 0.5,
-            b1SplitOnlyLogLoss: 0.9,
-            brierByGamma: new Dictionary<double, (double Brier, double LogLoss)>
-            {
-                [1.0] = (0.60, 1.10),
-                [1.05] = (0.58, 1.08),
-            });
-
-        var progressReports = new List<BacktestProgress>();
-        var progress = new Progress<BacktestProgress>(p => progressReports.Add(p));
-
-        var sut = new GammaOptimizer(mockService);
-
-        // Act
-        await sut.FindOptimalGammaAsync(
-            tournamentId: 406,
-            fromDate: DateTime.UtcNow.AddDays(-90),
-            toDate: DateTime.UtcNow,
-            gammaMin: 1.0,
-            gammaMax: 1.05,
-            step: 0.05,
-            progress: progress);
-
-        // Assert
-        Assert.Equal(2, progressReports.Count);
-        Assert.Contains("gamma=1.0", progressReports[0].CurrentMatch);
-        Assert.Contains("gamma=1.05", progressReports[1].CurrentMatch);
-    }
-
-    [Fact]
-    public async Task FindOptimalGammaAsync_ChoosesBestBrierScore()
-    {
-        // Arrange: gamma=1.25 has best Brier
-        var mockService = new FakeBacktestingServiceForGamma(
-            b1SplitOnlyBrier: 0.5,
-            b1SplitOnlyLogLoss: 0.9,
-            brierByGamma: new Dictionary<double, (double Brier, double LogLoss)>
-            {
-                [1.0] = (0.60, 1.10),
-                [1.05] = (0.58, 1.08),
-                [1.10] = (0.55, 1.05),
+                [1.0] = (0.55, 1.05),
+                [1.05] = (0.52, 1.02),
+                [1.10] = (0.50, 1.00), // best train
                 [1.15] = (0.53, 1.03),
-                [1.20] = (0.52, 1.00),
-                [1.25] = (0.51, 0.99),  // best Brier
-                [1.30] = (0.53, 1.01),
+                [1.20] = (0.56, 1.06),
+            },
+            brierValByGamma: new Dictionary<double, (double Brier, double LogLoss)>
+            {
+                [1.10] = (0.58, 1.08), // WORSE in validation → overfitting
             });
 
         var sut = new GammaOptimizer(mockService);
 
-        // Act
         var result = await sut.FindOptimalGammaAsync(
-            tournamentId: 406,
-            fromDate: DateTime.UtcNow.AddDays(-90),
-            toDate: DateTime.UtcNow,
-            gammaMin: 1.0,
-            gammaMax: 1.30,
-            step: 0.05);
+            406, TrainFrom, ValTo, 1.0, 1.20, 0.05);
 
-        // Assert
-        Assert.Equal(1.25, result.OptimalGamma);
-        Assert.Equal(0.51, result.BestBrierScore);
-        Assert.Equal(0.99, result.BestLogLoss);
+        Assert.True(result.PilotValidation.IsConsistent);
+        Assert.Equal(1.10, result.Training.OptimalGamma);
+        Assert.True(result.Validation.OverfittingDetected);
+        Assert.False(result.Validation.ImprovedVsTrain);
+        Assert.Equal(0.58, result.Validation.BrierScore);
+    }
+
+    [Fact]
+    public async Task FindOptimalGammaAsync_ValidationImproved_NotOverfitting()
+    {
+        var mockService = new FakeBacktestingServiceForGamma(
+            b1SplitOnlyBrier: 0.50,
+            b1SplitOnlyLogLoss: 0.90,
+            brierByGamma: new Dictionary<double, (double Brier, double LogLoss)>
+            {
+                [1.0] = (0.55, 1.05),
+                [1.05] = (0.52, 1.02),
+                [1.10] = (0.50, 1.00), // best train
+                [1.15] = (0.53, 1.03),
+                [1.20] = (0.56, 1.06),
+            },
+            brierValByGamma: new Dictionary<double, (double Brier, double LogLoss)>
+            {
+                [1.10] = (0.48, 0.98), // BETTER in validation
+            });
+
+        var sut = new GammaOptimizer(mockService);
+
+        var result = await sut.FindOptimalGammaAsync(
+            406, TrainFrom, ValTo, 1.0, 1.20, 0.05);
+
+        Assert.True(result.Validation.ImprovedVsTrain);
+        Assert.False(result.Validation.OverfittingDetected);
+    }
+
+    [Fact]
+    public async Task FindOptimalGammaAsync_B1SplitOnlyReported_BothHalves()
+    {
+        var mockService = new FakeBacktestingServiceForGamma(
+            b1SplitOnlyBrier: 0.50,
+            b1SplitOnlyLogLoss: 0.90,
+            brierByGamma: new Dictionary<double, (double Brier, double LogLoss)>
+            {
+                [1.0] = (0.55, 1.05),
+                [1.05] = (0.52, 1.02),
+            },
+            brierValByGamma: new Dictionary<double, (double Brier, double LogLoss)>
+            {
+                [1.05] = (0.53, 1.03),
+            },
+            b1SplitOnlyBrierVal: 0.48,
+            b1SplitOnlyLogLossVal: 0.88);
+
+        var sut = new GammaOptimizer(mockService);
+
+        var result = await sut.FindOptimalGammaAsync(
+            406, TrainFrom, ValTo, 1.0, 1.05, 0.05);
+
+        Assert.Equal(0.50, result.Training.B1SplitOnlyBrier);
+        Assert.Equal(0.90, result.Training.B1SplitOnlyLogLoss);
+        Assert.Equal(0.48, result.Validation.B1SplitOnlyBrier);
+        Assert.Equal(0.88, result.Validation.B1SplitOnlyLogLoss);
+    }
+
+    [Fact]
+    public async Task FindOptimalGammaAsync_PilotInconsistent_ReturnsEarlyWithReason()
+    {
+        var mockService = new FakeBacktestingServiceForGamma(
+            b1SplitOnlyBrier: 0.50,
+            b1SplitOnlyLogLoss: 0.90,
+            brierByGamma: new Dictionary<double, (double Brier, double LogLoss)>(),
+            brierValByGamma: new Dictionary<double, (double Brier, double LogLoss)>(),
+            pilotInconsistent: true);
+
+        var sut = new GammaOptimizer(mockService);
+
+        var result = await sut.FindOptimalGammaAsync(
+            406, TrainFrom, ValTo, 1.0, 1.20, 0.05);
+
+        Assert.False(result.PilotValidation.IsConsistent);
+        Assert.NotNull(result.PilotValidation.InconsistencyReason);
+        Assert.Empty(result.Training.GridResults);
+    }
+
+    [Fact]
+    public async Task FindOptimalGammaAsync_PilotPointsContainMatchIdsAndAsOfDateTimes()
+    {
+        var mockService = new FakeBacktestingServiceForGamma(
+            b1SplitOnlyBrier: 0.50,
+            b1SplitOnlyLogLoss: 0.90,
+            brierByGamma: new Dictionary<double, (double Brier, double LogLoss)>
+            {
+                [1.0] = (0.55, 1.05),
+                [1.05] = (0.52, 1.02),
+            },
+            brierValByGamma: new Dictionary<double, (double Brier, double LogLoss)>
+            {
+                [1.05] = (0.53, 1.03),
+            });
+
+        var sut = new GammaOptimizer(mockService);
+
+        var result = await sut.FindOptimalGammaAsync(
+            406, TrainFrom, ValTo, 1.0, 1.05, 0.05);
+
+        Assert.Equal(3, result.PilotValidation.PilotPoints.Count);
+        foreach (var pilot in result.PilotValidation.PilotPoints)
+        {
+            Assert.NotEmpty(pilot.MatchIds);
+            Assert.NotEmpty(pilot.AsOfDateTimes);
+            Assert.Equal(pilot.MatchIds.Count, pilot.AsOfDateTimes.Count);
+        }
+    }
+
+    [Fact]
+    public async Task FindOptimalGammaAsync_TrainingGridPointsContainMatchIds()
+    {
+        var mockService = new FakeBacktestingServiceForGamma(
+            b1SplitOnlyBrier: 0.50,
+            b1SplitOnlyLogLoss: 0.90,
+            brierByGamma: new Dictionary<double, (double Brier, double LogLoss)>
+            {
+                [1.0] = (0.55, 1.05),
+                [1.05] = (0.52, 1.02),
+            },
+            brierValByGamma: new Dictionary<double, (double Brier, double LogLoss)>
+            {
+                [1.05] = (0.53, 1.03),
+            });
+
+        var sut = new GammaOptimizer(mockService);
+
+        var result = await sut.FindOptimalGammaAsync(
+            406, TrainFrom, ValTo, 1.0, 1.05, 0.05);
+
+        foreach (var point in result.Training.GridResults)
+        {
+            Assert.NotEmpty(point.MatchIds);
+            Assert.Equal(point.MatchIds.Count, point.AsOfDateTimes.Count);
+        }
     }
 }
 
 internal class FakeBacktestingServiceForGamma : IBacktestingService
 {
     private readonly Dictionary<double, (double Brier, double LogLoss)> _brierByGamma;
+    private readonly Dictionary<double, (double Brier, double LogLoss)> _brierValByGamma;
     private readonly double _b1SplitOnlyBrier;
     private readonly double _b1SplitOnlyLogLoss;
+    private readonly double? _b1SplitOnlyBrierVal;
+    private readonly double? _b1SplitOnlyLogLossVal;
+    private readonly bool _pilotInconsistent;
+    private int _pilotCallCount;
+
+    private static readonly IReadOnlyList<int> PilotMatchIds = [101, 102, 103, 104, 105];
+    private static readonly IReadOnlyList<DateTime> PilotAsOfs =
+    [
+        new DateTime(2025, 1, 15, 18, 0, 0, DateTimeKind.Utc),
+        new DateTime(2025, 2, 1, 18, 0, 0, DateTimeKind.Utc),
+        new DateTime(2025, 3, 10, 18, 0, 0, DateTimeKind.Utc),
+        new DateTime(2025, 4, 5, 18, 0, 0, DateTimeKind.Utc),
+        new DateTime(2025, 5, 20, 18, 0, 0, DateTimeKind.Utc),
+    ];
 
     public int RunCallCount { get; private set; }
-    public double? B1RunGamma { get; private set; }
 
     public FakeBacktestingServiceForGamma(
         double b1SplitOnlyBrier,
         double b1SplitOnlyLogLoss,
-        Dictionary<double, (double Brier, double LogLoss)> brierByGamma)
+        Dictionary<double, (double Brier, double LogLoss)> brierByGamma,
+        Dictionary<double, (double Brier, double LogLoss)> brierValByGamma,
+        double? b1SplitOnlyBrierVal = null,
+        double? b1SplitOnlyLogLossVal = null,
+        bool pilotInconsistent = false)
     {
         _b1SplitOnlyBrier = b1SplitOnlyBrier;
         _b1SplitOnlyLogLoss = b1SplitOnlyLogLoss;
         _brierByGamma = brierByGamma;
+        _brierValByGamma = brierValByGamma;
+        _b1SplitOnlyBrierVal = b1SplitOnlyBrierVal;
+        _b1SplitOnlyLogLossVal = b1SplitOnlyLogLossVal;
+        _pilotInconsistent = pilotInconsistent;
     }
 
     public Task<(BacktestSummary Summary, IReadOnlyList<BacktestMatchResult> Details)> RunAsync(
@@ -203,33 +262,62 @@ internal class FakeBacktestingServiceForGamma : IBacktestingService
     {
         RunCallCount++;
 
+        var isVal = fromDate.Month >= 7;
+        var matchIds = _pilotInconsistent && !isVal
+            ? (_pilotCallCount++ == 0
+                ? new List<int>(PilotMatchIds)
+                : new List<int> { 101, 102, 103, 999 }) // inconsistent on 2nd+ call
+            : new List<int>(PilotMatchIds);
+        var asOfs = new List<DateTime>(PilotAsOfs);
+
         if (includeB2)
         {
-            B1RunGamma = experimentalGamma;
+            var b1Brier = isVal && _b1SplitOnlyBrierVal.HasValue
+                ? _b1SplitOnlyBrierVal.Value : _b1SplitOnlyBrier;
+            var b1LogLoss = isVal && _b1SplitOnlyLogLossVal.HasValue
+                ? _b1SplitOnlyLogLossVal.Value : _b1SplitOnlyLogLoss;
+
             var summary = new BacktestSummary
             {
-                ModelA = CreateModelVariant(0.7, 1.2, 100),
-                ModelB1 = CreateModelVariantWithSplit(0.65, 1.15, _b1SplitOnlyBrier, _b1SplitOnlyLogLoss, 80, 0.7, 1.2, 20),
-                ModelB2 = CreateModelVariant(0.7, 1.2, 100),
-                TotalMatches = 100,
+                ModelA = CreateModelVariant(0.7, 1.2, matchIds.Count),
+                ModelB1 = new ModelVariantMetrics
+                {
+                    Overall = new MetricSet { BrierScore = 0.65, LogLoss = 1.15, MatchCount = matchIds.Count },
+                    SplitOnly = new MetricSet { BrierScore = b1Brier, LogLoss = b1LogLoss, MatchCount = matchIds.Count },
+                    FallbackOnly = new MetricSet { BrierScore = 0.7, LogLoss = 1.2, MatchCount = 0 }
+                },
+                ModelB2 = CreateModelVariant(0.7, 1.2, matchIds.Count),
+                TotalMatches = matchIds.Count,
                 SkippedMatches = 0
             };
-            return Task.FromResult((summary, (IReadOnlyList<BacktestMatchResult>)[]));
+            var details = matchIds.Select((id, i) => new BacktestMatchResult
+            {
+                MatchId = id,
+                MatchDate = asOfs[i]
+            }).ToList();
+            return Task.FromResult((summary, (IReadOnlyList<BacktestMatchResult>)details));
         }
 
-        var (brier, logLoss) = _brierByGamma.ContainsKey(experimentalGamma)
-            ? _brierByGamma[experimentalGamma]
+        // Model A only
+        var dict = isVal ? _brierValByGamma : _brierByGamma;
+        var (brier, logLoss) = dict.ContainsKey(experimentalGamma)
+            ? dict[experimentalGamma]
             : (0.65, 1.15);
 
         var aSummary = new BacktestSummary
         {
-            ModelA = CreateModelVariant(brier, logLoss, 100),
-            ModelB1 = CreateModelVariant(brier, logLoss, 100),
-            ModelB2 = CreateModelVariant(brier, logLoss, 100),
-            TotalMatches = 100,
+            ModelA = CreateModelVariant(brier, logLoss, matchIds.Count),
+            ModelB1 = CreateModelVariant(brier, logLoss, matchIds.Count),
+            ModelB2 = CreateModelVariant(brier, logLoss, matchIds.Count),
+            TotalMatches = matchIds.Count,
             SkippedMatches = 0
         };
-        return Task.FromResult((aSummary, (IReadOnlyList<BacktestMatchResult>)[]));
+        var aDetails = matchIds.Select((id, i) => new BacktestMatchResult
+        {
+            MatchId = id,
+            MatchDate = asOfs[i]
+        }).ToList();
+        return Task.FromResult((aSummary, (IReadOnlyList<BacktestMatchResult>)aDetails));
     }
 
     private static ModelVariantMetrics CreateModelVariant(double brier, double logLoss, int matchCount)
@@ -239,19 +327,6 @@ internal class FakeBacktestingServiceForGamma : IBacktestingService
             Overall = new MetricSet { BrierScore = brier, LogLoss = logLoss, MatchCount = matchCount },
             SplitOnly = new MetricSet { BrierScore = brier, LogLoss = logLoss, MatchCount = matchCount },
             FallbackOnly = new MetricSet { BrierScore = brier, LogLoss = logLoss, MatchCount = matchCount }
-        };
-    }
-
-    private static ModelVariantMetrics CreateModelVariantWithSplit(
-        double overallBrier, double overallLogLoss,
-        double splitBrier, double splitLogLoss, int splitCount,
-        double fallbackBrier, double fallbackLogLoss, int fallbackCount)
-    {
-        return new ModelVariantMetrics
-        {
-            Overall = new MetricSet { BrierScore = overallBrier, LogLoss = overallLogLoss, MatchCount = splitCount + fallbackCount },
-            SplitOnly = new MetricSet { BrierScore = splitBrier, LogLoss = splitLogLoss, MatchCount = splitCount },
-            FallbackOnly = new MetricSet { BrierScore = fallbackBrier, LogLoss = fallbackLogLoss, MatchCount = fallbackCount }
         };
     }
 }
