@@ -1,6 +1,6 @@
 using System.Collections.Concurrent;
 
-namespace MatchEdge.Infrastructure.Clients;
+namespace MatchEdge.Application.UseCases.Backtesting;
 
 public class BacktestingJobStore
 {

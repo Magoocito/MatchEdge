@@ -1,6 +1,4 @@
-using MatchEdge.Application.UseCases.Backtesting;
-
-namespace MatchEdge.Infrastructure.Clients;
+namespace MatchEdge.Application.UseCases.Backtesting;
 
 public class BacktestingJob
 {

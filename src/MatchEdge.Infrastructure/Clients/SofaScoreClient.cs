@@ -89,9 +89,4 @@ namespace MatchEdge.Infrastructure.Clients
             return response;
         }
     }
-
-    internal class TeamsResponse
-    {
-        public List<Team>? Teams { get; set; }
-    }
 }
