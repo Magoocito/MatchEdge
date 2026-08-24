@@ -16,6 +16,7 @@ public class BacktestingService : IBacktestingService
     private readonly ITeamContextStatisticsService _contextStatisticsService;
     private readonly IHistoricalTeamStatisticsProvider _historicalStatisticsProvider;
     private readonly IProbabilityEngine _probabilityEngine;
+    private readonly ICalibrationCurveCalculator _calibrationCalculator;
 
     private static readonly string[] Prefixes = ["Apertura", "Clausura"];
     private const int FromRound = 1;
@@ -26,13 +27,15 @@ public class BacktestingService : IBacktestingService
         IHistoricalMatchEnumerator matchEnumerator,
         ITeamContextStatisticsService contextStatisticsService,
         IHistoricalTeamStatisticsProvider historicalStatisticsProvider,
-        IProbabilityEngine probabilityEngine)
+        IProbabilityEngine probabilityEngine,
+        ICalibrationCurveCalculator calibrationCalculator)
     {
         _seasonService = seasonService;
         _matchEnumerator = matchEnumerator;
         _contextStatisticsService = contextStatisticsService;
         _historicalStatisticsProvider = historicalStatisticsProvider;
         _probabilityEngine = probabilityEngine;
+        _calibrationCalculator = calibrationCalculator;
     }
 
     public async Task<(BacktestSummary Summary, IReadOnlyList<BacktestMatchResult> Details)> RunAsync(
@@ -199,7 +202,7 @@ public class BacktestingService : IBacktestingService
         return "D";
     }
 
-    private static BacktestSummary ComputeSummary(IReadOnlyList<BacktestMatchResult> details, bool includeB2)
+    private BacktestSummary ComputeSummary(IReadOnlyList<BacktestMatchResult> details, bool includeB2)
     {
         var overallA = details.Select(d => (d.ModelA_HomeWinProb, d.ModelA_DrawProb, d.ModelA_AwayWinProb, d.ActualResult)).ToList();
         var overallB1 = details.Select(d => (d.ModelB1_HomeWinProb, d.ModelB1_DrawProb, d.ModelB1_AwayWinProb, d.ActualResult)).ToList();
@@ -226,7 +229,9 @@ public class BacktestingService : IBacktestingService
                 Overall = ComputeMetrics(overallB1),
                 SplitOnly = ComputeMetrics(splitB1),
                 FallbackOnly = ComputeMetrics(fallbackB1)
-            }
+            },
+            CalibrationA = _calibrationCalculator.Calculate(overallA),
+            CalibrationB1 = _calibrationCalculator.Calculate(overallB1)
         };
 
         if (includeB2)
@@ -242,7 +247,8 @@ public class BacktestingService : IBacktestingService
                     Overall = ComputeMetrics(overallB2),
                     SplitOnly = ComputeMetrics(splitB2),
                     FallbackOnly = ComputeMetrics(fallbackB2)
-                }
+                },
+                CalibrationB2 = _calibrationCalculator.Calculate(overallB2)
             };
         }
 

@@ -30,7 +30,7 @@ public class BacktestingServiceTests
 
         var sut = new BacktestingService(
             fakeSeasonService, fakeEnumerator, fakeContextStats,
-            fakeHistoricalStats, fakeProbEngine);
+            fakeHistoricalStats, fakeProbEngine, new CalibrationCurveCalculator());
 
         await sut.RunAsync(
             TournamentId,
@@ -57,7 +57,7 @@ public class BacktestingServiceTests
 
         var sut = new BacktestingService(
             fakeSeasonService, fakeEnumerator, fakeContextStats,
-            fakeHistoricalStats, fakeProbEngine);
+            fakeHistoricalStats, fakeProbEngine, new CalibrationCurveCalculator());
 
         var customGamma = 2.5;
         await sut.RunAsync(
@@ -83,7 +83,7 @@ public class BacktestingServiceTests
 
         var sut = new BacktestingService(
             fakeSeasonService, fakeEnumerator, fakeContextStats,
-            fakeHistoricalStats, fakeProbEngine);
+            fakeHistoricalStats, fakeProbEngine, new CalibrationCurveCalculator());
 
         var (summary, details) = await sut.RunAsync(
             TournamentId,
@@ -122,7 +122,7 @@ public class BacktestingServiceTests
 
         var sut = new BacktestingService(
             fakeSeasonService, fakeEnumerator, fakeContextStats,
-            fakeHistoricalStats, fakeProbEngine);
+            fakeHistoricalStats, fakeProbEngine, new CalibrationCurveCalculator());
 
         var (summary, details) = await sut.RunAsync(
             TournamentId,
@@ -153,7 +153,7 @@ public class BacktestingServiceTests
         // If any real SofaScore call is made, this fake will throw
         var sut = new BacktestingService(
             fakeSeasonService, fakeEnumerator, fakeContextStats,
-            fakeHistoricalStats, fakeProbEngine);
+            fakeHistoricalStats, fakeProbEngine, new CalibrationCurveCalculator());
 
         var (summary, details) = await sut.RunAsync(
             TournamentId,
@@ -179,7 +179,7 @@ public class BacktestingServiceTests
 
         var sut = new BacktestingService(
             fakeSeasonService, fakeEnumerator, fakeContextStats,
-            fakeHistoricalStats, fakeProbEngine);
+            fakeHistoricalStats, fakeProbEngine, new CalibrationCurveCalculator());
 
         // Only include matches between 2025-01-01 and 2025-12-31
         var (summary, details) = await sut.RunAsync(
@@ -207,7 +207,7 @@ public class BacktestingServiceTests
 
         var sut = new BacktestingService(
             fakeSeasonService, fakeEnumerator, fakeContextStats,
-            fakeHistoricalStats, fakeProbEngine);
+            fakeHistoricalStats, fakeProbEngine, new CalibrationCurveCalculator());
 
         var progressReports = new List<BacktestProgress>();
         var progress = new SynchronousProgress<BacktestProgress>(p => progressReports.Add(p));
@@ -241,7 +241,7 @@ public class BacktestingServiceTests
 
         var sut = new BacktestingService(
             fakeSeasonService, fakeEnumerator, fakeContextStats,
-            fakeHistoricalStats, fakeProbEngine);
+            fakeHistoricalStats, fakeProbEngine, new CalibrationCurveCalculator());
 
         var (summary, details) = await sut.RunAsync(
             TournamentId,

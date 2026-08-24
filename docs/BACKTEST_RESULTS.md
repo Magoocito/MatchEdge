@@ -63,6 +63,35 @@ All 4 are newly promoted teams without sufficient historical matches. Confirmed:
 - **Model B1** is the leading candidate for future re-evaluation when more data is available (e.g., end of 2026 season)
 - **Model B2** (split + gamma) performs worst — overfits local advantage
 
+## Calibration Curves (NEW)
+
+Calibration curves (reliability diagrams) are now computed automatically with each backtest. They measure whether predicted probabilities match observed frequencies.
+
+### How to Read Calibration Curves
+
+The `BacktestSummary` now includes `CalibrationA`, `CalibrationB1`, and `CalibrationB2` fields. Each contains:
+
+- **HomeWin / Draw / AwayWin**: Calibration curves per outcome
+  - `Bins[]`: Each bin has `PredictedProbability`, `ObservedFrequency`, and `Count`
+  - `ExpectedCalibrationError (ECE)`: Weighted average of |predicted - observed| across bins
+  - `BrierScore`: Per-outcome Brier score
+- **OverallECE**: Macro-average of the three outcomes' ECE
+
+### Interpretation
+
+| ECE Range | Quality |
+|-----------|---------|
+| 0.00 - 0.05 | Excellent calibration |
+| 0.05 - 0.10 | Good calibration |
+| 0.10 - 0.20 | Moderate miscalibration |
+| > 0.20 | Poor calibration |
+
+**Ideal scenario:** Predicted probability ≈ Observed frequency for all bins (diagonal on reliability diagram).
+
+### Accessing Calibration Data
+
+Calibration data is included in `GET /api/backtesting/result/{jobId}` response under `summary.calibrationA`, `summary.calibrationB1`, and `summary.calibrationB2`.
+
 ## Bug Fix: Season Selection (This PR)
 
 The backtesting service previously used `calibrationAsOf` to select which seasons to enumerate for evaluation matches. This caused 0 matches when `calibrationAsOf` preceded the evaluation window. Fixed by using `toDate` for season selection. See commit history for details.

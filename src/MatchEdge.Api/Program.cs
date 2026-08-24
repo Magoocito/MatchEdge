@@ -56,6 +56,7 @@ builder.Services.AddSingleton<BacktestingJobStore>();
 builder.Services.AddScoped<ISofaScoreBrowserCollector>(sp => sp.GetRequiredService<SofaScoreBrowserCollector>());
 builder.Services.AddScoped<IValueBetCalculator, ValueBetCalculator>();
 builder.Services.AddScoped<IBacktestingService, BacktestingService>();
+builder.Services.AddScoped<ICalibrationCurveCalculator, CalibrationCurveCalculator>();
 builder.Services.AddScoped<IGammaOptimizer, GammaOptimizer>();
 builder.Services.AddScoped<IHistoricalMatchEnumerator, HistoricalMatchEnumerator>();
 builder.Services.AddScoped<IHistoricalTeamStatisticsProvider, HistoricalTeamStatisticsProvider>();
