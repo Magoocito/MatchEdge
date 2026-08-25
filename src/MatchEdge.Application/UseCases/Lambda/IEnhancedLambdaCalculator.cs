@@ -13,8 +13,3 @@ public interface IEnhancedLambdaCalculator
         DateTime asOfDateTime,
         int seasonLookback = 2);
 }
-
-public record EnhancedLambdaResult(
-    double LambdaHome,
-    double LambdaAway,
-    string CalculationMethod);

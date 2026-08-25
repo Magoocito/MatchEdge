@@ -12,26 +12,3 @@ public record BacktestSummary
     public CalibrationResult? CalibrationB1 { get; init; }
     public CalibrationResult? CalibrationB2 { get; init; }
 }
-
-public record SkippedMatchInfo
-{
-    public int MatchId { get; init; }
-    public int HomeTeamId { get; init; }
-    public int AwayTeamId { get; init; }
-    public DateTime MatchDate { get; init; }
-    public string Error { get; init; } = "";
-}
-
-public record ModelVariantMetrics
-{
-    public MetricSet Overall { get; init; } = new();
-    public MetricSet SplitOnly { get; init; } = new();
-    public MetricSet FallbackOnly { get; init; } = new();
-}
-
-public record MetricSet
-{
-    public double BrierScore { get; init; }
-    public double LogLoss { get; init; }
-    public int MatchCount { get; init; }
-}
