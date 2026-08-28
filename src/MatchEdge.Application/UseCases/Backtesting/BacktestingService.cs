@@ -45,7 +45,8 @@ public class BacktestingService : IBacktestingService
         double experimentalGamma,
         bool includeB2 = true,
         int seasonLookback = 2,
-        IProgress<BacktestProgress>? progress = null)
+        IProgress<BacktestProgress>? progress = null,
+        CalibrationWindow? calibrationWindow = null)
     {
         var seasonIds = await _seasonService.GetRecentSeasonIdsAsOfAsync(
             tournamentId, seasonLookback, toDate);
@@ -61,6 +62,15 @@ public class BacktestingService : IBacktestingService
             })
             .OrderBy(m => m.Event.StartTimestamp)
             .ToList();
+
+        // Use calibration window for gamma optimization if provided
+        // This prevents leakage by ensuring gamma calibration is computed on
+        // strictly historical data, not including matches being evaluated
+        if (calibrationWindow != null)
+        {
+            var evalWindow = new EvaluationWindow(fromDate, toDate);
+            calibrationWindow.EnsureNoOverlap(evalWindow);
+        }
 
         var baselineOptions = Options.Create(new MatchModelOptions { HomeAdvantageFactor = experimentalGamma });
         var baselineCalculator = new MatchLambdaCalculator(baselineOptions);
