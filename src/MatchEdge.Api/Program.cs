@@ -11,6 +11,7 @@ using MatchEdge.Application.UseCases.Teams;
 using MatchEdge.Application.UseCases.Backtesting;
 using MatchEdge.Application.UseCases.Historical;
 using MatchEdge.Application.UseCases.ValueBetting;
+using MatchEdge.Application.UseCases.OddsImport;
 using MatchEdge.Infrastructure.Clients;
 using MatchEdge.Infrastructure.Configuration;
 using MatchEdge.Infrastructure.Services;
@@ -60,6 +61,8 @@ builder.Services.AddScoped<ICalibrationCurveCalculator, CalibrationCurveCalculat
 builder.Services.AddScoped<IGammaOptimizer, GammaOptimizer>();
 builder.Services.AddScoped<IHistoricalMatchEnumerator, HistoricalMatchEnumerator>();
 builder.Services.AddScoped<IHistoricalTeamStatisticsProvider, HistoricalTeamStatisticsProvider>();
+builder.Services.AddScoped<ICsvOddsParser, CsvOddsParser>();
+builder.Services.AddSingleton<IHistoricalOddsService, HistoricalOddsService>();
 
 builder.Services.Configure<SofaScoreOptions>(
     builder.Configuration.GetSection("SofaScore"));

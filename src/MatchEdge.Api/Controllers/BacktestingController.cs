@@ -1,4 +1,5 @@
 using MatchEdge.Application.UseCases.Backtesting;
+using MatchEdge.Application.UseCases.OddsImport;
 using Microsoft.AspNetCore.Mvc;
 
 namespace MatchEdge.Api.Controllers;
@@ -9,15 +10,21 @@ public class BacktestingController : ControllerBase
 {
     private readonly IBacktestingService _backtestingService;
     private readonly BacktestingJobStore _jobStore;
+    private readonly ICsvOddsParser _csvOddsParser;
+    private readonly IHistoricalOddsService _historicalOddsService;
     private readonly ILogger<BacktestingController> _logger;
 
     public BacktestingController(
         IBacktestingService backtestingService,
         BacktestingJobStore jobStore,
+        ICsvOddsParser csvOddsParser,
+        IHistoricalOddsService historicalOddsService,
         ILogger<BacktestingController> logger)
     {
         _backtestingService = backtestingService;
         _jobStore = jobStore;
+        _csvOddsParser = csvOddsParser;
+        _historicalOddsService = historicalOddsService;
         _logger = logger;
     }
 
@@ -133,5 +140,56 @@ public class BacktestingController : ControllerBase
             startedAt = j.StartedAt,
             completedAt = j.CompletedAt
         }));
+    }
+
+    [HttpPost("odds/upload")]
+    public IActionResult UploadOdds(IFormFile file)
+    {
+        if (file == null || file.Length == 0)
+            return BadRequest(new { error = "No file uploaded or file is empty" });
+
+        if (!file.FileName.EndsWith(".csv", StringComparison.OrdinalIgnoreCase))
+            return BadRequest(new { error = "File must be a CSV" });
+
+        string csvContent;
+        using (var reader = new StreamReader(file.OpenReadStream()))
+        {
+            csvContent = reader.ReadToEnd();
+        }
+
+        var odds = _csvOddsParser.Parse(csvContent);
+        if (odds.Count == 0)
+            return BadRequest(new { error = "No valid odds data found in CSV" });
+
+        _historicalOddsService.Load(odds);
+
+        _logger.LogInformation("Loaded {Count} odds from CSV upload", odds.Count);
+
+        return Ok(new
+        {
+            message = $"Successfully loaded {odds.Count} odds records",
+            matchCount = odds.Count,
+            dateRange = new
+            {
+                from = odds.Min(o => o.MatchDate).ToString("yyyy-MM-dd"),
+                to = odds.Max(o => o.MatchDate).ToString("yyyy-MM-dd")
+            }
+        });
+    }
+
+    [HttpGet("odds")]
+    public IActionResult GetOdds([FromQuery] DateTime? fromDate, [FromQuery] DateTime? toDate, [FromQuery] int? tournamentId)
+    {
+        var odds = tournamentId.HasValue
+            ? _historicalOddsService.GetByTournament(tournamentId.Value)
+            : fromDate.HasValue && toDate.HasValue
+                ? _historicalOddsService.GetByDateRange(fromDate.Value, toDate.Value)
+                : _historicalOddsService.GetAll();
+
+        return Ok(new
+        {
+            count = odds.Count,
+            odds = odds
+        });
     }
 }
