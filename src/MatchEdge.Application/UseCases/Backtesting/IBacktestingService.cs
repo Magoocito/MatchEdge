@@ -9,5 +9,6 @@ public interface IBacktestingService
         double experimentalGamma,
         bool includeB2 = true,
         int seasonLookback = 2,
-        IProgress<BacktestProgress>? progress = null);
+        IProgress<BacktestProgress>? progress = null,
+        CalibrationWindow? calibrationWindow = null);
 }
