@@ -3,6 +3,7 @@ using MatchEdge.Application.Services;
 using MatchEdge.Application.UseCases.Context;
 using MatchEdge.Application.UseCases.Historical;
 using MatchEdge.Application.UseCases.Lambda;
+using MatchEdge.Application.UseCases.OddsImport;
 using MatchEdge.Application.UseCases.Probability;
 using MatchEdge.Application.UseCases.Statistics;
 using Microsoft.Extensions.Options;
@@ -17,6 +18,8 @@ public class BacktestingService : IBacktestingService
     private readonly IHistoricalTeamStatisticsProvider _historicalStatisticsProvider;
     private readonly IProbabilityEngine _probabilityEngine;
     private readonly ICalibrationCurveCalculator _calibrationCalculator;
+    private readonly IHistoricalOddsService _historicalOddsService;
+    private readonly IMatchMappingProvider _matchMappingProvider;
 
     private static readonly string[] Prefixes = ["Apertura", "Clausura"];
     private const int FromRound = 1;
@@ -28,7 +31,9 @@ public class BacktestingService : IBacktestingService
         ITeamContextStatisticsService contextStatisticsService,
         IHistoricalTeamStatisticsProvider historicalStatisticsProvider,
         IProbabilityEngine probabilityEngine,
-        ICalibrationCurveCalculator calibrationCalculator)
+        ICalibrationCurveCalculator calibrationCalculator,
+        IHistoricalOddsService historicalOddsService,
+        IMatchMappingProvider matchMappingProvider)
     {
         _seasonService = seasonService;
         _matchEnumerator = matchEnumerator;
@@ -36,6 +41,8 @@ public class BacktestingService : IBacktestingService
         _historicalStatisticsProvider = historicalStatisticsProvider;
         _probabilityEngine = probabilityEngine;
         _calibrationCalculator = calibrationCalculator;
+        _historicalOddsService = historicalOddsService;
+        _matchMappingProvider = matchMappingProvider;
     }
 
     public async Task<(BacktestSummary Summary, IReadOnlyList<BacktestMatchResult> Details)> RunAsync(
@@ -96,6 +103,11 @@ public class BacktestingService : IBacktestingService
         var skippedMatches = 0;
         var skippedMatchInfos = new List<(int MatchId, int HomeTeamId, int AwayTeamId, DateTime MatchDate, string Error)>();
 
+        var matchMappings = _matchMappingProvider.GetAllMatchMappings();
+        var matchMappingLookup = matchMappings.ToDictionary(m => m.SofaScoreEventId, m => m.SourceMatchId);
+        var allOdds = _historicalOddsService.GetAll();
+        var oddsLookup = allOdds.ToDictionary(o => o.MatchId, o => o);
+
         for (var i = 0; i < filteredMatches.Count; i++)
         {
             var match = filteredMatches[i];
@@ -154,6 +166,22 @@ public class BacktestingService : IBacktestingService
                     ModelB2_AwayWinProb = modelB2AwayWin,
                     CalculationMethod = modelB1Result.CalculationMethod
                 };
+
+                if (matchMappingLookup.TryGetValue(match.Event.Id, out var sourceMatchId) &&
+                    oddsLookup.TryGetValue(sourceMatchId, out var odds))
+                {
+                    var totalImplied = odds.ImpliedHomeWinProbability + odds.ImpliedDrawProbability + odds.ImpliedAwayWinProbability;
+                    if (totalImplied > 0)
+                    {
+                        result = result with
+                        {
+                            Market_HomeWinProb = odds.ImpliedHomeWinProbability / totalImplied,
+                            Market_DrawProb = odds.ImpliedDrawProbability / totalImplied,
+                            Market_AwayWinProb = odds.ImpliedAwayWinProbability / totalImplied,
+                            MarketOddsId = sourceMatchId
+                        };
+                    }
+                }
             }
             catch (Exception ex)
             {
@@ -259,6 +287,20 @@ public class BacktestingService : IBacktestingService
                     FallbackOnly = ComputeMetrics(fallbackB2)
                 },
                 CalibrationB2 = _calibrationCalculator.Calculate(overallB2)
+            };
+        }
+
+        var marketMatches = details.Where(d => d.Market_HomeWinProb.HasValue).ToList();
+        if (marketMatches.Count > 0)
+        {
+            var overallMarket = marketMatches.Select(d => (d.Market_HomeWinProb!.Value, d.Market_DrawProb!.Value, d.Market_AwayWinProb!.Value, d.ActualResult)).ToList();
+            summary = summary with
+            {
+                Market = new ModelVariantMetrics
+                {
+                    Overall = ComputeMetrics(overallMarket)
+                },
+                MarketOddsMatched = marketMatches.Count
             };
         }
 

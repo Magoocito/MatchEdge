@@ -1,13 +1,14 @@
 using System.Globalization;
 using System.Text;
 using System.Text.RegularExpressions;
+using MatchEdge.Application.UseCases.OddsImport;
 using MatchEdge.Infrastructure.Data;
 using MatchEdge.Infrastructure.Data.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace MatchEdge.Infrastructure.Services;
 
-public class OddsMatchingService : IOddsMatchingService
+public class OddsMatchingService : IOddsMatchingService, IMatchMappingProvider
 {
     private readonly MatchEdgeDbContext _db;
 
@@ -92,6 +93,15 @@ public class OddsMatchingService : IOddsMatchingService
     {
         return _db.MatchMappings
             .AsNoTracking()
+            .ToList()
+            .AsReadOnly();
+    }
+
+    IReadOnlyList<MatchMapping> IMatchMappingProvider.GetAllMatchMappings()
+    {
+        return _db.MatchMappings
+            .AsNoTracking()
+            .Select(m => new MatchMapping(m.Source, m.SourceMatchId, m.SofaScoreEventId, m.MatchDate, m.MatchConfidence))
             .ToList()
             .AsReadOnly();
     }

@@ -20,5 +20,10 @@ public record BacktestMatchResult
     public double ModelB2_DrawProb { get; init; }
     public double ModelB2_AwayWinProb { get; init; }
 
+    public double? Market_HomeWinProb { get; init; }
+    public double? Market_DrawProb { get; init; }
+    public double? Market_AwayWinProb { get; init; }
+    public int? MarketOddsId { get; init; }
+
     public string CalculationMethod { get; init; } = string.Empty;
 }
