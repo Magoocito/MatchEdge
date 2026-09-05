@@ -93,7 +93,7 @@ foreach (var csvFile in csvFiles)
         if (awayScoreIdx >= 0 && int.TryParse(values[awayScoreIdx].Trim(), out var as2))
             awayScore = as2;
 
-        var sourceMatchId = $"{fileName}_{i}".GetHashCode() & 0x7FFFFFFF;
+        var sourceMatchId = $"{matchDate:yyyyMMdd}_{homeTeam}_{awayTeam}".GetHashCode() & 0x7FFFFFFF;
         var existing = db.HistoricalOdds.FirstOrDefault(o => o.Source == "FootyStats" && o.SourceMatchId == sourceMatchId);
         if (existing != null)
         {
