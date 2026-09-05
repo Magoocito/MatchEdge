@@ -67,7 +67,7 @@ builder.Services.AddScoped<IGammaOptimizer, GammaOptimizer>();
 builder.Services.AddScoped<IHistoricalMatchEnumerator, HistoricalMatchEnumerator>();
 builder.Services.AddScoped<IHistoricalTeamStatisticsProvider, HistoricalTeamStatisticsProvider>();
 builder.Services.AddScoped<ICsvOddsParser, CsvOddsParser>();
-builder.Services.AddSingleton<IHistoricalOddsService, HistoricalOddsService>();
+builder.Services.AddScoped<IHistoricalOddsService, SqlHistoricalOddsService>();
 
 builder.Services.Configure<SofaScoreOptions>(
     builder.Configuration.GetSection("SofaScore"));
