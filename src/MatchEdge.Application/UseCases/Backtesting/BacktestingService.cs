@@ -182,6 +182,31 @@ public class BacktestingService : IBacktestingService
                         };
                     }
                 }
+                else
+                {
+                    var normalizedHome = NormalizeTeamName(match.Event.HomeTeam.Name);
+                    var normalizedAway = NormalizeTeamName(match.Event.AwayTeam.Name);
+
+                    var candidate = allOdds.FirstOrDefault(o =>
+                        o.MatchDate.Date == matchDate.Date &&
+                        NormalizeTeamName(o.HomeTeamName) == normalizedHome &&
+                        NormalizeTeamName(o.AwayTeamName) == normalizedAway);
+
+                    if (candidate != null)
+                    {
+                        var totalImplied = candidate.ImpliedHomeWinProbability + candidate.ImpliedDrawProbability + candidate.ImpliedAwayWinProbability;
+                        if (totalImplied > 0)
+                        {
+                            result = result with
+                            {
+                                Market_HomeWinProb = candidate.ImpliedHomeWinProbability / totalImplied,
+                                Market_DrawProb = candidate.ImpliedDrawProbability / totalImplied,
+                                Market_AwayWinProb = candidate.ImpliedAwayWinProbability / totalImplied,
+                                MarketOddsId = candidate.MatchId
+                            };
+                        }
+                    }
+                }
             }
             catch (Exception ex)
             {
@@ -318,5 +343,18 @@ public class BacktestingService : IBacktestingService
             LogLoss = LogLossCalculator.Calculate(preds),
             MatchCount = preds.Count
         };
+    }
+
+    private static string NormalizeTeamName(string name)
+    {
+        if (string.IsNullOrWhiteSpace(name))
+            return string.Empty;
+
+        var normalized = name.ToLowerInvariant().Trim();
+        normalized = normalized
+            .Replace("á", "a").Replace("é", "e").Replace("í", "i")
+            .Replace("ó", "o").Replace("ú", "u").Replace("ñ", "n");
+        normalized = System.Text.RegularExpressions.Regex.Replace(normalized, @"\s+", " ");
+        return normalized;
     }
 }
