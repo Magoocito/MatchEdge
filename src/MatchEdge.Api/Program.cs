@@ -69,6 +69,7 @@ builder.Services.AddScoped<IHistoricalTeamStatisticsProvider, HistoricalTeamStat
 builder.Services.AddScoped<ICsvOddsParser, CsvOddsParser>();
 builder.Services.AddScoped<IHistoricalOddsService, SqlHistoricalOddsService>();
 builder.Services.AddScoped<IOddsMatchingService, OddsMatchingService>();
+builder.Services.AddScoped<IMatchMappingProvider, OddsMatchingService>();
 
 builder.Services.Configure<SofaScoreOptions>(
     builder.Configuration.GetSection("SofaScore"));
