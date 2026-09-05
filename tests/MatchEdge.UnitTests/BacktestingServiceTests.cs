@@ -4,10 +4,12 @@ using MatchEdge.Application.Services;
 using MatchEdge.Application.UseCases.Backtesting;
 using MatchEdge.Application.UseCases.Context;
 using MatchEdge.Application.UseCases.Historical;
+using MatchEdge.Application.UseCases.OddsImport;
 using MatchEdge.Application.UseCases.Probability;
 using MatchEdge.Application.UseCases.Statistics;
 using MatchEdge.Domain.Matches;
 using MatchEdge.Domain.Models;
+using MatchEdge.Domain.Odds;
 using MatchEdge.Domain.Teams;
 using Microsoft.Extensions.Options;
 
@@ -30,7 +32,8 @@ public class BacktestingServiceTests
 
         var sut = new BacktestingService(
             fakeSeasonService, fakeEnumerator, fakeContextStats,
-            fakeHistoricalStats, fakeProbEngine, new CalibrationCurveCalculator());
+            fakeHistoricalStats, fakeProbEngine, new CalibrationCurveCalculator(),
+            new FakeHistoricalOddsServiceForBacktest(), new FakeMatchMappingProviderForBacktest());
 
         await sut.RunAsync(
             TournamentId,
@@ -57,7 +60,8 @@ public class BacktestingServiceTests
 
         var sut = new BacktestingService(
             fakeSeasonService, fakeEnumerator, fakeContextStats,
-            fakeHistoricalStats, fakeProbEngine, new CalibrationCurveCalculator());
+            fakeHistoricalStats, fakeProbEngine, new CalibrationCurveCalculator(),
+            new FakeHistoricalOddsServiceForBacktest(), new FakeMatchMappingProviderForBacktest());
 
         var customGamma = 2.5;
         await sut.RunAsync(
@@ -83,7 +87,8 @@ public class BacktestingServiceTests
 
         var sut = new BacktestingService(
             fakeSeasonService, fakeEnumerator, fakeContextStats,
-            fakeHistoricalStats, fakeProbEngine, new CalibrationCurveCalculator());
+            fakeHistoricalStats, fakeProbEngine, new CalibrationCurveCalculator(),
+            new FakeHistoricalOddsServiceForBacktest(), new FakeMatchMappingProviderForBacktest());
 
         var (summary, details) = await sut.RunAsync(
             TournamentId,
@@ -122,7 +127,8 @@ public class BacktestingServiceTests
 
         var sut = new BacktestingService(
             fakeSeasonService, fakeEnumerator, fakeContextStats,
-            fakeHistoricalStats, fakeProbEngine, new CalibrationCurveCalculator());
+            fakeHistoricalStats, fakeProbEngine, new CalibrationCurveCalculator(),
+            new FakeHistoricalOddsServiceForBacktest(), new FakeMatchMappingProviderForBacktest());
 
         var (summary, details) = await sut.RunAsync(
             TournamentId,
@@ -153,7 +159,8 @@ public class BacktestingServiceTests
         // If any real SofaScore call is made, this fake will throw
         var sut = new BacktestingService(
             fakeSeasonService, fakeEnumerator, fakeContextStats,
-            fakeHistoricalStats, fakeProbEngine, new CalibrationCurveCalculator());
+            fakeHistoricalStats, fakeProbEngine, new CalibrationCurveCalculator(),
+            new FakeHistoricalOddsServiceForBacktest(), new FakeMatchMappingProviderForBacktest());
 
         var (summary, details) = await sut.RunAsync(
             TournamentId,
@@ -179,7 +186,8 @@ public class BacktestingServiceTests
 
         var sut = new BacktestingService(
             fakeSeasonService, fakeEnumerator, fakeContextStats,
-            fakeHistoricalStats, fakeProbEngine, new CalibrationCurveCalculator());
+            fakeHistoricalStats, fakeProbEngine, new CalibrationCurveCalculator(),
+            new FakeHistoricalOddsServiceForBacktest(), new FakeMatchMappingProviderForBacktest());
 
         // Only include matches between 2025-01-01 and 2025-12-31
         var (summary, details) = await sut.RunAsync(
@@ -207,7 +215,8 @@ public class BacktestingServiceTests
 
         var sut = new BacktestingService(
             fakeSeasonService, fakeEnumerator, fakeContextStats,
-            fakeHistoricalStats, fakeProbEngine, new CalibrationCurveCalculator());
+            fakeHistoricalStats, fakeProbEngine, new CalibrationCurveCalculator(),
+            new FakeHistoricalOddsServiceForBacktest(), new FakeMatchMappingProviderForBacktest());
 
         var progressReports = new List<BacktestProgress>();
         var progress = new SynchronousProgress<BacktestProgress>(p => progressReports.Add(p));
@@ -241,7 +250,8 @@ public class BacktestingServiceTests
 
         var sut = new BacktestingService(
             fakeSeasonService, fakeEnumerator, fakeContextStats,
-            fakeHistoricalStats, fakeProbEngine, new CalibrationCurveCalculator());
+            fakeHistoricalStats, fakeProbEngine, new CalibrationCurveCalculator(),
+            new FakeHistoricalOddsServiceForBacktest(), new FakeMatchMappingProviderForBacktest());
 
         var (summary, details) = await sut.RunAsync(
             TournamentId,
@@ -412,6 +422,25 @@ internal class SynchronousProgress<T> : IProgress<T>
     private readonly Action<T> _handler;
     public SynchronousProgress(Action<T> handler) => _handler = handler;
     public void Report(T value) => _handler(value);
+}
+
+internal class FakeHistoricalOddsServiceForBacktest : IHistoricalOddsService
+{
+    private readonly List<HistoricalOdds> _odds;
+    public FakeHistoricalOddsServiceForBacktest(params HistoricalOdds[] odds) => _odds = odds.ToList();
+    public IReadOnlyList<HistoricalOdds> GetAll() => _odds.AsReadOnly();
+    public IReadOnlyList<HistoricalOdds> GetByDateRange(DateTime fromDate, DateTime toDate) =>
+        _odds.Where(o => o.MatchDate >= fromDate && o.MatchDate <= toDate).ToList().AsReadOnly();
+    public IReadOnlyList<HistoricalOdds> GetByTournament(int tournamentId) =>
+        _odds.Where(o => o.TournamentId == tournamentId).ToList().AsReadOnly();
+    public void Load(IReadOnlyList<HistoricalOdds> odds) { }
+}
+
+internal class FakeMatchMappingProviderForBacktest : IMatchMappingProvider
+{
+    private readonly List<MatchMapping> _mappings;
+    public FakeMatchMappingProviderForBacktest(params MatchMapping[] mappings) => _mappings = mappings.ToList();
+    public IReadOnlyList<MatchMapping> GetAllMatchMappings() => _mappings.AsReadOnly();
 }
 
 #endregion

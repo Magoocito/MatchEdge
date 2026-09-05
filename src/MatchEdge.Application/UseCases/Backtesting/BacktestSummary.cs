@@ -8,7 +8,9 @@ public record BacktestSummary
     public ModelVariantMetrics ModelA { get; init; } = new();
     public ModelVariantMetrics ModelB1 { get; init; } = new();
     public ModelVariantMetrics ModelB2 { get; init; } = new();
+    public ModelVariantMetrics? Market { get; init; }
     public CalibrationResult? CalibrationA { get; init; }
     public CalibrationResult? CalibrationB1 { get; init; }
     public CalibrationResult? CalibrationB2 { get; init; }
+    public int MarketOddsMatched { get; init; }
 }
