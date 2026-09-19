@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace MatchEdge.Infrastructure.Services;
 
-public class OddsMatchingService : IOddsMatchingService, IMatchMappingProvider
+public class OddsMatchingService : IOddsMatchingService, IMatchMappingProvider, ITeamMappingProvider
 {
     private readonly MatchEdgeDbContext _db;
 
@@ -32,7 +32,16 @@ public class OddsMatchingService : IOddsMatchingService, IMatchMappingProvider
         return normalized;
     }
 
-    public IReadOnlyList<TeamMappingEntity> GetAllTeamMappings()
+    public IReadOnlyList<TeamMapping> GetAllTeamMappings()
+    {
+        return _db.TeamMappings
+            .AsNoTracking()
+            .Select(m => new TeamMapping(m.Source, m.SourceTeamId, m.SourceTeamName, m.SofaScoreTeamId, m.SofaScoreTeamName, m.Confidence))
+            .ToList()
+            .AsReadOnly();
+    }
+
+    public IReadOnlyList<TeamMappingEntity> GetAllTeamMappingsRaw()
     {
         return _db.TeamMappings
             .AsNoTracking()
@@ -154,7 +163,7 @@ public class OddsMatchingService : IOddsMatchingService, IMatchMappingProvider
 public interface IOddsMatchingService
 {
     string NormalizeTeamName(string name);
-    IReadOnlyList<TeamMappingEntity> GetAllTeamMappings();
+    IReadOnlyList<TeamMappingEntity> GetAllTeamMappingsRaw();
     TeamMappingEntity? FindTeamMapping(string source, string teamName);
     void SaveTeamMapping(string source, int sourceTeamId, string sourceName,
         int sofaScoreTeamId, string sofaScoreName, double confidence = 1.0);

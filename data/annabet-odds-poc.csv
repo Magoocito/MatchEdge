@@ -1,0 +1,51 @@
+season,date,home_team,away_team,home_score,away_score,home_odds,draw_odds,away_odds,source_url,game_report_url
+2024,2024-09-23,"Sport Huancayo","Los Chankas",3,1,1.83,3.39,3.84,local-file,https://annabet.com/es/soccerstats/gamereport_1422379_Sport_Huancayo-Los_Chankas,23.09.2024.html
+2024,2024-09-23,"Alianza Atlético","Comerciantes Unidos",1,0,1.41,4.32,7.21,local-file,https://annabet.com/es/soccerstats/gamereport_1422312_Alianza_Atletico-Comerciantes_Unidos,23.09.2024.html
+2024,2024-09-23,"Universidad César Valle","ADT de Tarma",0,0,1.99,3.30,3.26,local-file,https://annabet.com/es/soccerstats/gamereport_1422257_Universidad_Cesar_Vallejo-ADT_de_Tarma,23.09.2024.html
+2024,2024-09-24,"UTC Cajamarca","Carlos A. Mannucci",2,0,1.70,3.63,4.47,local-file,https://annabet.com/es/soccerstats/gamereport_1422578_UTC_Cajamarca-Carlos_A._Mannucci,24.09.2024.html
+2024,2024-09-24,"FBC Melgar","Atlético Grau",0,0,1.35,4.44,7.91,local-file,https://annabet.com/es/soccerstats/gamereport_1422392_FBC_Melgar-Atletico_Grau,24.09.2024.html
+2024,2024-09-27,"Unión Comercio","Sport Boys",0,2,2.86,3.02,2.47,local-file,https://annabet.com/es/soccerstats/gamereport_1423126_Union_Comercio-Sport_Boys,27.09.2024.html
+2024,2024-09-28,"Cienciano","Cusco FC",1,2,2.71,3.09,2.56,local-file,https://annabet.com/es/soccerstats/gamereport_1424034_Cienciano-Cusco_FC,28.09.2024.html
+2024,2024-09-28,"ADT de Tarma","Alianza Atlético",0,1,1.51,3.81,5.85,local-file,https://annabet.com/es/soccerstats/gamereport_1424007_ADT_de_Tarma-Alianza_Atletico,28.09.2024.html
+2024,2024-09-29,"Comerciantes Unidos","Universitario de Deport",0,2,5.43,4.04,1.53,local-file,https://annabet.com/es/soccerstats/gamereport_1424634_Comerciantes_Unidos-Universitario_de_Deportes,29.09.2024.html
+2024,2024-09-29,"Carlos A. Mannucci","Sport Huancayo",1,2,1.94,3.28,3.74,local-file,https://annabet.com/es/soccerstats/gamereport_1424629_Carlos_A._Mannucci-Sport_Huancayo,29.09.2024.html
+2024,2024-09-29,"Los Chankas","Deportivo Garcilaso",1,0,1.95,3.31,3.60,local-file,https://annabet.com/es/soccerstats/gamereport_1424514_Los_Chankas-Deportivo_Garcilaso,29.09.2024.html
+2024,2024-09-29,"Sporting Cristal","Universidad César Valle",4,1,1.38,4.44,6.81,local-file,https://annabet.com/es/soccerstats/gamereport_1424480_Sporting_Cristal-Universidad_Cesar_Vallejo,29.09.2024.html
+2024,2024-09-29,"Alianza Lima","FBC Melgar",1,1,1.64,3.37,5.30,local-file,https://annabet.com/es/soccerstats/gamereport_1424071_Alianza_Lima-FBC_Melgar,29.09.2024.html
+2024,2024-09-30,"Atlético Grau","UTC Cajamarca",4,0,1.57,3.66,5.62,local-file,https://annabet.com/es/soccerstats/gamereport_1424761_Atletico_Grau-UTC_Cajamarca,30.09.2024.html
+2024,2024-10-17,"Cusco FC","Los Chankas",2,1,1.48,4.24,5.80,local-file,https://annabet.com/es/soccerstats/gamereport_1428553_Cusco_FC-Los_Chankas,17.10.2024.html
+2024,2024-10-17,"Unión Comercio","Comerciantes Unidos",3,2,2.03,3.33,3.40,local-file,https://annabet.com/es/soccerstats/gamereport_1428548_Union_Comercio-Comerciantes_Unidos,17.10.2024.html
+2024,2024-10-18,"Universidad César Valle","Cienciano",2,2,1.70,3.49,4.77,local-file,https://annabet.com/es/soccerstats/gamereport_1428808_Universidad_Cesar_Vallejo-Cienciano,18.10.2024.html
+2024,2024-10-18,"UTC Cajamarca","Alianza Lima",0,1,4.29,3.22,1.81,local-file,https://annabet.com/es/soccerstats/gamereport_1428798_UTC_Cajamarca-Alianza_Lima,18.10.2024.html
+2024,2024-10-18,"Sport Boys","FBC Melgar",0,2,3.64,3.16,2.00,local-file,https://annabet.com/es/soccerstats/gamereport_1428747_Sport_Boys-FBC_Melgar,18.10.2024.html
+2024,2024-10-18,"Sport Huancayo","Atlético Grau",1,3,1.99,3.07,4.05,local-file,https://annabet.com/es/soccerstats/gamereport_1428561_Sport_Huancayo-Atletico_Grau,18.10.2024.html
+2024,2024-10-19,"Alianza Atlético","Sporting Cristal",1,0,3.41,3.34,1.99,local-file,https://annabet.com/es/soccerstats/gamereport_1429517_Alianza_Atletico-Sporting_Cristal,19.10.2024.html
+2024,2024-10-19,"Deportivo Garcilaso","Carlos A. Mannucci",1,0,1.44,4.24,6.26,local-file,https://annabet.com/es/soccerstats/gamereport_1428815_Deportivo_Garcilaso-Carlos_A._Mannucci,19.10.2024.html
+2024,2024-10-20,"Universitario de Deport","ADT de Tarma",2,1,1.23,5.19,9.21,local-file,https://annabet.com/es/soccerstats/gamereport_1429617_Universitario_de_Deportes-ADT_de_Tarma,20.10.2024.html
+2024,2024-10-22,"Los Chankas","Universidad César Valle",2,1,1.64,3.71,4.84,local-file,https://annabet.com/es/soccerstats/gamereport_1430486_Los_Chankas-Universidad_Cesar_Vallejo,22.10.2024.html
+2024,2024-10-22,"Atlético Grau","Deportivo Garcilaso",2,2,1.63,3.64,5.10,local-file,https://annabet.com/es/soccerstats/gamereport_1430391_Atletico_Grau-Deportivo_Garcilaso,22.10.2024.html
+2024,2024-10-23,"Cienciano","Alianza Atlético",3,0,1.55,3.59,6.18,local-file,https://annabet.com/es/soccerstats/gamereport_1430708_Cienciano-Alianza_Atletico,23.10.2024.html
+2024,2024-10-23,"ADT de Tarma","Unión Comercio",2,0,1.19,6.29,10.27,local-file,https://annabet.com/es/soccerstats/gamereport_1430702_ADT_de_Tarma-Union_Comercio,23.10.2024.html
+2024,2024-10-23,"Alianza Lima","Sport Huancayo",2,1,1.17,6.17,14.98,local-file,https://annabet.com/es/soccerstats/gamereport_1430508_Alianza_Lima-Sport_Huancayo,23.10.2024.html
+2024,2024-10-23,"FBC Melgar","UTC Cajamarca",1,0,1.18,6.02,13.35,local-file,https://annabet.com/es/soccerstats/gamereport_1430491_FBC_Melgar-UTC_Cajamarca,23.10.2024.html
+2024,2024-10-24,"Comerciantes Unidos","Sport Boys",0,0,2.11,3.03,3.70,local-file,https://annabet.com/es/soccerstats/gamereport_1430862_Comerciantes_Unidos-Sport_Boys,24.10.2024.html
+2024,2024-10-24,"Sporting Cristal","Universitario de Deport",2,1,2.55,2.74,3.01,local-file,https://annabet.com/es/soccerstats/gamereport_1430719_Sporting_Cristal-Universitario_de_Deportes,24.10.2024.html
+2024,2024-10-24,"Carlos A. Mannucci","Cusco FC",4,1,2.37,3.54,2.66,local-file,https://annabet.com/es/soccerstats/gamereport_1430717_Carlos_A._Mannucci-Cusco_FC,24.10.2024.html
+2024,2024-10-26,"Deportivo Garcilaso","Alianza Lima",1,2,4.15,3.25,1.86,local-file,https://annabet.com/es/soccerstats/gamereport_1431917_Deportivo_Garcilaso-Alianza_Lima,26.10.2024.html
+2024,2024-10-27,"Universitario de Deport","Cienciano",3,1,1.18,6.24,13.29,local-file,https://annabet.com/es/soccerstats/gamereport_1432473_Universitario_de_Deportes-Cienciano,27.10.2024.html
+2024,2024-10-27,"Sport Huancayo","FBC Melgar",2,4,4.02,3.62,1.78,local-file,https://annabet.com/es/soccerstats/gamereport_1432454_Sport_Huancayo-FBC_Melgar,27.10.2024.html
+2024,2024-10-27,"Sport Boys","UTC Cajamarca",1,1,2.04,3.38,3.52,local-file,https://annabet.com/es/soccerstats/gamereport_1432391_Sport_Boys-UTC_Cajamarca,27.10.2024.html
+2024,2024-10-27,"Unión Comercio","Sporting Cristal",0,12,10.90,5.90,1.21,local-file,https://annabet.com/es/soccerstats/gamereport_1432392_Union_Comercio-Sporting_Cristal,27.10.2024.html
+2024,2024-10-27,"Universidad César Valle","Carlos A. Mannucci",0,2,2.07,3.16,3.57,local-file,https://annabet.com/es/soccerstats/gamereport_1431932_Universidad_Cesar_Vallejo-Carlos_A._Mannucci,27.10.2024.html
+2024,2024-10-28,"Cusco FC","Atlético Grau",0,1,1.75,3.49,4.48,local-file,https://annabet.com/es/soccerstats/gamereport_1432605_Cusco_FC-Atletico_Grau,28.10.2024.html
+2024,2024-10-28,"Comerciantes Unidos","ADT de Tarma",0,0,3.20,3.36,2.10,local-file,https://annabet.com/es/soccerstats/gamereport_1432593_Comerciantes_Unidos-ADT_de_Tarma,28.10.2024.html
+2024,2024-10-28,"Alianza Atlético","Los Chankas",1,0,1.59,3.53,5.74,local-file,https://annabet.com/es/soccerstats/gamereport_1432575_Alianza_Atletico-Los_Chankas,28.10.2024.html
+2024,2024-10-31,"Cienciano","Unión Comercio",7,0,1.03,25.05,47.95,local-file,https://annabet.com/es/soccerstats/gamereport_1433198_Cienciano-Union_Comercio,31.10.2024.html
+2024,2024-11-01,"ADT de Tarma","Sport Boys",1,0,1.36,4.58,7.27,local-file,https://annabet.com/es/soccerstats/gamereport_1433352_ADT_de_Tarma-Sport_Boys,01.11.2024.html
+2024,2024-11-02,"Atlético Grau","Universidad César Valle",3,1,2.08,3.52,3.23,local-file,https://annabet.com/es/soccerstats/gamereport_1434006_Atletico_Grau-Universidad_Cesar_Vallejo,02.11.2024.html
+2024,2024-11-02,"Carlos A. Mannucci","Alianza Atlético",2,2,1.50,3.97,5.61,local-file,https://annabet.com/es/soccerstats/gamereport_1434005_Carlos_A._Mannucci-Alianza_Atletico,02.11.2024.html
+2024,2024-11-02,"UTC Cajamarca","Sport Huancayo",1,1,1.49,4.01,6.04,local-file,https://annabet.com/es/soccerstats/gamereport_1434004_UTC_Cajamarca-Sport_Huancayo,02.11.2024.html
+2024,2024-11-03,"Alianza Lima","Cusco FC",1,2,1.12,7.25,16.37,local-file,https://annabet.com/es/soccerstats/gamereport_1434560_Alianza_Lima-Cusco_FC,03.11.2024.html
+2024,2024-11-03,"FBC Melgar","Deportivo Garcilaso",1,1,1.21,5.59,10.51,local-file,https://annabet.com/es/soccerstats/gamereport_1434587_FBC_Melgar-Deportivo_Garcilaso,03.11.2024.html
+2024,2024-11-03,"Los Chankas","Universitario de Deport",0,0,6.42,4.46,1.38,local-file,https://annabet.com/es/soccerstats/gamereport_1434561_Los_Chankas-Universitario_de_Deportes,03.11.2024.html
+2024,2024-11-03,"Sporting Cristal","Comerciantes Unidos",3,0,1.10,9.25,18.86,local-file,https://annabet.com/es/soccerstats/gamereport_1434471_Sporting_Cristal-Comerciantes_Unidos,03.11.2024.html

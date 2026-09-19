@@ -1,0 +1,25 @@
+{
+  "market": {
+    "brier": 0.5682,
+    "logLoss": 0.8634,
+    "matches": 1178,
+    "seasons": "2023-2026",
+    "favoriteAccuracy": 0.541,
+    "ci95": [
+      0.514,
+      0.569
+    ]
+  },
+  "modelA": {
+    "brier": 0.6076,
+    "logLoss": 1.0203,
+    "matches": 291,
+    "season": "2025"
+  },
+  "interpretation": {
+    "market_brier_better_by_pct": 6.484529295589201,
+    "market_logloss_better_by_pct": 15.377830049985302,
+    "caveat": "Different time periods - need same dataset for fair comparison"
+  },
+  "recommendation": "User decision needed"
+}

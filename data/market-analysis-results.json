@@ -1,0 +1,36 @@
+{
+  "total_matches": 1178,
+  "favorite_accuracy": 0.5407470288624788,
+  "favorite_accuracy_ci_95": [
+    0.5135823429541596,
+    0.568760611205433
+  ],
+  "brier_score": 0.5681858826876137,
+  "brier_improvement_pct": 14.772117596857937,
+  "log_loss": 0.8634053697868812,
+  "log_loss_improvement_pct": 21.409456393973077,
+  "overround_mean": 0.09765804228562203,
+  "outcome_distribution": {
+    "home": 0.5101867572156197,
+    "draw": 0.2640067911714771,
+    "away": 0.22580645161290322
+  },
+  "by_season": {
+    "2023": {
+      "matches": 324,
+      "favorite_accuracy": 0.5462962962962963
+    },
+    "2024": {
+      "matches": 350,
+      "favorite_accuracy": 0.5542857142857143
+    },
+    "2025": {
+      "matches": 329,
+      "favorite_accuracy": 0.5227963525835866
+    },
+    "2026": {
+      "matches": 175,
+      "favorite_accuracy": 0.5371428571428571
+    }
+  }
+}

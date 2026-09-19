@@ -3,6 +3,7 @@ using System;
 using MatchEdge.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace MatchEdge.Infrastructure.Migrations
 {
     [DbContext(typeof(MatchEdgeDbContext))]
-    partial class MatchEdgeDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260918231414_AddTrendPersistence")]
+    partial class AddTrendPersistence
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.31");

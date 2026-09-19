@@ -1,4 +1,5 @@
 using MatchEdge.Application.Clients;
+using MatchEdge.Application.Clients.FootyMetrics;
 using MatchEdge.Application.Configuration;
 using MatchEdge.Application.Services;
 using MatchEdge.Application.UseCases.Calibration;
@@ -20,8 +21,25 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Hosting.WindowsServices;
 
-var builder = WebApplication.CreateBuilder(args);
+var options = new WebApplicationOptions
+{
+    Args = args,
+    ContentRootPath = AppContext.BaseDirectory
+};
+
+var builder = WebApplication.CreateBuilder(options);
+
+builder.Host.UseWindowsService(options =>
+{
+    options.ServiceName = "MatchEdge";
+});
+
+builder.WebHost.ConfigureKestrel(options =>
+{
+    options.ListenLocalhost(5272);
+});
 
 // Add services to the container.
 
@@ -58,6 +76,8 @@ builder.Services.AddScoped<IMatchPredictionService, MatchPredictionService>();
 builder.Services.AddScoped<IHttpRequestExecutor, HttpRequestExecutor>();
 builder.Services.AddSingleton<PlaywrightBrowserManager>();
 builder.Services.AddSingleton<SofaScoreBrowserCollector>();
+builder.Services.AddSingleton<FootyMetricsBrowserManager>();
+builder.Services.AddSingleton<FootyMetricsBrowserCollector>();
 builder.Services.AddSingleton<BacktestingJobStore>();
 builder.Services.AddScoped<ISofaScoreBrowserCollector>(sp => sp.GetRequiredService<SofaScoreBrowserCollector>());
 builder.Services.AddScoped<IValueBetCalculator, ValueBetCalculator>();
@@ -68,8 +88,10 @@ builder.Services.AddScoped<IHistoricalMatchEnumerator, HistoricalMatchEnumerator
 builder.Services.AddScoped<IHistoricalTeamStatisticsProvider, HistoricalTeamStatisticsProvider>();
 builder.Services.AddScoped<ICsvOddsParser, CsvOddsParser>();
 builder.Services.AddScoped<IHistoricalOddsService, SqlHistoricalOddsService>();
-builder.Services.AddScoped<IOddsMatchingService, OddsMatchingService>();
-builder.Services.AddScoped<IMatchMappingProvider, OddsMatchingService>();
+builder.Services.AddScoped<OddsMatchingService>();
+builder.Services.AddScoped<IOddsMatchingService>(sp => sp.GetRequiredService<OddsMatchingService>());
+builder.Services.AddScoped<IMatchMappingProvider>(sp => sp.GetRequiredService<OddsMatchingService>());
+builder.Services.AddScoped<ITeamMappingProvider>(sp => sp.GetRequiredService<OddsMatchingService>());
 
 builder.Services.Configure<SofaScoreOptions>(
     builder.Configuration.GetSection("SofaScore"));
@@ -80,10 +102,34 @@ builder.Services.Configure<MatchModelOptions>(
 builder.Services.Configure<SofaScoreCacheOptions>(
     builder.Configuration.GetSection("SofaScoreCache"));
 
+builder.Services.Configure<FootyMetricsOptions>(
+    builder.Configuration.GetSection("FootyMetrics"));
+
+builder.Services.AddSingleton<FootyMetricsDomScraper>();
+builder.Services.AddScoped<FootyMetricsBrowserClient>();
+builder.Services.AddScoped<IFootyMetricsClient>(sp => sp.GetRequiredService<FootyMetricsBrowserClient>());
+builder.Services.AddScoped<ITrendPersistenceService, TrendPersistenceService>();
+builder.Services.AddScoped<ITrendBacktestingService, TrendBacktestingService>();
+builder.Services.AddScoped<IBankrollManager, BankrollManager>();
+builder.Services.AddScoped<IOrchestratorService, OrchestratorService>();
+builder.Services.AddHostedService<PipelineWorker>();
+
 var app = builder.Build();
+
+// Auto-migrate database
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<MatchEdgeDbContext>();
+    db.Database.EnsureCreated();
+}
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
+}
+else
 {
     app.UseSwagger();
     app.UseSwaggerUI();

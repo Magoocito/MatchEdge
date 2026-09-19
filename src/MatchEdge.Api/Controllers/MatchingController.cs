@@ -20,7 +20,7 @@ public class MatchingController : ControllerBase
     [HttpGet("teams")]
     public IActionResult GetTeamMappings()
     {
-        var mappings = _matchingService.GetAllTeamMappings();
+        var mappings = _matchingService.GetAllTeamMappingsRaw();
         return Ok(new { count = mappings.Count, mappings });
     }
 
