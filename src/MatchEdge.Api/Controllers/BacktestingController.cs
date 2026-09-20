@@ -1,6 +1,7 @@
 using MatchEdge.Application.UseCases.Backtesting;
 using MatchEdge.Application.UseCases.OddsImport;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace MatchEdge.Api.Controllers;
 
@@ -8,20 +9,20 @@ namespace MatchEdge.Api.Controllers;
 [Route("api/[controller]")]
 public class BacktestingController : ControllerBase
 {
-    private readonly IBacktestingService _backtestingService;
+    private readonly IServiceScopeFactory _scopeFactory;
     private readonly BacktestingJobStore _jobStore;
     private readonly ICsvOddsParser _csvOddsParser;
     private readonly IHistoricalOddsService _historicalOddsService;
     private readonly ILogger<BacktestingController> _logger;
 
     public BacktestingController(
-        IBacktestingService backtestingService,
+        IServiceScopeFactory scopeFactory,
         BacktestingJobStore jobStore,
         ICsvOddsParser csvOddsParser,
         IHistoricalOddsService historicalOddsService,
         ILogger<BacktestingController> logger)
     {
-        _backtestingService = backtestingService;
+        _scopeFactory = scopeFactory;
         _jobStore = jobStore;
         _csvOddsParser = csvOddsParser;
         _historicalOddsService = historicalOddsService;
@@ -38,8 +39,12 @@ public class BacktestingController : ControllerBase
             job.Status = "Running";
             _logger.LogInformation("Backtesting job {JobId} started", job.JobId);
 
+            IServiceScope? scope = null;
             try
             {
+                scope = _scopeFactory.CreateScope();
+                var backtestingService = scope.ServiceProvider.GetRequiredService<IBacktestingService>();
+
                 var progress = new Progress<BacktestProgress>(p =>
                 {
                     job.ProcessedMatches = p.ProcessedMatches;
@@ -47,14 +52,28 @@ public class BacktestingController : ControllerBase
                     job.CurrentMatch = p.CurrentMatch;
                 });
 
-                var (summary, details) = await _backtestingService.RunAsync(
-                    request.TournamentId,
-                    request.FromDate,
-                    request.ToDate,
-                    request.ExperimentalGamma,
-                    request.IncludeB2,
-                    request.SeasonLookback,
-                    progress);
+                BacktestSummary summary;
+                IReadOnlyList<BacktestMatchResult> details;
+
+                try
+                {
+                    (summary, details) = await backtestingService.RunAsync(
+                        request.TournamentId,
+                        request.FromDate,
+                        request.ToDate,
+                        request.ExperimentalGamma,
+                        request.IncludeB2,
+                        request.SeasonLookback,
+                        progress);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Backtesting job {JobId} failed during run", job.JobId);
+                    job.Status = "Failed";
+                    job.ErrorMessage = ex.Message;
+                    job.CompletedAt = DateTime.UtcNow;
+                    return;
+                }
 
                 job.Summary = summary;
                 job.Details = details;
@@ -72,6 +91,10 @@ public class BacktestingController : ControllerBase
                 job.ErrorMessage = ex.Message;
                 job.CompletedAt = DateTime.UtcNow;
                 _logger.LogError(ex, "Backtesting job {JobId} failed", job.JobId);
+            }
+            finally
+            {
+                scope?.Dispose();
             }
         });
 

@@ -1,0 +1,9305 @@
+[
+  {
+    "date": "2023-01-21",
+    "home": "Club Sporting Cristal",
+    "away": "Academia Deportiva Cantolao",
+    "homeScore": 0,
+    "awayScore": 0
+  },
+  {
+    "date": "2023-01-21",
+    "home": "Deportivo Garcilaso",
+    "away": "Carlos A. Mannucci",
+    "homeScore": 0,
+    "awayScore": 0
+  },
+  {
+    "date": "2023-01-22",
+    "home": "Universidad César Vallejo",
+    "away": "Sport Huancayo",
+    "homeScore": 0,
+    "awayScore": 0
+  },
+  {
+    "date": "2023-01-22",
+    "home": "Deportivo Municipal",
+    "away": "Unión Comercio",
+    "homeScore": 0,
+    "awayScore": 0
+  },
+  {
+    "date": "2023-01-22",
+    "home": "Club Atlético Grau",
+    "away": "Alianza Lima",
+    "homeScore": 0,
+    "awayScore": 0
+  },
+  {
+    "date": "2023-01-22",
+    "home": "Asociación Deportiva Tarma",
+    "away": "Melgar",
+    "homeScore": 0,
+    "awayScore": 0
+  },
+  {
+    "date": "2023-01-22",
+    "home": "Sport Boys",
+    "away": "Alianza Atlético de Sullana",
+    "homeScore": 0,
+    "awayScore": 0
+  },
+  {
+    "date": "2023-01-23",
+    "home": "Universidad Técnica de Cajamarca",
+    "away": "Cusco FC",
+    "homeScore": 0,
+    "awayScore": 0
+  },
+  {
+    "date": "2023-01-24",
+    "home": "Universitario de Deportes",
+    "away": "Cienciano",
+    "homeScore": 0,
+    "awayScore": 0
+  },
+  {
+    "date": "2023-03-25",
+    "home": "Universitario de Deportes",
+    "away": "Cienciano",
+    "homeScore": 3,
+    "awayScore": 0
+  },
+  {
+    "date": "2023-03-25",
+    "home": "Club Sporting Cristal",
+    "away": "Academia Deportiva Cantolao",
+    "homeScore": 2,
+    "awayScore": 0
+  },
+  {
+    "date": "2023-03-26",
+    "home": "Universidad César Vallejo",
+    "away": "Sport Huancayo",
+    "homeScore": 0,
+    "awayScore": 2
+  },
+  {
+    "date": "2023-03-26",
+    "home": "Deportivo Municipal",
+    "away": "Unión Comercio",
+    "homeScore": 2,
+    "awayScore": 0
+  },
+  {
+    "date": "2023-03-26",
+    "home": "Club Atlético Grau",
+    "away": "Alianza Lima",
+    "homeScore": 1,
+    "awayScore": 2
+  },
+  {
+    "date": "2023-03-26",
+    "home": "Asociación Deportiva Tarma",
+    "away": "Melgar",
+    "homeScore": 0,
+    "awayScore": 0
+  },
+  {
+    "date": "2023-03-26",
+    "home": "Sport Boys",
+    "away": "Alianza Atlético de Sullana",
+    "homeScore": 0,
+    "awayScore": 1
+  },
+  {
+    "date": "2023-03-26",
+    "home": "Deportivo Garcilaso",
+    "away": "Carlos A. Mannucci",
+    "homeScore": 1,
+    "awayScore": 2
+  },
+  {
+    "date": "2023-03-27",
+    "home": "Universidad Técnica de Cajamarca",
+    "away": "Cusco FC",
+    "homeScore": 0,
+    "awayScore": 0
+  },
+  {
+    "date": "2023-01-28",
+    "home": "Deportivo Binacional",
+    "away": "Asociación Deportiva Tarma",
+    "homeScore": 0,
+    "awayScore": 0
+  },
+  {
+    "date": "2023-01-28",
+    "home": "Sport Huancayo",
+    "away": "Universidad Técnica de Cajamarca",
+    "homeScore": 0,
+    "awayScore": 0
+  },
+  {
+    "date": "2023-01-28",
+    "home": "Alianza Lima",
+    "away": "Deportivo Municipal",
+    "homeScore": 0,
+    "awayScore": 0
+  },
+  {
+    "date": "2023-01-29",
+    "home": "Melgar",
+    "away": "Deportivo Garcilaso",
+    "homeScore": 0,
+    "awayScore": 0
+  },
+  {
+    "date": "2023-01-29",
+    "home": "Academia Deportiva Cantolao",
+    "away": "Sport Boys",
+    "homeScore": 0,
+    "awayScore": 0
+  },
+  {
+    "date": "2023-01-29",
+    "home": "Unión Comercio",
+    "away": "Club Sporting Cristal",
+    "homeScore": 0,
+    "awayScore": 0
+  },
+  {
+    "date": "2023-01-29",
+    "home": "Carlos A. Mannucci",
+    "away": "Club Atlético Grau",
+    "homeScore": 0,
+    "awayScore": 0
+  },
+  {
+    "date": "2023-01-29",
+    "home": "Alianza Atlético de Sullana",
+    "away": "Universitario de Deportes",
+    "homeScore": 0,
+    "awayScore": 0
+  },
+  {
+    "date": "2023-01-31",
+    "home": "Cienciano",
+    "away": "Universidad César Vallejo",
+    "homeScore": 0,
+    "awayScore": 0
+  },
+  {
+    "date": "2023-05-12",
+    "home": "Sport Huancayo",
+    "away": "Universidad Técnica de Cajamarca",
+    "homeScore": 5,
+    "awayScore": 1
+  },
+  {
+    "date": "2023-05-12",
+    "home": "Deportivo Binacional",
+    "away": "Asociación Deportiva Tarma",
+    "homeScore": 1,
+    "awayScore": 0
+  },
+  {
+    "date": "2023-05-13",
+    "home": "Unión Comercio",
+    "away": "Club Sporting Cristal",
+    "homeScore": 1,
+    "awayScore": 6
+  },
+  {
+    "date": "2023-05-14",
+    "home": "Carlos A. Mannucci",
+    "away": "Club Atlético Grau",
+    "homeScore": 1,
+    "awayScore": 0
+  },
+  {
+    "date": "2023-05-14",
+    "home": "Alianza Atlético de Sullana",
+    "away": "Universitario de Deportes",
+    "homeScore": 3,
+    "awayScore": 1
+  },
+  {
+    "date": "2023-05-14",
+    "home": "Cienciano",
+    "away": "Universidad César Vallejo",
+    "homeScore": 1,
+    "awayScore": 1
+  },
+  {
+    "date": "2023-05-15",
+    "home": "Melgar",
+    "away": "Deportivo Garcilaso",
+    "homeScore": 2,
+    "awayScore": 4
+  },
+  {
+    "date": "2023-05-16",
+    "home": "Alianza Lima",
+    "away": "Deportivo Municipal",
+    "homeScore": 2,
+    "awayScore": 1
+  },
+  {
+    "date": "2023-05-16",
+    "home": "Academia Deportiva Cantolao",
+    "away": "Sport Boys",
+    "homeScore": 0,
+    "awayScore": 0
+  },
+  {
+    "date": "2023-02-03",
+    "home": "Cusco FC",
+    "away": "Sport Huancayo",
+    "homeScore": 0,
+    "awayScore": 3
+  },
+  {
+    "date": "2023-02-04",
+    "home": "Sport Boys",
+    "away": "Unión Comercio",
+    "homeScore": 0,
+    "awayScore": 0
+  },
+  {
+    "date": "2023-02-04",
+    "home": "Club Atlético Grau",
+    "away": "Melgar",
+    "homeScore": 3,
+    "awayScore": 0
+  },
+  {
+    "date": "2023-02-04",
+    "home": "Universidad Técnica de Cajamarca",
+    "away": "Cienciano",
+    "homeScore": 3,
+    "awayScore": 0
+  },
+  {
+    "date": "2023-02-04",
+    "home": "Universitario de Deportes",
+    "away": "Academia Deportiva Cantolao",
+    "homeScore": 4,
+    "awayScore": 0
+  },
+  {
+    "date": "2023-02-05",
+    "home": "Deportivo Garcilaso",
+    "away": "Deportivo Binacional",
+    "homeScore": 3,
+    "awayScore": 0
+  },
+  {
+    "date": "2023-02-05",
+    "home": "Club Sporting Cristal",
+    "away": "Alianza Lima",
+    "homeScore": 3,
+    "awayScore": 0
+  },
+  {
+    "date": "2023-02-05",
+    "home": "Deportivo Municipal",
+    "away": "Carlos A. Mannucci",
+    "homeScore": 0,
+    "awayScore": 0
+  },
+  {
+    "date": "2023-02-06",
+    "home": "Sport Boys",
+    "away": "Unión Comercio",
+    "homeScore": 2,
+    "awayScore": 1
+  },
+  {
+    "date": "2023-02-06",
+    "home": "Universidad César Vallejo",
+    "away": "Alianza Atlético de Sullana",
+    "homeScore": 2,
+    "awayScore": 2
+  },
+  {
+    "date": "2023-02-07",
+    "home": "Deportivo Municipal",
+    "away": "Carlos A. Mannucci",
+    "homeScore": 0,
+    "awayScore": 3
+  },
+  {
+    "date": "2023-02-11",
+    "home": "Cienciano",
+    "away": "Cusco FC",
+    "homeScore": 2,
+    "awayScore": 0
+  },
+  {
+    "date": "2023-02-11",
+    "home": "Academia Deportiva Cantolao",
+    "away": "Universidad César Vallejo",
+    "homeScore": 1,
+    "awayScore": 2
+  },
+  {
+    "date": "2023-02-11",
+    "home": "Deportivo Binacional",
+    "away": "Club Atlético Grau",
+    "homeScore": 2,
+    "awayScore": 4
+  },
+  {
+    "date": "2023-02-11",
+    "home": "Asociación Deportiva Tarma",
+    "away": "Deportivo Garcilaso",
+    "homeScore": 1,
+    "awayScore": 2
+  },
+  {
+    "date": "2023-02-12",
+    "home": "Alianza Atlético de Sullana",
+    "away": "Universidad Técnica de Cajamarca",
+    "homeScore": 2,
+    "awayScore": 0
+  },
+  {
+    "date": "2023-02-12",
+    "home": "Unión Comercio",
+    "away": "Universitario de Deportes",
+    "homeScore": 1,
+    "awayScore": 0
+  },
+  {
+    "date": "2023-02-12",
+    "home": "Carlos A. Mannucci",
+    "away": "Club Sporting Cristal",
+    "homeScore": 1,
+    "awayScore": 1
+  },
+  {
+    "date": "2023-02-12",
+    "home": "Alianza Lima",
+    "away": "Sport Boys",
+    "homeScore": 2,
+    "awayScore": 0
+  },
+  {
+    "date": "2023-02-13",
+    "home": "Melgar",
+    "away": "Deportivo Municipal",
+    "homeScore": 0,
+    "awayScore": 2
+  },
+  {
+    "date": "2023-02-17",
+    "home": "Club Sporting Cristal",
+    "away": "Melgar",
+    "homeScore": 1,
+    "awayScore": 0
+  },
+  {
+    "date": "2023-02-18",
+    "home": "Universidad César Vallejo",
+    "away": "Unión Comercio",
+    "homeScore": 3,
+    "awayScore": 1
+  },
+  {
+    "date": "2023-02-18",
+    "home": "Sport Huancayo",
+    "away": "Cienciano",
+    "homeScore": 1,
+    "awayScore": 3
+  },
+  {
+    "date": "2023-02-18",
+    "home": "Sport Boys",
+    "away": "Carlos A. Mannucci",
+    "homeScore": 0,
+    "awayScore": 1
+  },
+  {
+    "date": "2023-02-18",
+    "home": "Universidad Técnica de Cajamarca",
+    "away": "Academia Deportiva Cantolao",
+    "homeScore": 0,
+    "awayScore": 0
+  },
+  {
+    "date": "2023-02-19",
+    "home": "Club Atlético Grau",
+    "away": "Asociación Deportiva Tarma",
+    "homeScore": 1,
+    "awayScore": 1
+  },
+  {
+    "date": "2023-02-19",
+    "home": "Universitario de Deportes",
+    "away": "Alianza Lima",
+    "homeScore": 1,
+    "awayScore": 2
+  },
+  {
+    "date": "2023-02-19",
+    "home": "Cusco FC",
+    "away": "Alianza Atlético de Sullana",
+    "homeScore": 2,
+    "awayScore": 1
+  },
+  {
+    "date": "2023-02-20",
+    "home": "Deportivo Municipal",
+    "away": "Deportivo Binacional",
+    "homeScore": 2,
+    "awayScore": 0
+  },
+  {
+    "date": "2023-02-22",
+    "home": "Universidad Técnica de Cajamarca",
+    "away": "Academia Deportiva Cantolao",
+    "homeScore": 1,
+    "awayScore": 0
+  },
+  {
+    "date": "2023-02-24",
+    "home": "Deportivo Binacional",
+    "away": "Club Sporting Cristal",
+    "homeScore": 0,
+    "awayScore": 0
+  },
+  {
+    "date": "2023-02-25",
+    "home": "Alianza Atlético de Sullana",
+    "away": "Sport Huancayo",
+    "homeScore": 4,
+    "awayScore": 2
+  },
+  {
+    "date": "2023-02-25",
+    "home": "Deportivo Garcilaso",
+    "away": "Club Atlético Grau",
+    "homeScore": 2,
+    "awayScore": 0
+  },
+  {
+    "date": "2023-02-26",
+    "home": "Alianza Lima",
+    "away": "Universidad César Vallejo",
+    "homeScore": 0,
+    "awayScore": 0
+  },
+  {
+    "date": "2023-02-26",
+    "home": "Unión Comercio",
+    "away": "Universidad Técnica de Cajamarca",
+    "homeScore": 1,
+    "awayScore": 0
+  },
+  {
+    "date": "2023-02-26",
+    "home": "Asociación Deportiva Tarma",
+    "away": "Deportivo Municipal",
+    "homeScore": 3,
+    "awayScore": 0
+  },
+  {
+    "date": "2023-02-26",
+    "home": "Melgar",
+    "away": "Sport Boys",
+    "homeScore": 0,
+    "awayScore": 0
+  },
+  {
+    "date": "2023-02-27",
+    "home": "Carlos A. Mannucci",
+    "away": "Universitario de Deportes",
+    "homeScore": 2,
+    "awayScore": 0
+  },
+  {
+    "date": "2023-02-27",
+    "home": "Academia Deportiva Cantolao",
+    "away": "Cusco FC",
+    "homeScore": 2,
+    "awayScore": 3
+  },
+  {
+    "date": "2023-05-12",
+    "home": "Alianza Lima",
+    "away": "Universidad César Vallejo",
+    "homeScore": 2,
+    "awayScore": 0
+  },
+  {
+    "date": "2023-05-12",
+    "home": "Melgar",
+    "away": "Sport Boys",
+    "homeScore": 2,
+    "awayScore": 0
+  },
+  {
+    "date": "2023-05-18",
+    "home": "Deportivo Binacional",
+    "away": "Club Sporting Cristal",
+    "homeScore": 0,
+    "awayScore": 1
+  },
+  {
+    "date": "2023-03-03",
+    "home": "Sport Boys",
+    "away": "Deportivo Binacional",
+    "homeScore": 2,
+    "awayScore": 2
+  },
+  {
+    "date": "2023-03-04",
+    "home": "Sport Huancayo",
+    "away": "Academia Deportiva Cantolao",
+    "homeScore": 4,
+    "awayScore": 0
+  },
+  {
+    "date": "2023-03-04",
+    "home": "Club Sporting Cristal",
+    "away": "Asociación Deportiva Tarma",
+    "homeScore": 0,
+    "awayScore": 0
+  },
+  {
+    "date": "2023-03-05",
+    "home": "Universidad César Vallejo",
+    "away": "Carlos A. Mannucci",
+    "homeScore": 2,
+    "awayScore": 0
+  },
+  {
+    "date": "2023-03-05",
+    "home": "Cienciano",
+    "away": "Alianza Atlético de Sullana",
+    "homeScore": 0,
+    "awayScore": 0
+  },
+  {
+    "date": "2023-03-05",
+    "home": "Universidad Técnica de Cajamarca",
+    "away": "Alianza Lima",
+    "homeScore": 0,
+    "awayScore": 1
+  },
+  {
+    "date": "2023-03-05",
+    "home": "Universitario de Deportes",
+    "away": "Melgar",
+    "homeScore": 1,
+    "awayScore": 0
+  },
+  {
+    "date": "2023-03-06",
+    "home": "Deportivo Municipal",
+    "away": "Deportivo Garcilaso",
+    "homeScore": 0,
+    "awayScore": 3
+  },
+  {
+    "date": "2023-03-06",
+    "home": "Cusco FC",
+    "away": "Unión Comercio",
+    "homeScore": 2,
+    "awayScore": 1
+  },
+  {
+    "date": "2023-05-10",
+    "home": "Cienciano",
+    "away": "Alianza Atlético de Sullana",
+    "homeScore": 5,
+    "awayScore": 2
+  },
+  {
+    "date": "2023-03-10",
+    "home": "Asociación Deportiva Tarma",
+    "away": "Sport Boys",
+    "homeScore": 1,
+    "awayScore": 0
+  },
+  {
+    "date": "2023-03-12",
+    "home": "Alianza Lima",
+    "away": "Cusco FC",
+    "homeScore": 2,
+    "awayScore": 0
+  },
+  {
+    "date": "2023-03-12",
+    "home": "Unión Comercio",
+    "away": "Sport Huancayo",
+    "homeScore": 2,
+    "awayScore": 0
+  },
+  {
+    "date": "2023-03-12",
+    "home": "Club Atlético Grau",
+    "away": "Deportivo Municipal",
+    "homeScore": 1,
+    "awayScore": 1
+  },
+  {
+    "date": "2023-03-12",
+    "home": "Academia Deportiva Cantolao",
+    "away": "Cienciano",
+    "homeScore": 1,
+    "awayScore": 0
+  },
+  {
+    "date": "2023-03-12",
+    "home": "Carlos A. Mannucci",
+    "away": "Universidad Técnica de Cajamarca",
+    "homeScore": 0,
+    "awayScore": 0
+  },
+  {
+    "date": "2023-03-12",
+    "home": "Deportivo Garcilaso",
+    "away": "Club Sporting Cristal",
+    "homeScore": 4,
+    "awayScore": 4
+  },
+  {
+    "date": "2023-03-13",
+    "home": "Deportivo Binacional",
+    "away": "Universitario de Deportes",
+    "homeScore": 1,
+    "awayScore": 2
+  },
+  {
+    "date": "2023-03-13",
+    "home": "Melgar",
+    "away": "Universidad César Vallejo",
+    "homeScore": 0,
+    "awayScore": 0
+  },
+  {
+    "date": "2023-05-17",
+    "home": "Carlos A. Mannucci",
+    "away": "Universidad Técnica de Cajamarca",
+    "homeScore": 0,
+    "awayScore": 1
+  },
+  {
+    "date": "2023-06-01",
+    "home": "Melgar",
+    "away": "Universidad César Vallejo",
+    "homeScore": 2,
+    "awayScore": 2
+  },
+  {
+    "date": "2023-03-17",
+    "home": "Sport Boys",
+    "away": "Deportivo Garcilaso",
+    "homeScore": 2,
+    "awayScore": 1
+  },
+  {
+    "date": "2023-03-18",
+    "home": "Alianza Atlético de Sullana",
+    "away": "Academia Deportiva Cantolao",
+    "homeScore": 2,
+    "awayScore": 1
+  },
+  {
+    "date": "2023-03-18",
+    "home": "Universidad Técnica de Cajamarca",
+    "away": "Melgar",
+    "homeScore": 0,
+    "awayScore": 0
+  },
+  {
+    "date": "2023-03-18",
+    "home": "Cienciano",
+    "away": "Unión Comercio",
+    "homeScore": 3,
+    "awayScore": 1
+  },
+  {
+    "date": "2023-03-19",
+    "home": "Universitario de Deportes",
+    "away": "Asociación Deportiva Tarma",
+    "homeScore": 3,
+    "awayScore": 1
+  },
+  {
+    "date": "2023-03-19",
+    "home": "Universidad César Vallejo",
+    "away": "Deportivo Binacional",
+    "homeScore": 2,
+    "awayScore": 0
+  },
+  {
+    "date": "2023-03-19",
+    "home": "Club Sporting Cristal",
+    "away": "Club Atlético Grau",
+    "homeScore": 2,
+    "awayScore": 1
+  },
+  {
+    "date": "2023-03-19",
+    "home": "Sport Huancayo",
+    "away": "Alianza Lima",
+    "homeScore": 2,
+    "awayScore": 1
+  },
+  {
+    "date": "2023-03-20",
+    "home": "Cusco FC",
+    "away": "Carlos A. Mannucci",
+    "homeScore": 3,
+    "awayScore": 0
+  },
+  {
+    "date": "2023-03-31",
+    "home": "Deportivo Municipal",
+    "away": "Club Sporting Cristal",
+    "homeScore": 1,
+    "awayScore": 1
+  },
+  {
+    "date": "2023-03-31",
+    "home": "Asociación Deportiva Tarma",
+    "away": "Universidad César Vallejo",
+    "homeScore": 2,
+    "awayScore": 0
+  },
+  {
+    "date": "2023-04-01",
+    "home": "Deportivo Garcilaso",
+    "away": "Universitario de Deportes",
+    "homeScore": 0,
+    "awayScore": 0
+  },
+  {
+    "date": "2023-04-01",
+    "home": "Melgar",
+    "away": "Cusco FC",
+    "homeScore": 1,
+    "awayScore": 1
+  },
+  {
+    "date": "2023-04-02",
+    "home": "Alianza Lima",
+    "away": "Cienciano",
+    "homeScore": 2,
+    "awayScore": 0
+  },
+  {
+    "date": "2023-04-02",
+    "home": "Unión Comercio",
+    "away": "Alianza Atlético de Sullana",
+    "homeScore": 3,
+    "awayScore": 3
+  },
+  {
+    "date": "2023-04-02",
+    "home": "Carlos A. Mannucci",
+    "away": "Sport Huancayo",
+    "homeScore": 0,
+    "awayScore": 0
+  },
+  {
+    "date": "2023-04-02",
+    "home": "Club Atlético Grau",
+    "away": "Sport Boys",
+    "homeScore": 3,
+    "awayScore": 0
+  },
+  {
+    "date": "2023-04-02",
+    "home": "Deportivo Binacional",
+    "away": "Universidad Técnica de Cajamarca",
+    "homeScore": 1,
+    "awayScore": 1
+  },
+  {
+    "date": "2023-04-07",
+    "home": "Cusco FC",
+    "away": "Deportivo Binacional",
+    "homeScore": 2,
+    "awayScore": 1
+  },
+  {
+    "date": "2023-04-08",
+    "home": "Sport Boys",
+    "away": "Deportivo Municipal",
+    "homeScore": 0,
+    "awayScore": 2
+  },
+  {
+    "date": "2023-04-08",
+    "home": "Universidad Técnica de Cajamarca",
+    "away": "Asociación Deportiva Tarma",
+    "homeScore": 1,
+    "awayScore": 0
+  },
+  {
+    "date": "2023-04-08",
+    "home": "Cienciano",
+    "away": "Carlos A. Mannucci",
+    "homeScore": 1,
+    "awayScore": 0
+  },
+  {
+    "date": "2023-04-09",
+    "home": "Alianza Atlético de Sullana",
+    "away": "Alianza Lima",
+    "homeScore": 0,
+    "awayScore": 1
+  },
+  {
+    "date": "2023-04-09",
+    "home": "Sport Huancayo",
+    "away": "Melgar",
+    "homeScore": 1,
+    "awayScore": 1
+  },
+  {
+    "date": "2023-04-09",
+    "home": "Universitario de Deportes",
+    "away": "Club Atlético Grau",
+    "homeScore": 2,
+    "awayScore": 1
+  },
+  {
+    "date": "2023-04-10",
+    "home": "Academia Deportiva Cantolao",
+    "away": "Unión Comercio",
+    "homeScore": 1,
+    "awayScore": 2
+  },
+  {
+    "date": "2023-04-10",
+    "home": "Universidad César Vallejo",
+    "away": "Deportivo Garcilaso",
+    "homeScore": 3,
+    "awayScore": 0
+  },
+  {
+    "date": "2023-04-14",
+    "home": "Club Sporting Cristal",
+    "away": "Sport Boys",
+    "homeScore": 1,
+    "awayScore": 1
+  },
+  {
+    "date": "2023-04-15",
+    "home": "Melgar",
+    "away": "Cienciano",
+    "homeScore": 1,
+    "awayScore": 0
+  },
+  {
+    "date": "2023-04-15",
+    "home": "Club Atlético Grau",
+    "away": "Universidad César Vallejo",
+    "homeScore": 1,
+    "awayScore": 1
+  },
+  {
+    "date": "2023-04-16",
+    "home": "Alianza Lima",
+    "away": "Academia Deportiva Cantolao",
+    "homeScore": 3,
+    "awayScore": 0
+  },
+  {
+    "date": "2023-04-16",
+    "home": "Deportivo Garcilaso",
+    "away": "Universidad Técnica de Cajamarca",
+    "homeScore": 2,
+    "awayScore": 2
+  },
+  {
+    "date": "2023-04-16",
+    "home": "Asociación Deportiva Tarma",
+    "away": "Cusco FC",
+    "homeScore": 0,
+    "awayScore": 2
+  },
+  {
+    "date": "2023-04-16",
+    "home": "Deportivo Municipal",
+    "away": "Universitario de Deportes",
+    "homeScore": 1,
+    "awayScore": 2
+  },
+  {
+    "date": "2023-04-16",
+    "home": "Deportivo Binacional",
+    "away": "Sport Huancayo",
+    "homeScore": 5,
+    "awayScore": 3
+  },
+  {
+    "date": "2023-04-17",
+    "home": "Carlos A. Mannucci",
+    "away": "Alianza Atlético de Sullana",
+    "homeScore": 1,
+    "awayScore": 0
+  },
+  {
+    "date": "2023-04-21",
+    "home": "Universidad Técnica de Cajamarca",
+    "away": "Club Atlético Grau",
+    "homeScore": 1,
+    "awayScore": 1
+  },
+  {
+    "date": "2023-04-22",
+    "home": "Academia Deportiva Cantolao",
+    "away": "Carlos A. Mannucci",
+    "homeScore": 0,
+    "awayScore": 2
+  },
+  {
+    "date": "2023-04-22",
+    "home": "Sport Huancayo",
+    "away": "Asociación Deportiva Tarma",
+    "homeScore": 1,
+    "awayScore": 3
+  },
+  {
+    "date": "2023-04-22",
+    "home": "Cienciano",
+    "away": "Deportivo Binacional",
+    "homeScore": 1,
+    "awayScore": 1
+  },
+  {
+    "date": "2023-04-23",
+    "home": "Unión Comercio",
+    "away": "Alianza Lima",
+    "homeScore": 1,
+    "awayScore": 3
+  },
+  {
+    "date": "2023-04-23",
+    "home": "Cusco FC",
+    "away": "Deportivo Garcilaso",
+    "homeScore": 2,
+    "awayScore": 1
+  },
+  {
+    "date": "2023-04-24",
+    "home": "Alianza Atlético de Sullana",
+    "away": "Melgar",
+    "homeScore": 3,
+    "awayScore": 3
+  },
+  {
+    "date": "2023-04-24",
+    "home": "Universidad César Vallejo",
+    "away": "Deportivo Municipal",
+    "homeScore": 1,
+    "awayScore": 1
+  },
+  {
+    "date": "2023-04-25",
+    "home": "Universitario de Deportes",
+    "away": "Club Sporting Cristal",
+    "homeScore": 2,
+    "awayScore": 0
+  },
+  {
+    "date": "2023-04-28",
+    "home": "Club Sporting Cristal",
+    "away": "Universidad César Vallejo",
+    "homeScore": 1,
+    "awayScore": 1
+  },
+  {
+    "date": "2023-04-29",
+    "home": "Club Atlético Grau",
+    "away": "Cusco FC",
+    "homeScore": 3,
+    "awayScore": 0
+  },
+  {
+    "date": "2023-04-29",
+    "home": "Sport Boys",
+    "away": "Universitario de Deportes",
+    "homeScore": 0,
+    "awayScore": 3
+  },
+  {
+    "date": "2023-04-29",
+    "home": "Deportivo Garcilaso",
+    "away": "Sport Huancayo",
+    "homeScore": 1,
+    "awayScore": 1
+  },
+  {
+    "date": "2023-04-29",
+    "home": "Melgar",
+    "away": "Academia Deportiva Cantolao",
+    "homeScore": 5,
+    "awayScore": 0
+  },
+  {
+    "date": "2023-04-30",
+    "home": "Deportivo Binacional",
+    "away": "Alianza Atlético de Sullana",
+    "homeScore": 4,
+    "awayScore": 2
+  },
+  {
+    "date": "2023-04-30",
+    "home": "Deportivo Municipal",
+    "away": "Universidad Técnica de Cajamarca",
+    "homeScore": 2,
+    "awayScore": 0
+  },
+  {
+    "date": "2023-04-30",
+    "home": "Asociación Deportiva Tarma",
+    "away": "Cienciano",
+    "homeScore": 3,
+    "awayScore": 4
+  },
+  {
+    "date": "2023-05-01",
+    "home": "Carlos A. Mannucci",
+    "away": "Unión Comercio",
+    "homeScore": 2,
+    "awayScore": 0
+  },
+  {
+    "date": "2023-05-05",
+    "home": "Academia Deportiva Cantolao",
+    "away": "Deportivo Binacional",
+    "homeScore": 1,
+    "awayScore": 0
+  },
+  {
+    "date": "2023-05-05",
+    "home": "Cusco FC",
+    "away": "Deportivo Municipal",
+    "homeScore": 1,
+    "awayScore": 0
+  },
+  {
+    "date": "2023-05-06",
+    "home": "Alianza Atlético de Sullana",
+    "away": "Asociación Deportiva Tarma",
+    "homeScore": 1,
+    "awayScore": 1
+  },
+  {
+    "date": "2023-05-06",
+    "home": "Sport Huancayo",
+    "away": "Club Atlético Grau",
+    "homeScore": 1,
+    "awayScore": 0
+  },
+  {
+    "date": "2023-05-07",
+    "home": "Cienciano",
+    "away": "Deportivo Garcilaso",
+    "homeScore": 0,
+    "awayScore": 0
+  },
+  {
+    "date": "2023-05-07",
+    "home": "Universidad Técnica de Cajamarca",
+    "away": "Club Sporting Cristal",
+    "homeScore": 1,
+    "awayScore": 1
+  },
+  {
+    "date": "2023-05-07",
+    "home": "Universidad César Vallejo",
+    "away": "Sport Boys",
+    "homeScore": 2,
+    "awayScore": 0
+  },
+  {
+    "date": "2023-05-08",
+    "home": "Alianza Lima",
+    "away": "Carlos A. Mannucci",
+    "homeScore": 3,
+    "awayScore": 0
+  },
+  {
+    "date": "2023-05-08",
+    "home": "Unión Comercio",
+    "away": "Melgar",
+    "homeScore": 1,
+    "awayScore": 1
+  },
+  {
+    "date": "2023-05-19",
+    "home": "Melgar",
+    "away": "Alianza Lima",
+    "homeScore": 2,
+    "awayScore": 1
+  },
+  {
+    "date": "2023-05-20",
+    "home": "Universitario de Deportes",
+    "away": "Universidad César Vallejo",
+    "homeScore": 4,
+    "awayScore": 0
+  },
+  {
+    "date": "2023-05-20",
+    "home": "Asociación Deportiva Tarma",
+    "away": "Academia Deportiva Cantolao",
+    "homeScore": 1,
+    "awayScore": 1
+  },
+  {
+    "date": "2023-05-20",
+    "home": "Deportivo Garcilaso",
+    "away": "Alianza Atlético de Sullana",
+    "homeScore": 3,
+    "awayScore": 2
+  },
+  {
+    "date": "2023-05-21",
+    "home": "Club Sporting Cristal",
+    "away": "Cusco FC",
+    "homeScore": 3,
+    "awayScore": 2
+  },
+  {
+    "date": "2023-05-21",
+    "home": "Club Atlético Grau",
+    "away": "Cienciano",
+    "homeScore": 4,
+    "awayScore": 0
+  },
+  {
+    "date": "2023-05-21",
+    "home": "Deportivo Municipal",
+    "away": "Sport Huancayo",
+    "homeScore": 1,
+    "awayScore": 2
+  },
+  {
+    "date": "2023-05-22",
+    "home": "Sport Boys",
+    "away": "Universidad Técnica de Cajamarca",
+    "homeScore": 3,
+    "awayScore": 2
+  },
+  {
+    "date": "2023-05-23",
+    "home": "Deportivo Binacional",
+    "away": "Unión Comercio",
+    "homeScore": 5,
+    "awayScore": 0
+  },
+  {
+    "date": "2023-05-26",
+    "home": "Academia Deportiva Cantolao",
+    "away": "Deportivo Garcilaso",
+    "homeScore": 1,
+    "awayScore": 1
+  },
+  {
+    "date": "2023-05-27",
+    "home": "Cienciano",
+    "away": "Deportivo Municipal",
+    "homeScore": 1,
+    "awayScore": 0
+  },
+  {
+    "date": "2023-05-27",
+    "home": "Alianza Atlético de Sullana",
+    "away": "Club Atlético Grau",
+    "homeScore": 3,
+    "awayScore": 2
+  },
+  {
+    "date": "2023-05-27",
+    "home": "Cusco FC",
+    "away": "Sport Boys",
+    "homeScore": 2,
+    "awayScore": 1
+  },
+  {
+    "date": "2023-05-28",
+    "home": "Unión Comercio",
+    "away": "Asociación Deportiva Tarma",
+    "homeScore": 4,
+    "awayScore": 3
+  },
+  {
+    "date": "2023-05-28",
+    "home": "Universidad Técnica de Cajamarca",
+    "away": "Universitario de Deportes",
+    "homeScore": 1,
+    "awayScore": 0
+  },
+  {
+    "date": "2023-05-28",
+    "home": "Sport Huancayo",
+    "away": "Club Sporting Cristal",
+    "homeScore": 1,
+    "awayScore": 2
+  },
+  {
+    "date": "2023-05-28",
+    "home": "Carlos A. Mannucci",
+    "away": "Melgar",
+    "homeScore": 1,
+    "awayScore": 2
+  },
+  {
+    "date": "2023-05-29",
+    "home": "Alianza Lima",
+    "away": "Deportivo Binacional",
+    "homeScore": 6,
+    "awayScore": 1
+  },
+  {
+    "date": "2023-06-02",
+    "home": "Club Sporting Cristal",
+    "away": "Cienciano",
+    "homeScore": 4,
+    "awayScore": 2
+  },
+  {
+    "date": "2023-06-03",
+    "home": "Asociación Deportiva Tarma",
+    "away": "Alianza Lima",
+    "homeScore": 2,
+    "awayScore": 1
+  },
+  {
+    "date": "2023-06-03",
+    "home": "Universitario de Deportes",
+    "away": "Cusco FC",
+    "homeScore": 1,
+    "awayScore": 0
+  },
+  {
+    "date": "2023-06-03",
+    "home": "Deportivo Municipal",
+    "away": "Alianza Atlético de Sullana",
+    "homeScore": 2,
+    "awayScore": 1
+  },
+  {
+    "date": "2023-06-03",
+    "home": "Deportivo Binacional",
+    "away": "Carlos A. Mannucci",
+    "homeScore": 3,
+    "awayScore": 0
+  },
+  {
+    "date": "2023-06-04",
+    "home": "Deportivo Garcilaso",
+    "away": "Unión Comercio",
+    "homeScore": 2,
+    "awayScore": 2
+  },
+  {
+    "date": "2023-06-04",
+    "home": "Club Atlético Grau",
+    "away": "Academia Deportiva Cantolao",
+    "homeScore": 3,
+    "awayScore": 0
+  },
+  {
+    "date": "2023-06-04",
+    "home": "Sport Boys",
+    "away": "Sport Huancayo",
+    "homeScore": 1,
+    "awayScore": 0
+  },
+  {
+    "date": "2023-06-04",
+    "home": "Universidad César Vallejo",
+    "away": "Universidad Técnica de Cajamarca",
+    "homeScore": 3,
+    "awayScore": 1
+  },
+  {
+    "date": "2023-06-10",
+    "home": "Cienciano",
+    "away": "Sport Boys",
+    "homeScore": 0,
+    "awayScore": 1
+  },
+  {
+    "date": "2023-06-10",
+    "home": "Unión Comercio",
+    "away": "Club Atlético Grau",
+    "homeScore": 2,
+    "awayScore": 2
+  },
+  {
+    "date": "2023-06-10",
+    "home": "Academia Deportiva Cantolao",
+    "away": "Deportivo Municipal",
+    "homeScore": 0,
+    "awayScore": 1
+  },
+  {
+    "date": "2023-06-10",
+    "home": "Melgar",
+    "away": "Deportivo Binacional",
+    "homeScore": 2,
+    "awayScore": 1
+  },
+  {
+    "date": "2023-06-11",
+    "home": "Carlos A. Mannucci",
+    "away": "Asociación Deportiva Tarma",
+    "homeScore": 1,
+    "awayScore": 1
+  },
+  {
+    "date": "2023-06-11",
+    "home": "Alianza Lima",
+    "away": "Deportivo Garcilaso",
+    "homeScore": 3,
+    "awayScore": 2
+  },
+  {
+    "date": "2023-06-11",
+    "home": "Alianza Atlético de Sullana",
+    "away": "Club Sporting Cristal",
+    "homeScore": 0,
+    "awayScore": 0
+  },
+  {
+    "date": "2023-06-11",
+    "home": "Cusco FC",
+    "away": "Universidad César Vallejo",
+    "homeScore": 2,
+    "awayScore": 0
+  },
+  {
+    "date": "2023-06-11",
+    "home": "Sport Huancayo",
+    "away": "Universitario de Deportes",
+    "homeScore": 1,
+    "awayScore": 0
+  },
+  {
+    "date": "2023-06-22",
+    "home": "Academia Deportiva Cantolao",
+    "away": "Club Sporting Cristal",
+    "homeScore": 0,
+    "awayScore": 2
+  },
+  {
+    "date": "2023-06-22",
+    "home": "Melgar",
+    "away": "Asociación Deportiva Tarma",
+    "homeScore": 4,
+    "awayScore": 0
+  },
+  {
+    "date": "2023-06-23",
+    "home": "Cienciano",
+    "away": "Universitario de Deportes",
+    "homeScore": 1,
+    "awayScore": 1
+  },
+  {
+    "date": "2023-06-24",
+    "home": "Alianza Lima",
+    "away": "Club Atlético Grau",
+    "homeScore": 2,
+    "awayScore": 0
+  },
+  {
+    "date": "2023-06-24",
+    "home": "Sport Huancayo",
+    "away": "Universidad César Vallejo",
+    "homeScore": 2,
+    "awayScore": 0
+  },
+  {
+    "date": "2023-06-25",
+    "home": "Carlos A. Mannucci",
+    "away": "Deportivo Garcilaso",
+    "homeScore": 0,
+    "awayScore": 1
+  },
+  {
+    "date": "2023-06-25",
+    "home": "Alianza Atlético de Sullana",
+    "away": "Sport Boys",
+    "homeScore": 1,
+    "awayScore": 2
+  },
+  {
+    "date": "2023-06-25",
+    "home": "Unión Comercio",
+    "away": "Deportivo Municipal",
+    "homeScore": 1,
+    "awayScore": 3
+  },
+  {
+    "date": "2023-06-26",
+    "home": "Cusco FC",
+    "away": "Universidad Técnica de Cajamarca",
+    "homeScore": 2,
+    "awayScore": 1
+  },
+  {
+    "date": "2023-06-30",
+    "home": "Universidad Técnica de Cajamarca",
+    "away": "Sport Huancayo",
+    "homeScore": 0,
+    "awayScore": 0
+  },
+  {
+    "date": "2023-07-01",
+    "home": "Asociación Deportiva Tarma",
+    "away": "Deportivo Binacional",
+    "homeScore": 2,
+    "awayScore": 0
+  },
+  {
+    "date": "2023-07-01",
+    "home": "Deportivo Garcilaso",
+    "away": "Melgar",
+    "homeScore": 2,
+    "awayScore": 2
+  },
+  {
+    "date": "2023-07-02",
+    "home": "Deportivo Municipal",
+    "away": "Alianza Lima",
+    "homeScore": 0,
+    "awayScore": 1
+  },
+  {
+    "date": "2023-07-02",
+    "home": "Club Sporting Cristal",
+    "away": "Unión Comercio",
+    "homeScore": 3,
+    "awayScore": 0
+  },
+  {
+    "date": "2023-07-02",
+    "home": "Club Atlético Grau",
+    "away": "Carlos A. Mannucci",
+    "homeScore": 0,
+    "awayScore": 2
+  },
+  {
+    "date": "2023-07-03",
+    "home": "Universidad César Vallejo",
+    "away": "Cienciano",
+    "homeScore": 0,
+    "awayScore": 3
+  },
+  {
+    "date": "2023-07-04",
+    "home": "Universitario de Deportes",
+    "away": "Alianza Atlético de Sullana",
+    "homeScore": 2,
+    "awayScore": 0
+  },
+  {
+    "date": "2023-07-04",
+    "home": "Sport Boys",
+    "away": "Academia Deportiva Cantolao",
+    "homeScore": 0,
+    "awayScore": 1
+  },
+  {
+    "date": "2023-07-07",
+    "home": "Melgar",
+    "away": "Club Atlético Grau",
+    "homeScore": 3,
+    "awayScore": 0
+  },
+  {
+    "date": "2023-07-08",
+    "home": "Academia Deportiva Cantolao",
+    "away": "Universitario de Deportes",
+    "homeScore": 1,
+    "awayScore": 4
+  },
+  {
+    "date": "2023-07-08",
+    "home": "Alianza Atlético de Sullana",
+    "away": "Universidad César Vallejo",
+    "homeScore": 0,
+    "awayScore": 1
+  },
+  {
+    "date": "2023-07-08",
+    "home": "Cienciano",
+    "away": "Universidad Técnica de Cajamarca",
+    "homeScore": 2,
+    "awayScore": 2
+  },
+  {
+    "date": "2023-07-09",
+    "home": "Alianza Lima",
+    "away": "Club Sporting Cristal",
+    "homeScore": 0,
+    "awayScore": 0
+  },
+  {
+    "date": "2023-07-09",
+    "home": "Unión Comercio",
+    "away": "Sport Boys",
+    "homeScore": 0,
+    "awayScore": 1
+  },
+  {
+    "date": "2023-07-09",
+    "home": "Carlos A. Mannucci",
+    "away": "Deportivo Municipal",
+    "homeScore": 0,
+    "awayScore": 0
+  },
+  {
+    "date": "2023-07-10",
+    "home": "Deportivo Binacional",
+    "away": "Deportivo Garcilaso",
+    "homeScore": 1,
+    "awayScore": 5
+  },
+  {
+    "date": "2023-07-10",
+    "home": "Sport Huancayo",
+    "away": "Cusco FC",
+    "homeScore": 3,
+    "awayScore": 1
+  },
+  {
+    "date": "2023-07-14",
+    "home": "Universidad Técnica de Cajamarca",
+    "away": "Alianza Atlético de Sullana",
+    "homeScore": 1,
+    "awayScore": 1
+  },
+  {
+    "date": "2023-07-15",
+    "home": "Universitario de Deportes",
+    "away": "Unión Comercio",
+    "homeScore": 2,
+    "awayScore": 0
+  },
+  {
+    "date": "2023-07-15",
+    "home": "Deportivo Garcilaso",
+    "away": "Asociación Deportiva Tarma",
+    "homeScore": 1,
+    "awayScore": 2
+  },
+  {
+    "date": "2023-07-15",
+    "home": "Club Sporting Cristal",
+    "away": "Carlos A. Mannucci",
+    "homeScore": 3,
+    "awayScore": 2
+  },
+  {
+    "date": "2023-07-16",
+    "home": "Universidad César Vallejo",
+    "away": "Academia Deportiva Cantolao",
+    "homeScore": 2,
+    "awayScore": 1
+  },
+  {
+    "date": "2023-07-16",
+    "home": "Club Atlético Grau",
+    "away": "Deportivo Binacional",
+    "homeScore": 2,
+    "awayScore": 1
+  },
+  {
+    "date": "2023-07-16",
+    "home": "Sport Boys",
+    "away": "Alianza Lima",
+    "homeScore": 1,
+    "awayScore": 0
+  },
+  {
+    "date": "2023-07-16",
+    "home": "Cusco FC",
+    "away": "Cienciano",
+    "homeScore": 0,
+    "awayScore": 0
+  },
+  {
+    "date": "2023-07-17",
+    "home": "Deportivo Municipal",
+    "away": "Melgar",
+    "homeScore": 0,
+    "awayScore": 1
+  },
+  {
+    "date": "2023-07-21",
+    "home": "Unión Comercio",
+    "away": "Universidad César Vallejo",
+    "homeScore": 1,
+    "awayScore": 4
+  },
+  {
+    "date": "2023-07-22",
+    "home": "Cienciano",
+    "away": "Sport Huancayo",
+    "homeScore": 1,
+    "awayScore": 0
+  },
+  {
+    "date": "2023-07-22",
+    "home": "Alianza Atlético de Sullana",
+    "away": "Cusco FC",
+    "homeScore": 2,
+    "awayScore": 0
+  },
+  {
+    "date": "2023-07-23",
+    "home": "Alianza Lima",
+    "away": "Universitario de Deportes",
+    "homeScore": 0,
+    "awayScore": 0
+  },
+  {
+    "date": "2023-07-23",
+    "home": "Academia Deportiva Cantolao",
+    "away": "Universidad Técnica de Cajamarca",
+    "homeScore": 2,
+    "awayScore": 0
+  },
+  {
+    "date": "2023-07-23",
+    "home": "Carlos A. Mannucci",
+    "away": "Sport Boys",
+    "homeScore": 0,
+    "awayScore": 0
+  },
+  {
+    "date": "2023-07-23",
+    "home": "Asociación Deportiva Tarma",
+    "away": "Club Atlético Grau",
+    "homeScore": 1,
+    "awayScore": 0
+  },
+  {
+    "date": "2023-07-23",
+    "home": "Melgar",
+    "away": "Club Sporting Cristal",
+    "homeScore": 1,
+    "awayScore": 1
+  },
+  {
+    "date": "2023-07-24",
+    "home": "Deportivo Binacional",
+    "away": "Deportivo Municipal",
+    "homeScore": 4,
+    "awayScore": 1
+  },
+  {
+    "date": "2023-07-27",
+    "home": "Club Sporting Cristal",
+    "away": "Deportivo Binacional",
+    "homeScore": 5,
+    "awayScore": 0
+  },
+  {
+    "date": "2023-07-28",
+    "home": "Cusco FC",
+    "away": "Academia Deportiva Cantolao",
+    "homeScore": 3,
+    "awayScore": 0
+  },
+  {
+    "date": "2023-07-29",
+    "home": "Universidad Técnica de Cajamarca",
+    "away": "Unión Comercio",
+    "homeScore": 1,
+    "awayScore": 1
+  },
+  {
+    "date": "2023-07-30",
+    "home": "Universidad César Vallejo",
+    "away": "Alianza Lima",
+    "homeScore": 1,
+    "awayScore": 1
+  },
+  {
+    "date": "2023-07-30",
+    "home": "Club Atlético Grau",
+    "away": "Deportivo Garcilaso",
+    "homeScore": 1,
+    "awayScore": 1
+  },
+  {
+    "date": "2023-07-31",
+    "home": "Sport Boys",
+    "away": "Melgar",
+    "homeScore": 0,
+    "awayScore": 2
+  },
+  {
+    "date": "2023-07-31",
+    "home": "Sport Huancayo",
+    "away": "Alianza Atlético de Sullana",
+    "homeScore": 2,
+    "awayScore": 0
+  },
+  {
+    "date": "2023-08-01",
+    "home": "Universitario de Deportes",
+    "away": "Carlos A. Mannucci",
+    "homeScore": 3,
+    "awayScore": 0
+  },
+  {
+    "date": "2023-08-01",
+    "home": "Deportivo Municipal",
+    "away": "Asociación Deportiva Tarma",
+    "homeScore": 1,
+    "awayScore": 2
+  },
+  {
+    "date": "2023-08-04",
+    "home": "Unión Comercio",
+    "away": "Cusco FC",
+    "homeScore": 2,
+    "awayScore": 1
+  },
+  {
+    "date": "2023-08-05",
+    "home": "Deportivo Binacional",
+    "away": "Sport Boys",
+    "homeScore": 4,
+    "awayScore": 0
+  },
+  {
+    "date": "2023-08-06",
+    "home": "Alianza Lima",
+    "away": "Universidad Técnica de Cajamarca",
+    "homeScore": 1,
+    "awayScore": 0
+  },
+  {
+    "date": "2023-08-06",
+    "home": "Alianza Atlético de Sullana",
+    "away": "Cienciano",
+    "homeScore": 2,
+    "awayScore": 1
+  },
+  {
+    "date": "2023-08-06",
+    "home": "Carlos A. Mannucci",
+    "away": "Universidad César Vallejo",
+    "homeScore": 2,
+    "awayScore": 1
+  },
+  {
+    "date": "2023-08-06",
+    "home": "Asociación Deportiva Tarma",
+    "away": "Club Sporting Cristal",
+    "homeScore": 1,
+    "awayScore": 1
+  },
+  {
+    "date": "2023-08-06",
+    "home": "Melgar",
+    "away": "Universitario de Deportes",
+    "homeScore": 0,
+    "awayScore": 1
+  },
+  {
+    "date": "2023-08-07",
+    "home": "Academia Deportiva Cantolao",
+    "away": "Sport Huancayo",
+    "homeScore": 1,
+    "awayScore": 1
+  },
+  {
+    "date": "2023-08-07",
+    "home": "Deportivo Garcilaso",
+    "away": "Deportivo Municipal",
+    "homeScore": 5,
+    "awayScore": 2
+  },
+  {
+    "date": "2023-08-11",
+    "home": "Sport Huancayo",
+    "away": "Unión Comercio",
+    "homeScore": 1,
+    "awayScore": 1
+  },
+  {
+    "date": "2023-08-11",
+    "home": "Universidad Técnica de Cajamarca",
+    "away": "Carlos A. Mannucci",
+    "homeScore": 2,
+    "awayScore": 0
+  },
+  {
+    "date": "2023-08-12",
+    "home": "Universidad César Vallejo",
+    "away": "Melgar",
+    "homeScore": 1,
+    "awayScore": 2
+  },
+  {
+    "date": "2023-08-12",
+    "home": "Sport Boys",
+    "away": "Asociación Deportiva Tarma",
+    "homeScore": 1,
+    "awayScore": 1
+  },
+  {
+    "date": "2023-08-12",
+    "home": "Cienciano",
+    "away": "Academia Deportiva Cantolao",
+    "homeScore": 1,
+    "awayScore": 0
+  },
+  {
+    "date": "2023-08-13",
+    "home": "Universitario de Deportes",
+    "away": "Deportivo Binacional",
+    "homeScore": 1,
+    "awayScore": 0
+  },
+  {
+    "date": "2023-08-13",
+    "home": "Club Sporting Cristal",
+    "away": "Deportivo Garcilaso",
+    "homeScore": 3,
+    "awayScore": 0
+  },
+  {
+    "date": "2023-08-13",
+    "home": "Cusco FC",
+    "away": "Alianza Lima",
+    "homeScore": 1,
+    "awayScore": 1
+  },
+  {
+    "date": "2023-08-14",
+    "home": "Deportivo Municipal",
+    "away": "Club Atlético Grau",
+    "homeScore": 0,
+    "awayScore": 0
+  },
+  {
+    "date": "2023-08-15",
+    "home": "Unión Comercio",
+    "away": "Cienciano",
+    "homeScore": 2,
+    "awayScore": 0
+  },
+  {
+    "date": "2023-08-15",
+    "home": "Academia Deportiva Cantolao",
+    "away": "Alianza Atlético de Sullana",
+    "homeScore": 1,
+    "awayScore": 0
+  },
+  {
+    "date": "2023-08-15",
+    "home": "Melgar",
+    "away": "Universidad Técnica de Cajamarca",
+    "homeScore": 1,
+    "awayScore": 1
+  },
+  {
+    "date": "2023-08-16",
+    "home": "Asociación Deportiva Tarma",
+    "away": "Universitario de Deportes",
+    "homeScore": 2,
+    "awayScore": 0
+  },
+  {
+    "date": "2023-08-16",
+    "home": "Carlos A. Mannucci",
+    "away": "Cusco FC",
+    "homeScore": 0,
+    "awayScore": 0
+  },
+  {
+    "date": "2023-08-16",
+    "home": "Deportivo Garcilaso",
+    "away": "Sport Boys",
+    "homeScore": 3,
+    "awayScore": 0
+  },
+  {
+    "date": "2023-08-17",
+    "home": "Alianza Lima",
+    "away": "Sport Huancayo",
+    "homeScore": 1,
+    "awayScore": 0
+  },
+  {
+    "date": "2023-08-17",
+    "home": "Deportivo Binacional",
+    "away": "Universidad César Vallejo",
+    "homeScore": 1,
+    "awayScore": 0
+  },
+  {
+    "date": "2023-08-17",
+    "home": "Club Atlético Grau",
+    "away": "Club Sporting Cristal",
+    "homeScore": 2,
+    "awayScore": 3
+  },
+  {
+    "date": "2023-08-19",
+    "home": "Alianza Atlético de Sullana",
+    "away": "Unión Comercio",
+    "homeScore": 2,
+    "awayScore": 2
+  },
+  {
+    "date": "2023-08-19",
+    "home": "Cusco FC",
+    "away": "Melgar",
+    "homeScore": 1,
+    "awayScore": 1
+  },
+  {
+    "date": "2023-08-19",
+    "home": "Sport Huancayo",
+    "away": "Carlos A. Mannucci",
+    "homeScore": 3,
+    "awayScore": 1
+  },
+  {
+    "date": "2023-08-20",
+    "home": "Universitario de Deportes",
+    "away": "Deportivo Garcilaso",
+    "homeScore": 1,
+    "awayScore": 1
+  },
+  {
+    "date": "2023-08-20",
+    "home": "Club Sporting Cristal",
+    "away": "Deportivo Municipal",
+    "homeScore": 1,
+    "awayScore": 0
+  },
+  {
+    "date": "2023-08-20",
+    "home": "Cienciano",
+    "away": "Alianza Lima",
+    "homeScore": 0,
+    "awayScore": 0
+  },
+  {
+    "date": "2023-08-21",
+    "home": "Sport Boys",
+    "away": "Club Atlético Grau",
+    "homeScore": 1,
+    "awayScore": 1
+  },
+  {
+    "date": "2023-08-21",
+    "home": "Universidad Técnica de Cajamarca",
+    "away": "Deportivo Binacional",
+    "homeScore": 3,
+    "awayScore": 2
+  },
+  {
+    "date": "2023-08-21",
+    "home": "Universidad César Vallejo",
+    "away": "Asociación Deportiva Tarma",
+    "homeScore": 1,
+    "awayScore": 1
+  },
+  {
+    "date": "2023-08-26",
+    "home": "Unión Comercio",
+    "away": "Academia Deportiva Cantolao",
+    "homeScore": 2,
+    "awayScore": 1
+  },
+  {
+    "date": "2023-08-26",
+    "home": "Carlos A. Mannucci",
+    "away": "Cienciano",
+    "homeScore": 2,
+    "awayScore": 0
+  },
+  {
+    "date": "2023-08-26",
+    "home": "Deportivo Binacional",
+    "away": "Cusco FC",
+    "homeScore": 2,
+    "awayScore": 0
+  },
+  {
+    "date": "2023-08-27",
+    "home": "Alianza Lima",
+    "away": "Alianza Atlético de Sullana",
+    "homeScore": 1,
+    "awayScore": 0
+  },
+  {
+    "date": "2023-08-27",
+    "home": "Club Atlético Grau",
+    "away": "Universitario de Deportes",
+    "homeScore": 2,
+    "awayScore": 2
+  },
+  {
+    "date": "2023-08-27",
+    "home": "Deportivo Municipal",
+    "away": "Sport Boys",
+    "homeScore": 0,
+    "awayScore": 3
+  },
+  {
+    "date": "2023-08-27",
+    "home": "Melgar",
+    "away": "Sport Huancayo",
+    "homeScore": 1,
+    "awayScore": 3
+  },
+  {
+    "date": "2023-08-28",
+    "home": "Asociación Deportiva Tarma",
+    "away": "Universidad Técnica de Cajamarca",
+    "homeScore": 0,
+    "awayScore": 0
+  },
+  {
+    "date": "2023-08-28",
+    "home": "Deportivo Garcilaso",
+    "away": "Universidad César Vallejo",
+    "homeScore": 1,
+    "awayScore": 0
+  },
+  {
+    "date": "2023-09-02",
+    "home": "Alianza Atlético de Sullana",
+    "away": "Carlos A. Mannucci",
+    "homeScore": 1,
+    "awayScore": 1
+  },
+  {
+    "date": "2023-09-02",
+    "home": "Cusco FC",
+    "away": "Asociación Deportiva Tarma",
+    "homeScore": 1,
+    "awayScore": 0
+  },
+  {
+    "date": "2023-09-03",
+    "home": "Sport Huancayo",
+    "away": "Deportivo Binacional",
+    "homeScore": 3,
+    "awayScore": 1
+  },
+  {
+    "date": "2023-09-03",
+    "home": "Universidad Técnica de Cajamarca",
+    "away": "Deportivo Garcilaso",
+    "homeScore": 0,
+    "awayScore": 0
+  },
+  {
+    "date": "2023-09-04",
+    "home": "Universidad César Vallejo",
+    "away": "Club Atlético Grau",
+    "homeScore": 5,
+    "awayScore": 0
+  },
+  {
+    "date": "2023-09-09",
+    "home": "Academia Deportiva Cantolao",
+    "away": "Alianza Lima",
+    "homeScore": 0,
+    "awayScore": 2
+  },
+  {
+    "date": "2023-09-10",
+    "home": "Cienciano",
+    "away": "Melgar",
+    "homeScore": 0,
+    "awayScore": 1
+  },
+  {
+    "date": "2023-09-10",
+    "home": "Sport Boys",
+    "away": "Club Sporting Cristal",
+    "homeScore": 1,
+    "awayScore": 1
+  },
+  {
+    "date": "2023-09-11",
+    "home": "Universitario de Deportes",
+    "away": "Deportivo Municipal",
+    "homeScore": 1,
+    "awayScore": 0
+  },
+  {
+    "date": "2023-09-15",
+    "home": "Club Atlético Grau",
+    "away": "Universidad Técnica de Cajamarca",
+    "homeScore": 4,
+    "awayScore": 2
+  },
+  {
+    "date": "2023-09-15",
+    "home": "Carlos A. Mannucci",
+    "away": "Academia Deportiva Cantolao",
+    "homeScore": 1,
+    "awayScore": 2
+  },
+  {
+    "date": "2023-09-15",
+    "home": "Melgar",
+    "away": "Alianza Atlético de Sullana",
+    "homeScore": 4,
+    "awayScore": 0
+  },
+  {
+    "date": "2023-09-16",
+    "home": "Deportivo Binacional",
+    "away": "Cienciano",
+    "homeScore": 2,
+    "awayScore": 2
+  },
+  {
+    "date": "2023-09-16",
+    "home": "Deportivo Municipal",
+    "away": "Universidad César Vallejo",
+    "homeScore": 0,
+    "awayScore": 3
+  },
+  {
+    "date": "2023-09-16",
+    "home": "Deportivo Garcilaso",
+    "away": "Cusco FC",
+    "homeScore": 2,
+    "awayScore": 1
+  },
+  {
+    "date": "2023-09-17",
+    "home": "Club Sporting Cristal",
+    "away": "Universitario de Deportes",
+    "homeScore": 0,
+    "awayScore": 0
+  },
+  {
+    "date": "2023-09-17",
+    "home": "Asociación Deportiva Tarma",
+    "away": "Sport Huancayo",
+    "homeScore": 2,
+    "awayScore": 1
+  },
+  {
+    "date": "2023-09-17",
+    "home": "Alianza Lima",
+    "away": "Unión Comercio",
+    "homeScore": 3,
+    "awayScore": 1
+  },
+  {
+    "date": "2023-09-19",
+    "home": "Alianza Atlético de Sullana",
+    "away": "Deportivo Binacional",
+    "homeScore": 1,
+    "awayScore": 0
+  },
+  {
+    "date": "2023-09-19",
+    "home": "Academia Deportiva Cantolao",
+    "away": "Melgar",
+    "homeScore": 0,
+    "awayScore": 1
+  },
+  {
+    "date": "2023-09-20",
+    "home": "Unión Comercio",
+    "away": "Carlos A. Mannucci",
+    "homeScore": 0,
+    "awayScore": 0
+  },
+  {
+    "date": "2023-09-20",
+    "home": "Universidad Técnica de Cajamarca",
+    "away": "Deportivo Municipal",
+    "homeScore": 5,
+    "awayScore": 1
+  },
+  {
+    "date": "2023-09-20",
+    "home": "Cienciano",
+    "away": "Asociación Deportiva Tarma",
+    "homeScore": 2,
+    "awayScore": 2
+  },
+  {
+    "date": "2023-09-21",
+    "home": "Universitario de Deportes",
+    "away": "Sport Boys",
+    "homeScore": 3,
+    "awayScore": 0
+  },
+  {
+    "date": "2023-09-21",
+    "home": "Sport Huancayo",
+    "away": "Deportivo Garcilaso",
+    "homeScore": 0,
+    "awayScore": 0
+  },
+  {
+    "date": "2023-09-21",
+    "home": "Cusco FC",
+    "away": "Club Atlético Grau",
+    "homeScore": 0,
+    "awayScore": 0
+  },
+  {
+    "date": "2023-09-22",
+    "home": "Universidad César Vallejo",
+    "away": "Club Sporting Cristal",
+    "homeScore": 0,
+    "awayScore": 1
+  },
+  {
+    "date": "2023-09-23",
+    "home": "Deportivo Binacional",
+    "away": "Academia Deportiva Cantolao",
+    "homeScore": 1,
+    "awayScore": 0
+  },
+  {
+    "date": "2023-09-24",
+    "home": "Asociación Deportiva Tarma",
+    "away": "Alianza Atlético de Sullana",
+    "homeScore": 1,
+    "awayScore": 0
+  },
+  {
+    "date": "2023-09-24",
+    "home": "Sport Boys",
+    "away": "Universidad César Vallejo",
+    "homeScore": 0,
+    "awayScore": 2
+  },
+  {
+    "date": "2023-09-24",
+    "home": "Melgar",
+    "away": "Unión Comercio",
+    "homeScore": 3,
+    "awayScore": 1
+  },
+  {
+    "date": "2023-09-24",
+    "home": "Carlos A. Mannucci",
+    "away": "Alianza Lima",
+    "homeScore": 1,
+    "awayScore": 2
+  },
+  {
+    "date": "2023-09-25",
+    "home": "Deportivo Garcilaso",
+    "away": "Cienciano",
+    "homeScore": 0,
+    "awayScore": 3
+  },
+  {
+    "date": "2023-09-25",
+    "home": "Deportivo Municipal",
+    "away": "Cusco FC",
+    "homeScore": 2,
+    "awayScore": 0
+  },
+  {
+    "date": "2023-09-25",
+    "home": "Club Atlético Grau",
+    "away": "Sport Huancayo",
+    "homeScore": 0,
+    "awayScore": 0
+  },
+  {
+    "date": "2023-09-26",
+    "home": "Club Sporting Cristal",
+    "away": "Universidad Técnica de Cajamarca",
+    "homeScore": 1,
+    "awayScore": 1
+  },
+  {
+    "date": "2023-09-28",
+    "home": "Unión Comercio",
+    "away": "Deportivo Binacional",
+    "homeScore": 2,
+    "awayScore": 2
+  },
+  {
+    "date": "2023-09-28",
+    "home": "Universidad César Vallejo",
+    "away": "Universitario de Deportes",
+    "homeScore": 0,
+    "awayScore": 1
+  },
+  {
+    "date": "2023-09-29",
+    "home": "Alianza Lima",
+    "away": "Melgar",
+    "homeScore": 0,
+    "awayScore": 0
+  },
+  {
+    "date": "2023-09-29",
+    "home": "Sport Huancayo",
+    "away": "Deportivo Municipal",
+    "homeScore": 2,
+    "awayScore": 0
+  },
+  {
+    "date": "2023-09-29",
+    "home": "Universidad Técnica de Cajamarca",
+    "away": "Sport Boys",
+    "homeScore": 1,
+    "awayScore": 1
+  },
+  {
+    "date": "2023-09-29",
+    "home": "Cusco FC",
+    "away": "Club Sporting Cristal",
+    "homeScore": 4,
+    "awayScore": 1
+  },
+  {
+    "date": "2023-09-30",
+    "home": "Cienciano",
+    "away": "Club Atlético Grau",
+    "homeScore": 2,
+    "awayScore": 0
+  },
+  {
+    "date": "2023-10-01",
+    "home": "Alianza Atlético de Sullana",
+    "away": "Deportivo Garcilaso",
+    "homeScore": 2,
+    "awayScore": 0
+  },
+  {
+    "date": "2023-10-01",
+    "home": "Academia Deportiva Cantolao",
+    "away": "Asociación Deportiva Tarma",
+    "homeScore": 0,
+    "awayScore": 1
+  },
+  {
+    "date": "2023-10-03",
+    "home": "Universitario de Deportes",
+    "away": "Universidad Técnica de Cajamarca",
+    "homeScore": 3,
+    "awayScore": 0
+  },
+  {
+    "date": "2023-10-03",
+    "home": "Club Sporting Cristal",
+    "away": "Sport Huancayo",
+    "homeScore": 2,
+    "awayScore": 0
+  },
+  {
+    "date": "2023-10-03",
+    "home": "Sport Boys",
+    "away": "Cusco FC",
+    "homeScore": 2,
+    "awayScore": 1
+  },
+  {
+    "date": "2023-10-03",
+    "home": "Melgar",
+    "away": "Carlos A. Mannucci",
+    "homeScore": 2,
+    "awayScore": 1
+  },
+  {
+    "date": "2023-10-04",
+    "home": "Deportivo Binacional",
+    "away": "Alianza Lima",
+    "homeScore": 1,
+    "awayScore": 2
+  },
+  {
+    "date": "2023-10-07",
+    "home": "Deportivo Municipal",
+    "away": "Cienciano",
+    "homeScore": 4,
+    "awayScore": 1
+  },
+  {
+    "date": "2023-10-07",
+    "home": "Deportivo Garcilaso",
+    "away": "Academia Deportiva Cantolao",
+    "homeScore": 0,
+    "awayScore": 0
+  },
+  {
+    "date": "2023-10-08",
+    "home": "Club Atlético Grau",
+    "away": "Alianza Atlético de Sullana",
+    "homeScore": 1,
+    "awayScore": 1
+  },
+  {
+    "date": "2023-10-08",
+    "home": "Asociación Deportiva Tarma",
+    "away": "Unión Comercio",
+    "homeScore": 3,
+    "awayScore": 0
+  },
+  {
+    "date": "2023-10-20",
+    "home": "Universidad Técnica de Cajamarca",
+    "away": "Universidad César Vallejo",
+    "homeScore": 1,
+    "awayScore": 1
+  },
+  {
+    "date": "2023-10-21",
+    "home": "Alianza Atlético de Sullana",
+    "away": "Deportivo Municipal",
+    "homeScore": 1,
+    "awayScore": 2
+  },
+  {
+    "date": "2023-10-21",
+    "home": "Alianza Lima",
+    "away": "Asociación Deportiva Tarma",
+    "homeScore": 0,
+    "awayScore": 0
+  },
+  {
+    "date": "2023-10-22",
+    "home": "Cusco FC",
+    "away": "Universitario de Deportes",
+    "homeScore": 1,
+    "awayScore": 1
+  },
+  {
+    "date": "2023-10-22",
+    "home": "Carlos A. Mannucci",
+    "away": "Deportivo Binacional",
+    "homeScore": 3,
+    "awayScore": 2
+  },
+  {
+    "date": "2023-10-22",
+    "home": "Sport Huancayo",
+    "away": "Sport Boys",
+    "homeScore": 1,
+    "awayScore": 0
+  },
+  {
+    "date": "2023-10-22",
+    "home": "Unión Comercio",
+    "away": "Deportivo Garcilaso",
+    "homeScore": 1,
+    "awayScore": 2
+  },
+  {
+    "date": "2023-10-23",
+    "home": "Cienciano",
+    "away": "Club Sporting Cristal",
+    "homeScore": 1,
+    "awayScore": 0
+  },
+  {
+    "date": "2023-10-23",
+    "home": "Academia Deportiva Cantolao",
+    "away": "Club Atlético Grau",
+    "homeScore": 0,
+    "awayScore": 4
+  },
+  {
+    "date": "2023-10-28",
+    "home": "Deportivo Municipal",
+    "away": "Academia Deportiva Cantolao",
+    "homeScore": 1,
+    "awayScore": 2
+  },
+  {
+    "date": "2023-10-28",
+    "home": "Sport Boys",
+    "away": "Cienciano",
+    "homeScore": 2,
+    "awayScore": 1
+  },
+  {
+    "date": "2023-10-28",
+    "home": "Universidad César Vallejo",
+    "away": "Cusco FC",
+    "homeScore": 3,
+    "awayScore": 1
+  },
+  {
+    "date": "2023-10-29",
+    "home": "Asociación Deportiva Tarma",
+    "away": "Carlos A. Mannucci",
+    "homeScore": 0,
+    "awayScore": 0
+  },
+  {
+    "date": "2023-10-29",
+    "home": "Club Atlético Grau",
+    "away": "Unión Comercio",
+    "homeScore": 0,
+    "awayScore": 1
+  },
+  {
+    "date": "2023-10-29",
+    "home": "Club Sporting Cristal",
+    "away": "Alianza Atlético de Sullana",
+    "homeScore": 3,
+    "awayScore": 0
+  },
+  {
+    "date": "2023-10-29",
+    "home": "Deportivo Binacional",
+    "away": "Melgar",
+    "homeScore": 1,
+    "awayScore": 2
+  },
+  {
+    "date": "2023-10-29",
+    "home": "Deportivo Garcilaso",
+    "away": "Alianza Lima",
+    "homeScore": 0,
+    "awayScore": 1
+  },
+  {
+    "date": "2023-10-29",
+    "home": "Universitario de Deportes",
+    "away": "Sport Huancayo",
+    "homeScore": 2,
+    "awayScore": 0
+  },
+  {
+    "date": "2024-01-26",
+    "home": "Universidad Técnica de Cajamarca",
+    "away": "Deportivo Garcilaso",
+    "homeScore": 1,
+    "awayScore": 0
+  },
+  {
+    "date": "2024-01-26",
+    "home": "Carlos A. Mannucci",
+    "away": "Universitario de Deportes",
+    "homeScore": 0,
+    "awayScore": 0
+  },
+  {
+    "date": "2024-01-27",
+    "home": "Melgar",
+    "away": "Cusco FC",
+    "homeScore": 2,
+    "awayScore": 3
+  },
+  {
+    "date": "2024-01-27",
+    "home": "Club Sporting Cristal",
+    "away": "Asociación Deportiva Tarma",
+    "homeScore": 6,
+    "awayScore": 2
+  },
+  {
+    "date": "2024-01-27",
+    "home": "Sport Huancayo",
+    "away": "Sport Boys",
+    "homeScore": 1,
+    "awayScore": 0
+  },
+  {
+    "date": "2024-01-28",
+    "home": "Cienciano",
+    "away": "Comerciantes Unidos",
+    "homeScore": 1,
+    "awayScore": 0
+  },
+  {
+    "date": "2024-01-28",
+    "home": "Club Atlético Grau",
+    "away": "Alianza Atlético de Sullana",
+    "homeScore": 1,
+    "awayScore": 1
+  },
+  {
+    "date": "2024-01-28",
+    "home": "Carlos A. Mannucci",
+    "away": "Universitario de Deportes",
+    "homeScore": 0,
+    "awayScore": 4
+  },
+  {
+    "date": "2024-01-29",
+    "home": "Alianza Lima",
+    "away": "Universidad César Vallejo",
+    "homeScore": 2,
+    "awayScore": 1
+  },
+  {
+    "date": "2024-01-29",
+    "home": "Los Chankas CYC",
+    "away": "Unión Comercio",
+    "homeScore": 2,
+    "awayScore": 1
+  },
+  {
+    "date": "2024-02-02",
+    "home": "Cusco FC",
+    "away": "Universidad Técnica de Cajamarca",
+    "homeScore": 1,
+    "awayScore": 1
+  },
+  {
+    "date": "2024-02-03",
+    "home": "Universidad César Vallejo",
+    "away": "Melgar",
+    "homeScore": 3,
+    "awayScore": 2
+  },
+  {
+    "date": "2024-02-03",
+    "home": "Asociación Deportiva Tarma",
+    "away": "Cienciano",
+    "homeScore": 1,
+    "awayScore": 1
+  },
+  {
+    "date": "2024-02-03",
+    "home": "Unión Comercio",
+    "away": "Carlos A. Mannucci",
+    "homeScore": 2,
+    "awayScore": 2
+  },
+  {
+    "date": "2024-02-04",
+    "home": "Universitario de Deportes",
+    "away": "Club Atlético Grau",
+    "homeScore": 1,
+    "awayScore": 0
+  },
+  {
+    "date": "2024-02-04",
+    "home": "Alianza Atlético de Sullana",
+    "away": "Alianza Lima",
+    "homeScore": 0,
+    "awayScore": 2
+  },
+  {
+    "date": "2024-02-04",
+    "home": "Sport Boys",
+    "away": "Club Sporting Cristal",
+    "homeScore": 1,
+    "awayScore": 3
+  },
+  {
+    "date": "2024-02-05",
+    "home": "Deportivo Garcilaso",
+    "away": "Sport Huancayo",
+    "homeScore": 0,
+    "awayScore": 2
+  },
+  {
+    "date": "2024-02-05",
+    "home": "Comerciantes Unidos",
+    "away": "Los Chankas CYC",
+    "homeScore": 3,
+    "awayScore": 2
+  },
+  {
+    "date": "2024-02-09",
+    "home": "Universidad Técnica de Cajamarca",
+    "away": "Universidad César Vallejo",
+    "homeScore": 4,
+    "awayScore": 0
+  },
+  {
+    "date": "2024-02-10",
+    "home": "Cienciano",
+    "away": "Club Sporting Cristal",
+    "homeScore": 2,
+    "awayScore": 2
+  },
+  {
+    "date": "2024-02-10",
+    "home": "Melgar",
+    "away": "Alianza Atlético de Sullana",
+    "homeScore": 1,
+    "awayScore": 0
+  },
+  {
+    "date": "2024-02-10",
+    "home": "Carlos A. Mannucci",
+    "away": "Comerciantes Unidos",
+    "homeScore": 1,
+    "awayScore": 3
+  },
+  {
+    "date": "2024-02-11",
+    "home": "Alianza Lima",
+    "away": "Universitario de Deportes",
+    "homeScore": 0,
+    "awayScore": 1
+  },
+  {
+    "date": "2024-02-11",
+    "home": "Los Chankas CYC",
+    "away": "Asociación Deportiva Tarma",
+    "homeScore": 2,
+    "awayScore": 0
+  },
+  {
+    "date": "2024-02-11",
+    "home": "Sport Boys",
+    "away": "Deportivo Garcilaso",
+    "homeScore": 2,
+    "awayScore": 0
+  },
+  {
+    "date": "2024-02-11",
+    "home": "Sport Huancayo",
+    "away": "Cusco FC",
+    "homeScore": 2,
+    "awayScore": 0
+  },
+  {
+    "date": "2024-02-12",
+    "home": "Club Atlético Grau",
+    "away": "Unión Comercio",
+    "homeScore": 1,
+    "awayScore": 0
+  },
+  {
+    "date": "2024-02-16",
+    "home": "Club Sporting Cristal",
+    "away": "Los Chankas CYC",
+    "homeScore": 4,
+    "awayScore": 1
+  },
+  {
+    "date": "2024-02-16",
+    "home": "Alianza Atlético de Sullana",
+    "away": "Universidad Técnica de Cajamarca",
+    "homeScore": 2,
+    "awayScore": 0
+  },
+  {
+    "date": "2024-02-17",
+    "home": "Asociación Deportiva Tarma",
+    "away": "Carlos A. Mannucci",
+    "homeScore": 4,
+    "awayScore": 0
+  },
+  {
+    "date": "2024-02-17",
+    "home": "Cusco FC",
+    "away": "Deportivo Garcilaso",
+    "homeScore": 1,
+    "awayScore": 0
+  },
+  {
+    "date": "2024-02-18",
+    "home": "Universitario de Deportes",
+    "away": "Melgar",
+    "homeScore": 2,
+    "awayScore": 0
+  },
+  {
+    "date": "2024-02-18",
+    "home": "Unión Comercio",
+    "away": "Alianza Lima",
+    "homeScore": 1,
+    "awayScore": 3
+  },
+  {
+    "date": "2024-02-18",
+    "home": "Cienciano",
+    "away": "Sport Boys",
+    "homeScore": 3,
+    "awayScore": 2
+  },
+  {
+    "date": "2024-02-19",
+    "home": "Universidad César Vallejo",
+    "away": "Sport Huancayo",
+    "homeScore": 1,
+    "awayScore": 1
+  },
+  {
+    "date": "2024-02-19",
+    "home": "Comerciantes Unidos",
+    "away": "Club Atlético Grau",
+    "homeScore": 2,
+    "awayScore": 2
+  },
+  {
+    "date": "2024-02-23",
+    "home": "Sport Huancayo",
+    "away": "Alianza Atlético de Sullana",
+    "homeScore": 4,
+    "awayScore": 0
+  },
+  {
+    "date": "2024-02-24",
+    "home": "Sport Boys",
+    "away": "Cusco FC",
+    "homeScore": 3,
+    "awayScore": 0
+  },
+  {
+    "date": "2024-02-24",
+    "home": "Universidad Técnica de Cajamarca",
+    "away": "Universitario de Deportes",
+    "homeScore": 0,
+    "awayScore": 0
+  },
+  {
+    "date": "2024-02-24",
+    "home": "Melgar",
+    "away": "Unión Comercio",
+    "homeScore": 2,
+    "awayScore": 1
+  },
+  {
+    "date": "2024-02-24",
+    "home": "Carlos A. Mannucci",
+    "away": "Club Sporting Cristal",
+    "homeScore": 0,
+    "awayScore": 4
+  },
+  {
+    "date": "2024-02-25",
+    "home": "Club Atlético Grau",
+    "away": "Asociación Deportiva Tarma",
+    "homeScore": 2,
+    "awayScore": 2
+  },
+  {
+    "date": "2024-02-25",
+    "home": "Alianza Lima",
+    "away": "Comerciantes Unidos",
+    "homeScore": 5,
+    "awayScore": 1
+  },
+  {
+    "date": "2024-02-26",
+    "home": "Deportivo Garcilaso",
+    "away": "Universidad César Vallejo",
+    "homeScore": 2,
+    "awayScore": 0
+  },
+  {
+    "date": "2024-02-26",
+    "home": "Los Chankas CYC",
+    "away": "Cienciano",
+    "homeScore": 1,
+    "awayScore": 2
+  },
+  {
+    "date": "2024-02-29",
+    "home": "Alianza Atlético de Sullana",
+    "away": "Deportivo Garcilaso",
+    "homeScore": 3,
+    "awayScore": 0
+  },
+  {
+    "date": "2024-03-01",
+    "home": "Asociación Deportiva Tarma",
+    "away": "Alianza Lima",
+    "homeScore": 2,
+    "awayScore": 0
+  },
+  {
+    "date": "2024-03-02",
+    "home": "Universitario de Deportes",
+    "away": "Sport Huancayo",
+    "homeScore": 2,
+    "awayScore": 0
+  },
+  {
+    "date": "2024-03-02",
+    "home": "Club Sporting Cristal",
+    "away": "Club Atlético Grau",
+    "homeScore": 1,
+    "awayScore": 0
+  },
+  {
+    "date": "2024-03-02",
+    "home": "Comerciantes Unidos",
+    "away": "Melgar",
+    "homeScore": 0,
+    "awayScore": 0
+  },
+  {
+    "date": "2024-03-03",
+    "home": "Universidad César Vallejo",
+    "away": "Cusco FC",
+    "homeScore": 2,
+    "awayScore": 2
+  },
+  {
+    "date": "2024-03-03",
+    "home": "Los Chankas CYC",
+    "away": "Sport Boys",
+    "homeScore": 2,
+    "awayScore": 0
+  },
+  {
+    "date": "2024-03-04",
+    "home": "Cienciano",
+    "away": "Carlos A. Mannucci",
+    "homeScore": 2,
+    "awayScore": 2
+  },
+  {
+    "date": "2024-03-04",
+    "home": "Unión Comercio",
+    "away": "Universidad Técnica de Cajamarca",
+    "homeScore": 2,
+    "awayScore": 0
+  },
+  {
+    "date": "2024-03-07",
+    "home": "Cusco FC",
+    "away": "Alianza Atlético de Sullana",
+    "homeScore": 2,
+    "awayScore": 0
+  },
+  {
+    "date": "2024-03-08",
+    "home": "Universidad Técnica de Cajamarca",
+    "away": "Comerciantes Unidos",
+    "homeScore": 2,
+    "awayScore": 3
+  },
+  {
+    "date": "2024-03-09",
+    "home": "Deportivo Garcilaso",
+    "away": "Universitario de Deportes",
+    "homeScore": 2,
+    "awayScore": 2
+  },
+  {
+    "date": "2024-03-09",
+    "home": "Club Atlético Grau",
+    "away": "Cienciano",
+    "homeScore": 1,
+    "awayScore": 1
+  },
+  {
+    "date": "2024-03-09",
+    "home": "Melgar",
+    "away": "Asociación Deportiva Tarma",
+    "homeScore": 3,
+    "awayScore": 1
+  },
+  {
+    "date": "2024-03-09",
+    "home": "Carlos A. Mannucci",
+    "away": "Los Chankas CYC",
+    "homeScore": 2,
+    "awayScore": 1
+  },
+  {
+    "date": "2024-03-10",
+    "home": "Alianza Lima",
+    "away": "Club Sporting Cristal",
+    "homeScore": 1,
+    "awayScore": 2
+  },
+  {
+    "date": "2024-03-10",
+    "home": "Sport Boys",
+    "away": "Universidad César Vallejo",
+    "homeScore": 2,
+    "awayScore": 0
+  },
+  {
+    "date": "2024-03-10",
+    "home": "Sport Huancayo",
+    "away": "Unión Comercio",
+    "homeScore": 2,
+    "awayScore": 2
+  },
+  {
+    "date": "2024-03-13",
+    "home": "Universitario de Deportes",
+    "away": "Cusco FC",
+    "homeScore": 1,
+    "awayScore": 0
+  },
+  {
+    "date": "2024-03-13",
+    "home": "Cienciano",
+    "away": "Alianza Lima",
+    "homeScore": 2,
+    "awayScore": 1
+  },
+  {
+    "date": "2024-03-14",
+    "home": "Club Sporting Cristal",
+    "away": "Melgar",
+    "homeScore": 1,
+    "awayScore": 2
+  },
+  {
+    "date": "2024-03-14",
+    "home": "Alianza Atlético de Sullana",
+    "away": "Universidad César Vallejo",
+    "homeScore": 1,
+    "awayScore": 1
+  },
+  {
+    "date": "2024-03-14",
+    "home": "Comerciantes Unidos",
+    "away": "Sport Huancayo",
+    "homeScore": 3,
+    "awayScore": 2
+  },
+  {
+    "date": "2024-03-15",
+    "home": "Carlos A. Mannucci",
+    "away": "Sport Boys",
+    "homeScore": 1,
+    "awayScore": 0
+  },
+  {
+    "date": "2024-03-15",
+    "home": "Unión Comercio",
+    "away": "Deportivo Garcilaso",
+    "homeScore": 0,
+    "awayScore": 4
+  },
+  {
+    "date": "2024-03-15",
+    "home": "Los Chankas CYC",
+    "away": "Club Atlético Grau",
+    "homeScore": 0,
+    "awayScore": 1
+  },
+  {
+    "date": "2024-03-16",
+    "home": "Asociación Deportiva Tarma",
+    "away": "Universidad Técnica de Cajamarca",
+    "homeScore": 2,
+    "awayScore": 1
+  },
+  {
+    "date": "2024-03-28",
+    "home": "Deportivo Garcilaso",
+    "away": "Comerciantes Unidos",
+    "homeScore": 1,
+    "awayScore": 2
+  },
+  {
+    "date": "2024-03-29",
+    "home": "Alianza Lima",
+    "away": "Los Chankas CYC",
+    "homeScore": 3,
+    "awayScore": 0
+  },
+  {
+    "date": "2024-03-30",
+    "home": "Cusco FC",
+    "away": "Unión Comercio",
+    "homeScore": 1,
+    "awayScore": 0
+  },
+  {
+    "date": "2024-03-30",
+    "home": "Club Atlético Grau",
+    "away": "Carlos A. Mannucci",
+    "homeScore": 3,
+    "awayScore": 0
+  },
+  {
+    "date": "2024-03-30",
+    "home": "Melgar",
+    "away": "Cienciano",
+    "homeScore": 2,
+    "awayScore": 0
+  },
+  {
+    "date": "2024-03-31",
+    "home": "Universidad César Vallejo",
+    "away": "Universitario de Deportes",
+    "homeScore": 0,
+    "awayScore": 0
+  },
+  {
+    "date": "2024-03-31",
+    "home": "Sport Huancayo",
+    "away": "Asociación Deportiva Tarma",
+    "homeScore": 0,
+    "awayScore": 2
+  },
+  {
+    "date": "2024-03-31",
+    "home": "Sport Boys",
+    "away": "Alianza Atlético de Sullana",
+    "homeScore": 0,
+    "awayScore": 0
+  },
+  {
+    "date": "2024-03-31",
+    "home": "Universidad Técnica de Cajamarca",
+    "away": "Club Sporting Cristal",
+    "homeScore": 1,
+    "awayScore": 2
+  },
+  {
+    "date": "2024-04-05",
+    "home": "Club Atlético Grau",
+    "away": "Sport Boys",
+    "homeScore": 0,
+    "awayScore": 0
+  },
+  {
+    "date": "2024-04-06",
+    "home": "Universitario de Deportes",
+    "away": "Alianza Atlético de Sullana",
+    "homeScore": 1,
+    "awayScore": 0
+  },
+  {
+    "date": "2024-04-06",
+    "home": "Los Chankas CYC",
+    "away": "Melgar",
+    "homeScore": 2,
+    "awayScore": 2
+  },
+  {
+    "date": "2024-04-06",
+    "home": "Unión Comercio",
+    "away": "Universidad César Vallejo",
+    "homeScore": 2,
+    "awayScore": 2
+  },
+  {
+    "date": "2024-04-06",
+    "home": "Carlos A. Mannucci",
+    "away": "Alianza Lima",
+    "homeScore": 0,
+    "awayScore": 4
+  },
+  {
+    "date": "2024-04-07",
+    "home": "Cienciano",
+    "away": "Universidad Técnica de Cajamarca",
+    "homeScore": 1,
+    "awayScore": 1
+  },
+  {
+    "date": "2024-04-07",
+    "home": "Asociación Deportiva Tarma",
+    "away": "Deportivo Garcilaso",
+    "homeScore": 2,
+    "awayScore": 2
+  },
+  {
+    "date": "2024-04-07",
+    "home": "Club Sporting Cristal",
+    "away": "Sport Huancayo",
+    "homeScore": 4,
+    "awayScore": 0
+  },
+  {
+    "date": "2024-04-08",
+    "home": "Comerciantes Unidos",
+    "away": "Cusco FC",
+    "homeScore": 0,
+    "awayScore": 1
+  },
+  {
+    "date": "2024-04-12",
+    "home": "Sport Huancayo",
+    "away": "Cienciano",
+    "homeScore": 1,
+    "awayScore": 2
+  },
+  {
+    "date": "2024-04-13",
+    "home": "Alianza Atlético de Sullana",
+    "away": "Unión Comercio",
+    "homeScore": 2,
+    "awayScore": 0
+  },
+  {
+    "date": "2024-04-13",
+    "home": "Deportivo Garcilaso",
+    "away": "Club Sporting Cristal",
+    "homeScore": 0,
+    "awayScore": 0
+  },
+  {
+    "date": "2024-04-13",
+    "home": "Melgar",
+    "away": "Carlos A. Mannucci",
+    "homeScore": 2,
+    "awayScore": 0
+  },
+  {
+    "date": "2024-04-14",
+    "home": "Sport Boys",
+    "away": "Universitario de Deportes",
+    "homeScore": 1,
+    "awayScore": 2
+  },
+  {
+    "date": "2024-04-14",
+    "home": "Universidad César Vallejo",
+    "away": "Comerciantes Unidos",
+    "homeScore": 3,
+    "awayScore": 1
+  },
+  {
+    "date": "2024-04-14",
+    "home": "Cusco FC",
+    "away": "Asociación Deportiva Tarma",
+    "homeScore": 3,
+    "awayScore": 2
+  },
+  {
+    "date": "2024-04-15",
+    "home": "Alianza Lima",
+    "away": "Club Atlético Grau",
+    "homeScore": 2,
+    "awayScore": 0
+  },
+  {
+    "date": "2024-04-15",
+    "home": "Universidad Técnica de Cajamarca",
+    "away": "Los Chankas CYC",
+    "homeScore": 2,
+    "awayScore": 0
+  },
+  {
+    "date": "2024-04-16",
+    "home": "Deportivo Garcilaso",
+    "away": "Club Sporting Cristal",
+    "homeScore": 2,
+    "awayScore": 3
+  },
+  {
+    "date": "2024-04-19",
+    "home": "Alianza Lima",
+    "away": "Sport Boys",
+    "homeScore": 3,
+    "awayScore": 0
+  },
+  {
+    "date": "2024-04-19",
+    "home": "Unión Comercio",
+    "away": "Universitario de Deportes",
+    "homeScore": 1,
+    "awayScore": 2
+  },
+  {
+    "date": "2024-04-20",
+    "home": "Cienciano",
+    "away": "Deportivo Garcilaso",
+    "homeScore": 0,
+    "awayScore": 2
+  },
+  {
+    "date": "2024-04-20",
+    "home": "Los Chankas CYC",
+    "away": "Sport Huancayo",
+    "homeScore": 6,
+    "awayScore": 0
+  },
+  {
+    "date": "2024-04-20",
+    "home": "Asociación Deportiva Tarma",
+    "away": "Universidad César Vallejo",
+    "homeScore": 1,
+    "awayScore": 0
+  },
+  {
+    "date": "2024-04-20",
+    "home": "Carlos A. Mannucci",
+    "away": "Universidad Técnica de Cajamarca",
+    "homeScore": 2,
+    "awayScore": 0
+  },
+  {
+    "date": "2024-04-21",
+    "home": "Club Sporting Cristal",
+    "away": "Cusco FC",
+    "homeScore": 2,
+    "awayScore": 0
+  },
+  {
+    "date": "2024-04-21",
+    "home": "Club Atlético Grau",
+    "away": "Melgar",
+    "homeScore": 1,
+    "awayScore": 2
+  },
+  {
+    "date": "2024-04-23",
+    "home": "Comerciantes Unidos",
+    "away": "Alianza Atlético de Sullana",
+    "homeScore": 0,
+    "awayScore": 0
+  },
+  {
+    "date": "2024-04-26",
+    "home": "Sport Huancayo",
+    "away": "Carlos A. Mannucci",
+    "homeScore": 1,
+    "awayScore": 0
+  },
+  {
+    "date": "2024-04-27",
+    "home": "Sport Boys",
+    "away": "Unión Comercio",
+    "homeScore": 0,
+    "awayScore": 0
+  },
+  {
+    "date": "2024-04-27",
+    "home": "Universidad César Vallejo",
+    "away": "Club Sporting Cristal",
+    "homeScore": 0,
+    "awayScore": 0
+  },
+  {
+    "date": "2024-04-27",
+    "home": "Universidad Técnica de Cajamarca",
+    "away": "Club Atlético Grau",
+    "homeScore": 3,
+    "awayScore": 2
+  },
+  {
+    "date": "2024-04-27",
+    "home": "Cusco FC",
+    "away": "Cienciano",
+    "homeScore": 2,
+    "awayScore": 0
+  },
+  {
+    "date": "2024-04-28",
+    "home": "Alianza Atlético de Sullana",
+    "away": "Asociación Deportiva Tarma",
+    "homeScore": 1,
+    "awayScore": 2
+  },
+  {
+    "date": "2024-04-28",
+    "home": "Melgar",
+    "away": "Alianza Lima",
+    "homeScore": 1,
+    "awayScore": 0
+  },
+  {
+    "date": "2024-04-29",
+    "home": "Deportivo Garcilaso",
+    "away": "Los Chankas CYC",
+    "homeScore": 1,
+    "awayScore": 1
+  },
+  {
+    "date": "2024-04-29",
+    "home": "Universitario de Deportes",
+    "away": "Comerciantes Unidos",
+    "homeScore": 6,
+    "awayScore": 0
+  },
+  {
+    "date": "2024-04-30",
+    "home": "Universidad César Vallejo",
+    "away": "Club Sporting Cristal",
+    "homeScore": 2,
+    "awayScore": 1
+  },
+  {
+    "date": "2024-05-03",
+    "home": "Asociación Deportiva Tarma",
+    "away": "Universitario de Deportes",
+    "homeScore": 2,
+    "awayScore": 0
+  },
+  {
+    "date": "2024-05-03",
+    "home": "Cienciano",
+    "away": "Unión Comercio",
+    "homeScore": 0,
+    "awayScore": 0
+  },
+  {
+    "date": "2024-05-03",
+    "home": "Cienciano",
+    "away": "Universidad César Vallejo",
+    "homeScore": 1,
+    "awayScore": 1
+  },
+  {
+    "date": "2024-05-04",
+    "home": "Alianza Lima",
+    "away": "Universidad Técnica de Cajamarca",
+    "homeScore": 1,
+    "awayScore": 0
+  },
+  {
+    "date": "2024-05-04",
+    "home": "Los Chankas CYC",
+    "away": "Cusco FC",
+    "homeScore": 2,
+    "awayScore": 0
+  },
+  {
+    "date": "2024-05-04",
+    "home": "Carlos A. Mannucci",
+    "away": "Deportivo Garcilaso",
+    "homeScore": 1,
+    "awayScore": 1
+  },
+  {
+    "date": "2024-05-04",
+    "home": "Comerciantes Unidos",
+    "away": "Unión Comercio",
+    "homeScore": 3,
+    "awayScore": 1
+  },
+  {
+    "date": "2024-05-05",
+    "home": "Club Sporting Cristal",
+    "away": "Alianza Atlético de Sullana",
+    "homeScore": 2,
+    "awayScore": 1
+  },
+  {
+    "date": "2024-05-05",
+    "home": "Melgar",
+    "away": "Sport Boys",
+    "homeScore": 2,
+    "awayScore": 1
+  },
+  {
+    "date": "2024-05-06",
+    "home": "Club Atlético Grau",
+    "away": "Sport Huancayo",
+    "homeScore": 0,
+    "awayScore": 0
+  },
+  {
+    "date": "2024-05-10",
+    "home": "Unión Comercio",
+    "away": "Asociación Deportiva Tarma",
+    "homeScore": 2,
+    "awayScore": 2
+  },
+  {
+    "date": "2024-05-11",
+    "home": "Sport Boys",
+    "away": "Comerciantes Unidos",
+    "homeScore": 1,
+    "awayScore": 1
+  },
+  {
+    "date": "2024-05-11",
+    "home": "Cusco FC",
+    "away": "Carlos A. Mannucci",
+    "homeScore": 3,
+    "awayScore": 0
+  },
+  {
+    "date": "2024-05-11",
+    "home": "Sport Huancayo",
+    "away": "Alianza Lima",
+    "homeScore": 0,
+    "awayScore": 2
+  },
+  {
+    "date": "2024-05-12",
+    "home": "Universidad César Vallejo",
+    "away": "Los Chankas CYC",
+    "homeScore": 1,
+    "awayScore": 1
+  },
+  {
+    "date": "2024-05-12",
+    "home": "Universidad Técnica de Cajamarca",
+    "away": "Melgar",
+    "homeScore": 2,
+    "awayScore": 6
+  },
+  {
+    "date": "2024-05-12",
+    "home": "Deportivo Garcilaso",
+    "away": "Club Atlético Grau",
+    "homeScore": 0,
+    "awayScore": 0
+  },
+  {
+    "date": "2024-05-12",
+    "home": "Universitario de Deportes",
+    "away": "Club Sporting Cristal",
+    "homeScore": 4,
+    "awayScore": 1
+  },
+  {
+    "date": "2024-05-13",
+    "home": "Alianza Atlético de Sullana",
+    "away": "Cienciano",
+    "homeScore": 0,
+    "awayScore": 1
+  },
+  {
+    "date": "2024-05-17",
+    "home": "Club Atlético Grau",
+    "away": "Cusco FC",
+    "homeScore": 4,
+    "awayScore": 0
+  },
+  {
+    "date": "2024-05-18",
+    "home": "Cienciano",
+    "away": "Universitario de Deportes",
+    "homeScore": 0,
+    "awayScore": 0
+  },
+  {
+    "date": "2024-05-18",
+    "home": "Club Sporting Cristal",
+    "away": "Unión Comercio",
+    "homeScore": 5,
+    "awayScore": 1
+  },
+  {
+    "date": "2024-05-18",
+    "home": "Melgar",
+    "away": "Sport Huancayo",
+    "homeScore": 4,
+    "awayScore": 1
+  },
+  {
+    "date": "2024-05-19",
+    "home": "Asociación Deportiva Tarma",
+    "away": "Comerciantes Unidos",
+    "homeScore": 2,
+    "awayScore": 0
+  },
+  {
+    "date": "2024-05-19",
+    "home": "Los Chankas CYC",
+    "away": "Alianza Atlético de Sullana",
+    "homeScore": 2,
+    "awayScore": 0
+  },
+  {
+    "date": "2024-05-19",
+    "home": "Carlos A. Mannucci",
+    "away": "Universidad César Vallejo",
+    "homeScore": 0,
+    "awayScore": 0
+  },
+  {
+    "date": "2024-05-20",
+    "home": "Alianza Lima",
+    "away": "Deportivo Garcilaso",
+    "homeScore": 3,
+    "awayScore": 2
+  },
+  {
+    "date": "2024-05-20",
+    "home": "Universidad Técnica de Cajamarca",
+    "away": "Sport Boys",
+    "homeScore": 2,
+    "awayScore": 4
+  },
+  {
+    "date": "2024-05-21",
+    "home": "Cienciano",
+    "away": "Universitario de Deportes",
+    "homeScore": 0,
+    "awayScore": 0
+  },
+  {
+    "date": "2024-05-24",
+    "home": "Cusco FC",
+    "away": "Alianza Lima",
+    "homeScore": 3,
+    "awayScore": 0
+  },
+  {
+    "date": "2024-05-25",
+    "home": "Universidad César Vallejo",
+    "away": "Club Atlético Grau",
+    "homeScore": 2,
+    "awayScore": 1
+  },
+  {
+    "date": "2024-05-25",
+    "home": "Sport Huancayo",
+    "away": "Universidad Técnica de Cajamarca",
+    "homeScore": 1,
+    "awayScore": 1
+  },
+  {
+    "date": "2024-05-25",
+    "home": "Comerciantes Unidos",
+    "away": "Club Sporting Cristal",
+    "homeScore": 0,
+    "awayScore": 1
+  },
+  {
+    "date": "2024-05-25",
+    "home": "Deportivo Garcilaso",
+    "away": "Melgar",
+    "homeScore": 1,
+    "awayScore": 3
+  },
+  {
+    "date": "2024-05-25",
+    "home": "Universitario de Deportes",
+    "away": "Los Chankas CYC",
+    "homeScore": 4,
+    "awayScore": 0
+  },
+  {
+    "date": "2024-05-26",
+    "home": "Alianza Atlético de Sullana",
+    "away": "Carlos A. Mannucci",
+    "homeScore": 0,
+    "awayScore": 0
+  },
+  {
+    "date": "2024-05-26",
+    "home": "Sport Boys",
+    "away": "Asociación Deportiva Tarma",
+    "homeScore": 1,
+    "awayScore": 0
+  },
+  {
+    "date": "2024-05-27",
+    "home": "Unión Comercio",
+    "away": "Cienciano",
+    "homeScore": 1,
+    "awayScore": 1
+  },
+  {
+    "date": "2024-07-12",
+    "home": "Unión Comercio",
+    "away": "Los Chankas CYC",
+    "homeScore": 1,
+    "awayScore": 2
+  },
+  {
+    "date": "2024-07-12",
+    "home": "Asociación Deportiva Tarma",
+    "away": "Club Sporting Cristal",
+    "homeScore": 3,
+    "awayScore": 1
+  },
+  {
+    "date": "2024-07-13",
+    "home": "Deportivo Garcilaso",
+    "away": "Universidad Técnica de Cajamarca",
+    "homeScore": 1,
+    "awayScore": 0
+  },
+  {
+    "date": "2024-07-13",
+    "home": "Comerciantes Unidos",
+    "away": "Cienciano",
+    "homeScore": 1,
+    "awayScore": 2
+  },
+  {
+    "date": "2024-07-13",
+    "home": "Universidad César Vallejo",
+    "away": "Alianza Lima",
+    "homeScore": 2,
+    "awayScore": 3
+  },
+  {
+    "date": "2024-07-13",
+    "home": "Universitario de Deportes",
+    "away": "Carlos A. Mannucci",
+    "homeScore": 6,
+    "awayScore": 0
+  },
+  {
+    "date": "2024-07-14",
+    "home": "Alianza Atlético de Sullana",
+    "away": "Club Atlético Grau",
+    "homeScore": 0,
+    "awayScore": 0
+  },
+  {
+    "date": "2024-07-14",
+    "home": "Sport Boys",
+    "away": "Sport Huancayo",
+    "homeScore": 2,
+    "awayScore": 1
+  },
+  {
+    "date": "2024-07-14",
+    "home": "Cusco FC",
+    "away": "Melgar",
+    "homeScore": 0,
+    "awayScore": 3
+  },
+  {
+    "date": "2024-07-19",
+    "home": "Universidad Técnica de Cajamarca",
+    "away": "Cusco FC",
+    "homeScore": 2,
+    "awayScore": 1
+  },
+  {
+    "date": "2024-07-19",
+    "home": "Sport Huancayo",
+    "away": "Deportivo Garcilaso",
+    "homeScore": 1,
+    "awayScore": 0
+  },
+  {
+    "date": "2024-07-20",
+    "home": "Los Chankas CYC",
+    "away": "Comerciantes Unidos",
+    "homeScore": 2,
+    "awayScore": 0
+  },
+  {
+    "date": "2024-07-20",
+    "home": "Melgar",
+    "away": "Universidad César Vallejo",
+    "homeScore": 5,
+    "awayScore": 2
+  },
+  {
+    "date": "2024-07-21",
+    "home": "Alianza Lima",
+    "away": "Alianza Atlético de Sullana",
+    "homeScore": 2,
+    "awayScore": 0
+  },
+  {
+    "date": "2024-07-21",
+    "home": "Club Atlético Grau",
+    "away": "Universitario de Deportes",
+    "homeScore": 1,
+    "awayScore": 1
+  },
+  {
+    "date": "2024-07-21",
+    "home": "Carlos A. Mannucci",
+    "away": "Unión Comercio",
+    "homeScore": 0,
+    "awayScore": 0
+  },
+  {
+    "date": "2024-07-21",
+    "home": "Club Sporting Cristal",
+    "away": "Sport Boys",
+    "homeScore": 4,
+    "awayScore": 0
+  },
+  {
+    "date": "2024-07-21",
+    "home": "Cienciano",
+    "away": "Asociación Deportiva Tarma",
+    "homeScore": 0,
+    "awayScore": 1
+  },
+  {
+    "date": "2024-07-25",
+    "home": "Alianza Atlético de Sullana",
+    "away": "Melgar",
+    "homeScore": 3,
+    "awayScore": 1
+  },
+  {
+    "date": "2024-07-25",
+    "home": "Cusco FC",
+    "away": "Sport Huancayo",
+    "homeScore": 3,
+    "awayScore": 0
+  },
+  {
+    "date": "2024-07-26",
+    "home": "Universidad César Vallejo",
+    "away": "Universidad Técnica de Cajamarca",
+    "homeScore": 2,
+    "awayScore": 0
+  },
+  {
+    "date": "2024-07-26",
+    "home": "Unión Comercio",
+    "away": "Club Atlético Grau",
+    "homeScore": 0,
+    "awayScore": 0
+  },
+  {
+    "date": "2024-07-26",
+    "home": "Comerciantes Unidos",
+    "away": "Carlos A. Mannucci",
+    "homeScore": 2,
+    "awayScore": 1
+  },
+  {
+    "date": "2024-07-26",
+    "home": "Deportivo Garcilaso",
+    "away": "Sport Boys",
+    "homeScore": 2,
+    "awayScore": 0
+  },
+  {
+    "date": "2024-07-27",
+    "home": "Universitario de Deportes",
+    "away": "Alianza Lima",
+    "homeScore": 2,
+    "awayScore": 1
+  },
+  {
+    "date": "2024-07-27",
+    "home": "Club Sporting Cristal",
+    "away": "Cienciano",
+    "homeScore": 5,
+    "awayScore": 1
+  },
+  {
+    "date": "2024-07-27",
+    "home": "Asociación Deportiva Tarma",
+    "away": "Los Chankas CYC",
+    "homeScore": 2,
+    "awayScore": 1
+  },
+  {
+    "date": "2024-09-01",
+    "home": "Unión Comercio",
+    "away": "Club Atlético Grau",
+    "homeScore": 1,
+    "awayScore": 2
+  },
+  {
+    "date": "2024-07-29",
+    "home": "Deportivo Garcilaso",
+    "away": "Cusco FC",
+    "homeScore": 0,
+    "awayScore": 2
+  },
+  {
+    "date": "2024-07-30",
+    "home": "Sport Boys",
+    "away": "Cienciano",
+    "homeScore": 2,
+    "awayScore": 0
+  },
+  {
+    "date": "2024-07-30",
+    "home": "Sport Huancayo",
+    "away": "Universidad César Vallejo",
+    "homeScore": 1,
+    "awayScore": 0
+  },
+  {
+    "date": "2024-07-31",
+    "home": "Alianza Lima",
+    "away": "Unión Comercio",
+    "homeScore": 1,
+    "awayScore": 0
+  },
+  {
+    "date": "2024-07-31",
+    "home": "Club Atlético Grau",
+    "away": "Comerciantes Unidos",
+    "homeScore": 3,
+    "awayScore": 0
+  },
+  {
+    "date": "2024-07-31",
+    "home": "Los Chankas CYC",
+    "away": "Club Sporting Cristal",
+    "homeScore": 3,
+    "awayScore": 3
+  },
+  {
+    "date": "2024-08-01",
+    "home": "Carlos A. Mannucci",
+    "away": "Asociación Deportiva Tarma",
+    "homeScore": 3,
+    "awayScore": 2
+  },
+  {
+    "date": "2024-08-01",
+    "home": "Melgar",
+    "away": "Universitario de Deportes",
+    "homeScore": 1,
+    "awayScore": 0
+  },
+  {
+    "date": "2024-08-01",
+    "home": "Universidad Técnica de Cajamarca",
+    "away": "Alianza Atlético de Sullana",
+    "homeScore": 1,
+    "awayScore": 1
+  },
+  {
+    "date": "2024-08-03",
+    "home": "Comerciantes Unidos",
+    "away": "Alianza Lima",
+    "homeScore": 1,
+    "awayScore": 3
+  },
+  {
+    "date": "2024-08-03",
+    "home": "Cienciano",
+    "away": "Los Chankas CYC",
+    "homeScore": 0,
+    "awayScore": 0
+  },
+  {
+    "date": "2024-08-04",
+    "home": "Universidad César Vallejo",
+    "away": "Deportivo Garcilaso",
+    "homeScore": 0,
+    "awayScore": 2
+  },
+  {
+    "date": "2024-08-04",
+    "home": "Club Sporting Cristal",
+    "away": "Carlos A. Mannucci",
+    "homeScore": 4,
+    "awayScore": 0
+  },
+  {
+    "date": "2024-08-04",
+    "home": "Unión Comercio",
+    "away": "Melgar",
+    "homeScore": 2,
+    "awayScore": 1
+  },
+  {
+    "date": "2024-08-04",
+    "home": "Asociación Deportiva Tarma",
+    "away": "Club Atlético Grau",
+    "homeScore": 1,
+    "awayScore": 2
+  },
+  {
+    "date": "2024-08-05",
+    "home": "Universitario de Deportes",
+    "away": "Universidad Técnica de Cajamarca",
+    "homeScore": 1,
+    "awayScore": 0
+  },
+  {
+    "date": "2024-08-05",
+    "home": "Alianza Atlético de Sullana",
+    "away": "Sport Huancayo",
+    "homeScore": 1,
+    "awayScore": 1
+  },
+  {
+    "date": "2024-08-05",
+    "home": "Cusco FC",
+    "away": "Sport Boys",
+    "homeScore": 3,
+    "awayScore": 1
+  },
+  {
+    "date": "2024-08-09",
+    "home": "Universidad Técnica de Cajamarca",
+    "away": "Unión Comercio",
+    "homeScore": 3,
+    "awayScore": 1
+  },
+  {
+    "date": "2024-08-10",
+    "home": "Deportivo Garcilaso",
+    "away": "Alianza Atlético de Sullana",
+    "homeScore": 0,
+    "awayScore": 1
+  },
+  {
+    "date": "2024-08-10",
+    "home": "Sport Boys",
+    "away": "Los Chankas CYC",
+    "homeScore": 2,
+    "awayScore": 1
+  },
+  {
+    "date": "2024-08-10",
+    "home": "Melgar",
+    "away": "Comerciantes Unidos",
+    "homeScore": 0,
+    "awayScore": 0
+  },
+  {
+    "date": "2024-08-11",
+    "home": "Alianza Lima",
+    "away": "Asociación Deportiva Tarma",
+    "homeScore": 0,
+    "awayScore": 0
+  },
+  {
+    "date": "2024-08-11",
+    "home": "Club Atlético Grau",
+    "away": "Club Sporting Cristal",
+    "homeScore": 1,
+    "awayScore": 1
+  },
+  {
+    "date": "2024-08-11",
+    "home": "Carlos A. Mannucci",
+    "away": "Cienciano",
+    "homeScore": 1,
+    "awayScore": 2
+  },
+  {
+    "date": "2024-08-11",
+    "home": "Sport Huancayo",
+    "away": "Universitario de Deportes",
+    "homeScore": 1,
+    "awayScore": 1
+  },
+  {
+    "date": "2024-08-11",
+    "home": "Cusco FC",
+    "away": "Universidad César Vallejo",
+    "homeScore": 2,
+    "awayScore": 1
+  },
+  {
+    "date": "2024-09-07",
+    "home": "Melgar",
+    "away": "Comerciantes Unidos",
+    "homeScore": 3,
+    "awayScore": 0
+  },
+  {
+    "date": "2024-08-15",
+    "home": "Alianza Atlético de Sullana",
+    "away": "Cusco FC",
+    "homeScore": 1,
+    "awayScore": 1
+  },
+  {
+    "date": "2024-08-15",
+    "home": "Comerciantes Unidos",
+    "away": "Universidad Técnica de Cajamarca",
+    "homeScore": 1,
+    "awayScore": 1
+  },
+  {
+    "date": "2024-08-16",
+    "home": "Asociación Deportiva Tarma",
+    "away": "Melgar",
+    "homeScore": 1,
+    "awayScore": 1
+  },
+  {
+    "date": "2024-08-16",
+    "home": "Universidad César Vallejo",
+    "away": "Sport Boys",
+    "homeScore": 2,
+    "awayScore": 2
+  },
+  {
+    "date": "2024-08-17",
+    "home": "Universitario de Deportes",
+    "away": "Deportivo Garcilaso",
+    "homeScore": 3,
+    "awayScore": 1
+  },
+  {
+    "date": "2024-08-17",
+    "home": "Unión Comercio",
+    "away": "Sport Huancayo",
+    "homeScore": 0,
+    "awayScore": 1
+  },
+  {
+    "date": "2024-08-17",
+    "home": "Cienciano",
+    "away": "Club Atlético Grau",
+    "homeScore": 1,
+    "awayScore": 0
+  },
+  {
+    "date": "2024-08-18",
+    "home": "Club Sporting Cristal",
+    "away": "Alianza Lima",
+    "homeScore": 0,
+    "awayScore": 0
+  },
+  {
+    "date": "2024-08-18",
+    "home": "Los Chankas CYC",
+    "away": "Carlos A. Mannucci",
+    "homeScore": 1,
+    "awayScore": 1
+  },
+  {
+    "date": "2024-08-19",
+    "home": "Universidad César Vallejo",
+    "away": "Alianza Atlético de Sullana",
+    "homeScore": 0,
+    "awayScore": 0
+  },
+  {
+    "date": "2024-08-20",
+    "home": "Universidad Técnica de Cajamarca",
+    "away": "Asociación Deportiva Tarma",
+    "homeScore": 1,
+    "awayScore": 1
+  },
+  {
+    "date": "2024-08-20",
+    "home": "Sport Huancayo",
+    "away": "Comerciantes Unidos",
+    "homeScore": 2,
+    "awayScore": 2
+  },
+  {
+    "date": "2024-08-20",
+    "home": "Cusco FC",
+    "away": "Universitario de Deportes",
+    "homeScore": 1,
+    "awayScore": 1
+  },
+  {
+    "date": "2024-08-21",
+    "home": "Alianza Lima",
+    "away": "Cienciano",
+    "homeScore": 3,
+    "awayScore": 0
+  },
+  {
+    "date": "2024-08-21",
+    "home": "Club Atlético Grau",
+    "away": "Los Chankas CYC",
+    "homeScore": 1,
+    "awayScore": 1
+  },
+  {
+    "date": "2024-08-21",
+    "home": "Sport Boys",
+    "away": "Carlos A. Mannucci",
+    "homeScore": 2,
+    "awayScore": 6
+  },
+  {
+    "date": "2024-08-21",
+    "home": "Deportivo Garcilaso",
+    "away": "Unión Comercio",
+    "homeScore": 3,
+    "awayScore": 1
+  },
+  {
+    "date": "2024-08-22",
+    "home": "Melgar",
+    "away": "Club Sporting Cristal",
+    "homeScore": 2,
+    "awayScore": 0
+  },
+  {
+    "date": "2024-08-24",
+    "home": "Alianza Atlético de Sullana",
+    "away": "Sport Boys",
+    "homeScore": 2,
+    "awayScore": 0
+  },
+  {
+    "date": "2024-08-24",
+    "home": "Los Chankas CYC",
+    "away": "Alianza Lima",
+    "homeScore": 0,
+    "awayScore": 1
+  },
+  {
+    "date": "2024-08-25",
+    "home": "Universitario de Deportes",
+    "away": "Universidad César Vallejo",
+    "homeScore": 1,
+    "awayScore": 0
+  },
+  {
+    "date": "2024-08-25",
+    "home": "Club Sporting Cristal",
+    "away": "Universidad Técnica de Cajamarca",
+    "homeScore": 4,
+    "awayScore": 0
+  },
+  {
+    "date": "2024-08-25",
+    "home": "Asociación Deportiva Tarma",
+    "away": "Sport Huancayo",
+    "homeScore": 2,
+    "awayScore": 1
+  },
+  {
+    "date": "2024-08-25",
+    "home": "Comerciantes Unidos",
+    "away": "Deportivo Garcilaso",
+    "homeScore": 2,
+    "awayScore": 1
+  },
+  {
+    "date": "2024-08-26",
+    "home": "Cienciano",
+    "away": "Melgar",
+    "homeScore": 3,
+    "awayScore": 1
+  },
+  {
+    "date": "2024-08-26",
+    "home": "Unión Comercio",
+    "away": "Cusco FC",
+    "homeScore": 3,
+    "awayScore": 3
+  },
+  {
+    "date": "2024-08-27",
+    "home": "Carlos A. Mannucci",
+    "away": "Club Atlético Grau",
+    "homeScore": 1,
+    "awayScore": 1
+  },
+  {
+    "date": "2024-09-13",
+    "home": "Universidad Técnica de Cajamarca",
+    "away": "Cienciano",
+    "homeScore": 1,
+    "awayScore": 2
+  },
+  {
+    "date": "2024-09-13",
+    "home": "Deportivo Garcilaso",
+    "away": "Asociación Deportiva Tarma",
+    "homeScore": 1,
+    "awayScore": 0
+  },
+  {
+    "date": "2024-09-13",
+    "home": "Universidad César Vallejo",
+    "away": "Unión Comercio",
+    "homeScore": 1,
+    "awayScore": 0
+  },
+  {
+    "date": "2024-09-14",
+    "home": "Cusco FC",
+    "away": "Comerciantes Unidos",
+    "homeScore": 2,
+    "awayScore": 1
+  },
+  {
+    "date": "2024-09-14",
+    "home": "Sport Boys",
+    "away": "Club Atlético Grau",
+    "homeScore": 0,
+    "awayScore": 0
+  },
+  {
+    "date": "2024-09-14",
+    "home": "Sport Huancayo",
+    "away": "Club Sporting Cristal",
+    "homeScore": 1,
+    "awayScore": 2
+  },
+  {
+    "date": "2024-09-15",
+    "home": "Alianza Lima",
+    "away": "Carlos A. Mannucci",
+    "homeScore": 1,
+    "awayScore": 0
+  },
+  {
+    "date": "2024-09-15",
+    "home": "Alianza Atlético de Sullana",
+    "away": "Universitario de Deportes",
+    "homeScore": 0,
+    "awayScore": 3
+  },
+  {
+    "date": "2024-09-15",
+    "home": "Melgar",
+    "away": "Los Chankas CYC",
+    "homeScore": 2,
+    "awayScore": 0
+  },
+  {
+    "date": "2024-09-17",
+    "home": "Club Sporting Cristal",
+    "away": "Deportivo Garcilaso",
+    "homeScore": 1,
+    "awayScore": 0
+  },
+  {
+    "date": "2024-09-17",
+    "home": "Asociación Deportiva Tarma",
+    "away": "Cusco FC",
+    "homeScore": 1,
+    "awayScore": 2
+  },
+  {
+    "date": "2024-09-18",
+    "home": "Club Atlético Grau",
+    "away": "Alianza Lima",
+    "homeScore": 1,
+    "awayScore": 0
+  },
+  {
+    "date": "2024-09-18",
+    "home": "Comerciantes Unidos",
+    "away": "Universidad César Vallejo",
+    "homeScore": 2,
+    "awayScore": 0
+  },
+  {
+    "date": "2024-09-18",
+    "home": "Cienciano",
+    "away": "Sport Huancayo",
+    "homeScore": 3,
+    "awayScore": 1
+  },
+  {
+    "date": "2024-09-19",
+    "home": "Universitario de Deportes",
+    "away": "Sport Boys",
+    "homeScore": 3,
+    "awayScore": 0
+  },
+  {
+    "date": "2024-09-19",
+    "home": "Unión Comercio",
+    "away": "Alianza Atlético de Sullana",
+    "homeScore": 1,
+    "awayScore": 2
+  },
+  {
+    "date": "2024-09-19",
+    "home": "Los Chankas CYC",
+    "away": "Universidad Técnica de Cajamarca",
+    "homeScore": 1,
+    "awayScore": 1
+  },
+  {
+    "date": "2024-09-20",
+    "home": "Carlos A. Mannucci",
+    "away": "Melgar",
+    "homeScore": 1,
+    "awayScore": 1
+  },
+  {
+    "date": "2024-09-21",
+    "home": "Deportivo Garcilaso",
+    "away": "Cienciano",
+    "homeScore": 1,
+    "awayScore": 0
+  },
+  {
+    "date": "2024-09-22",
+    "home": "Sport Boys",
+    "away": "Alianza Lima",
+    "homeScore": 0,
+    "awayScore": 3
+  },
+  {
+    "date": "2024-09-22",
+    "home": "Cusco FC",
+    "away": "Club Sporting Cristal",
+    "homeScore": 1,
+    "awayScore": 1
+  },
+  {
+    "date": "2024-09-22",
+    "home": "Universitario de Deportes",
+    "away": "Unión Comercio",
+    "homeScore": 1,
+    "awayScore": 0
+  },
+  {
+    "date": "2024-09-23",
+    "home": "Universidad César Vallejo",
+    "away": "Asociación Deportiva Tarma",
+    "homeScore": 0,
+    "awayScore": 0
+  },
+  {
+    "date": "2024-09-23",
+    "home": "Alianza Atlético de Sullana",
+    "away": "Comerciantes Unidos",
+    "homeScore": 1,
+    "awayScore": 0
+  },
+  {
+    "date": "2024-09-23",
+    "home": "Sport Huancayo",
+    "away": "Los Chankas CYC",
+    "homeScore": 3,
+    "awayScore": 1
+  },
+  {
+    "date": "2024-09-24",
+    "home": "Melgar",
+    "away": "Club Atlético Grau",
+    "homeScore": 0,
+    "awayScore": 0
+  },
+  {
+    "date": "2024-09-24",
+    "home": "Universidad Técnica de Cajamarca",
+    "away": "Carlos A. Mannucci",
+    "homeScore": 2,
+    "awayScore": 0
+  },
+  {
+    "date": "2024-09-27",
+    "home": "Unión Comercio",
+    "away": "Sport Boys",
+    "homeScore": 0,
+    "awayScore": 2
+  },
+  {
+    "date": "2024-09-28",
+    "home": "Asociación Deportiva Tarma",
+    "away": "Alianza Atlético de Sullana",
+    "homeScore": 0,
+    "awayScore": 1
+  },
+  {
+    "date": "2024-09-28",
+    "home": "Cienciano",
+    "away": "Cusco FC",
+    "homeScore": 1,
+    "awayScore": 2
+  },
+  {
+    "date": "2024-09-29",
+    "home": "Alianza Lima",
+    "away": "Melgar",
+    "homeScore": 1,
+    "awayScore": 1
+  },
+  {
+    "date": "2024-09-29",
+    "home": "Club Sporting Cristal",
+    "away": "Universidad César Vallejo",
+    "homeScore": 4,
+    "awayScore": 1
+  },
+  {
+    "date": "2024-09-29",
+    "home": "Los Chankas CYC",
+    "away": "Deportivo Garcilaso",
+    "homeScore": 1,
+    "awayScore": 0
+  },
+  {
+    "date": "2024-09-29",
+    "home": "Carlos A. Mannucci",
+    "away": "Sport Huancayo",
+    "homeScore": 1,
+    "awayScore": 2
+  },
+  {
+    "date": "2024-09-29",
+    "home": "Comerciantes Unidos",
+    "away": "Universitario de Deportes",
+    "homeScore": 0,
+    "awayScore": 2
+  },
+  {
+    "date": "2024-09-30",
+    "home": "Club Atlético Grau",
+    "away": "Universidad Técnica de Cajamarca",
+    "homeScore": 4,
+    "awayScore": 0
+  },
+  {
+    "date": "2024-10-17",
+    "home": "Unión Comercio",
+    "away": "Comerciantes Unidos",
+    "homeScore": 3,
+    "awayScore": 2
+  },
+  {
+    "date": "2024-10-17",
+    "home": "Cusco FC",
+    "away": "Los Chankas CYC",
+    "homeScore": 2,
+    "awayScore": 1
+  },
+  {
+    "date": "2024-10-17",
+    "home": "Sport Huancayo",
+    "away": "Club Atlético Grau",
+    "homeScore": 1,
+    "awayScore": 3
+  },
+  {
+    "date": "2024-10-18",
+    "home": "Sport Boys",
+    "away": "Melgar",
+    "homeScore": 0,
+    "awayScore": 2
+  },
+  {
+    "date": "2024-10-18",
+    "home": "Universidad Técnica de Cajamarca",
+    "away": "Alianza Lima",
+    "homeScore": 0,
+    "awayScore": 1
+  },
+  {
+    "date": "2024-10-18",
+    "home": "Universidad César Vallejo",
+    "away": "Cienciano",
+    "homeScore": 2,
+    "awayScore": 2
+  },
+  {
+    "date": "2024-10-19",
+    "home": "Deportivo Garcilaso",
+    "away": "Carlos A. Mannucci",
+    "homeScore": 1,
+    "awayScore": 0
+  },
+  {
+    "date": "2024-10-19",
+    "home": "Alianza Atlético de Sullana",
+    "away": "Club Sporting Cristal",
+    "homeScore": 1,
+    "awayScore": 0
+  },
+  {
+    "date": "2024-10-20",
+    "home": "Universitario de Deportes",
+    "away": "Asociación Deportiva Tarma",
+    "homeScore": 2,
+    "awayScore": 1
+  },
+  {
+    "date": "2024-10-22",
+    "home": "Club Atlético Grau",
+    "away": "Deportivo Garcilaso",
+    "homeScore": 2,
+    "awayScore": 2
+  },
+  {
+    "date": "2024-10-22",
+    "home": "Los Chankas CYC",
+    "away": "Universidad César Vallejo",
+    "homeScore": 2,
+    "awayScore": 1
+  },
+  {
+    "date": "2024-10-22",
+    "home": "Melgar",
+    "away": "Universidad Técnica de Cajamarca",
+    "homeScore": 1,
+    "awayScore": 0
+  },
+  {
+    "date": "2024-10-23",
+    "home": "Alianza Lima",
+    "away": "Sport Huancayo",
+    "homeScore": 2,
+    "awayScore": 1
+  },
+  {
+    "date": "2024-10-23",
+    "home": "Asociación Deportiva Tarma",
+    "away": "Unión Comercio",
+    "homeScore": 2,
+    "awayScore": 0
+  },
+  {
+    "date": "2024-10-23",
+    "home": "Cienciano",
+    "away": "Alianza Atlético de Sullana",
+    "homeScore": 3,
+    "awayScore": 0
+  },
+  {
+    "date": "2024-10-24",
+    "home": "Carlos A. Mannucci",
+    "away": "Cusco FC",
+    "homeScore": 4,
+    "awayScore": 1
+  },
+  {
+    "date": "2024-10-24",
+    "home": "Club Sporting Cristal",
+    "away": "Universitario de Deportes",
+    "homeScore": 2,
+    "awayScore": 1
+  },
+  {
+    "date": "2024-10-24",
+    "home": "Comerciantes Unidos",
+    "away": "Sport Boys",
+    "homeScore": 0,
+    "awayScore": 0
+  },
+  {
+    "date": "2024-10-26",
+    "home": "Deportivo Garcilaso",
+    "away": "Alianza Lima",
+    "homeScore": 1,
+    "awayScore": 2
+  },
+  {
+    "date": "2024-10-27",
+    "home": "Universidad César Vallejo",
+    "away": "Carlos A. Mannucci",
+    "homeScore": 0,
+    "awayScore": 2
+  },
+  {
+    "date": "2024-10-27",
+    "home": "Sport Boys",
+    "away": "Universidad Técnica de Cajamarca",
+    "homeScore": 1,
+    "awayScore": 1
+  },
+  {
+    "date": "2024-10-27",
+    "home": "Unión Comercio",
+    "away": "Club Sporting Cristal",
+    "homeScore": 0,
+    "awayScore": 12
+  },
+  {
+    "date": "2024-10-27",
+    "home": "Sport Huancayo",
+    "away": "Melgar",
+    "homeScore": 2,
+    "awayScore": 4
+  },
+  {
+    "date": "2024-10-27",
+    "home": "Universitario de Deportes",
+    "away": "Cienciano",
+    "homeScore": 3,
+    "awayScore": 1
+  },
+  {
+    "date": "2024-10-28",
+    "home": "Alianza Atlético de Sullana",
+    "away": "Los Chankas CYC",
+    "homeScore": 1,
+    "awayScore": 0
+  },
+  {
+    "date": "2024-10-28",
+    "home": "Comerciantes Unidos",
+    "away": "Asociación Deportiva Tarma",
+    "homeScore": 0,
+    "awayScore": 0
+  },
+  {
+    "date": "2024-10-28",
+    "home": "Cusco FC",
+    "away": "Club Atlético Grau",
+    "homeScore": 0,
+    "awayScore": 1
+  },
+  {
+    "date": "2024-10-31",
+    "home": "Cienciano",
+    "away": "Unión Comercio",
+    "homeScore": 7,
+    "awayScore": 0
+  },
+  {
+    "date": "2024-11-01",
+    "home": "Asociación Deportiva Tarma",
+    "away": "Sport Boys",
+    "homeScore": 1,
+    "awayScore": 0
+  },
+  {
+    "date": "2024-11-02",
+    "home": "Carlos A. Mannucci",
+    "away": "Alianza Atlético de Sullana",
+    "homeScore": 2,
+    "awayScore": 2
+  },
+  {
+    "date": "2024-11-02",
+    "home": "Club Atlético Grau",
+    "away": "Universidad César Vallejo",
+    "homeScore": 3,
+    "awayScore": 1
+  },
+  {
+    "date": "2024-11-02",
+    "home": "Universidad Técnica de Cajamarca",
+    "away": "Sport Huancayo",
+    "homeScore": 1,
+    "awayScore": 1
+  },
+  {
+    "date": "2024-11-03",
+    "home": "Club Sporting Cristal",
+    "away": "Comerciantes Unidos",
+    "homeScore": 3,
+    "awayScore": 0
+  },
+  {
+    "date": "2024-11-03",
+    "home": "Alianza Lima",
+    "away": "Cusco FC",
+    "homeScore": 1,
+    "awayScore": 2
+  },
+  {
+    "date": "2024-11-03",
+    "home": "Los Chankas CYC",
+    "away": "Universitario de Deportes",
+    "homeScore": 0,
+    "awayScore": 0
+  },
+  {
+    "date": "2024-11-03",
+    "home": "Melgar",
+    "away": "Deportivo Garcilaso",
+    "homeScore": 1,
+    "awayScore": 1
+  },
+  {
+    "date": "2025-02-07",
+    "home": "Sport Huancayo",
+    "away": "Alianza Atlético de Sullana",
+    "homeScore": 2,
+    "awayScore": 1
+  },
+  {
+    "date": "2025-02-08",
+    "home": "Melgar",
+    "away": "Universidad Técnica de Cajamarca",
+    "homeScore": 3,
+    "awayScore": 0
+  },
+  {
+    "date": "2025-02-08",
+    "home": "Club Atlético Grau",
+    "away": "Ayacucho FC",
+    "homeScore": 1,
+    "awayScore": 0
+  },
+  {
+    "date": "2025-02-09",
+    "home": "Alianza Lima",
+    "away": "Cusco FC",
+    "homeScore": 3,
+    "awayScore": 0
+  },
+  {
+    "date": "2025-02-09",
+    "home": "Alianza Universidad",
+    "away": "Club Sporting Cristal",
+    "homeScore": 2,
+    "awayScore": 2
+  },
+  {
+    "date": "2025-02-09",
+    "home": "Sport Boys",
+    "away": "CD Juan Pablo II",
+    "homeScore": 1,
+    "awayScore": 0
+  },
+  {
+    "date": "2025-02-09",
+    "home": "Comerciantes Unidos",
+    "away": "Universitario de Deportes",
+    "homeScore": 1,
+    "awayScore": 1
+  },
+  {
+    "date": "2025-02-09",
+    "home": "Cienciano",
+    "away": "Asociación Deportiva Tarma",
+    "homeScore": 2,
+    "awayScore": 2
+  },
+  {
+    "date": "2025-02-10",
+    "home": "Los Chankas CYC",
+    "away": "Deportivo Garcilaso",
+    "homeScore": 2,
+    "awayScore": 2
+  },
+  {
+    "date": "2025-02-14",
+    "home": "Cusco FC",
+    "away": "Melgar",
+    "homeScore": 0,
+    "awayScore": 1
+  },
+  {
+    "date": "2025-02-15",
+    "home": "Universidad Técnica de Cajamarca",
+    "away": "Deportivo Binacional",
+    "homeScore": 0,
+    "awayScore": 4
+  },
+  {
+    "date": "2025-02-15",
+    "home": "Asociación Deportiva Tarma",
+    "away": "Club Atlético Grau",
+    "homeScore": 4,
+    "awayScore": 3
+  },
+  {
+    "date": "2025-02-15",
+    "home": "Alianza Atlético de Sullana",
+    "away": "Alianza Lima",
+    "homeScore": 3,
+    "awayScore": 1
+  },
+  {
+    "date": "2025-02-16",
+    "home": "Universitario de Deportes",
+    "away": "Cienciano",
+    "homeScore": 3,
+    "awayScore": 2
+  },
+  {
+    "date": "2025-02-16",
+    "home": "Club Sporting Cristal",
+    "away": "Sport Boys",
+    "homeScore": 2,
+    "awayScore": 1
+  },
+  {
+    "date": "2025-02-16",
+    "home": "CD Juan Pablo II",
+    "away": "Sport Huancayo",
+    "homeScore": 0,
+    "awayScore": 1
+  },
+  {
+    "date": "2025-02-16",
+    "home": "Deportivo Garcilaso",
+    "away": "Comerciantes Unidos",
+    "homeScore": 2,
+    "awayScore": 1
+  },
+  {
+    "date": "2025-02-17",
+    "home": "Ayacucho FC",
+    "away": "Alianza Universidad",
+    "homeScore": 3,
+    "awayScore": 2
+  },
+  {
+    "date": "2025-02-22",
+    "home": "Alianza Lima",
+    "away": "CD Juan Pablo II",
+    "homeScore": 1,
+    "awayScore": 0
+  },
+  {
+    "date": "2025-02-22",
+    "home": "Comerciantes Unidos",
+    "away": "Los Chankas CYC",
+    "homeScore": 1,
+    "awayScore": 1
+  },
+  {
+    "date": "2025-02-22",
+    "home": "Sport Boys",
+    "away": "Ayacucho FC",
+    "homeScore": 2,
+    "awayScore": 1
+  },
+  {
+    "date": "2025-02-22",
+    "home": "Sport Huancayo",
+    "away": "Club Sporting Cristal",
+    "homeScore": 0,
+    "awayScore": 1
+  },
+  {
+    "date": "2025-02-23",
+    "home": "Cienciano",
+    "away": "Deportivo Garcilaso",
+    "homeScore": 2,
+    "awayScore": 3
+  },
+  {
+    "date": "2025-02-23",
+    "home": "Alianza Universidad",
+    "away": "Asociación Deportiva Tarma",
+    "homeScore": 2,
+    "awayScore": 3
+  },
+  {
+    "date": "2025-02-23",
+    "home": "Club Atlético Grau",
+    "away": "Universitario de Deportes",
+    "homeScore": 0,
+    "awayScore": 0
+  },
+  {
+    "date": "2025-02-24",
+    "home": "Melgar",
+    "away": "Alianza Atlético de Sullana",
+    "homeScore": 2,
+    "awayScore": 1
+  },
+  {
+    "date": "2025-02-24",
+    "home": "Deportivo Binacional",
+    "away": "Cusco FC",
+    "homeScore": 1,
+    "awayScore": 2
+  },
+  {
+    "date": "2025-06-26",
+    "home": "Club Atlético Grau",
+    "away": "Universitario de Deportes",
+    "homeScore": 0,
+    "awayScore": 2
+  },
+  {
+    "date": "2025-02-27",
+    "home": "Los Chankas CYC",
+    "away": "Cienciano",
+    "homeScore": 0,
+    "awayScore": 0
+  },
+  {
+    "date": "2025-02-27",
+    "home": "Asociación Deportiva Tarma",
+    "away": "Sport Boys",
+    "homeScore": 2,
+    "awayScore": 2
+  },
+  {
+    "date": "2025-02-28",
+    "home": "Deportivo Garcilaso",
+    "away": "Club Atlético Grau",
+    "homeScore": 2,
+    "awayScore": 0
+  },
+  {
+    "date": "2025-03-01",
+    "home": "Cusco FC",
+    "away": "Universidad Técnica de Cajamarca",
+    "homeScore": 1,
+    "awayScore": 1
+  },
+  {
+    "date": "2025-03-01",
+    "home": "Alianza Atlético de Sullana",
+    "away": "Deportivo Binacional",
+    "homeScore": 4,
+    "awayScore": 1
+  },
+  {
+    "date": "2025-03-02",
+    "home": "Club Sporting Cristal",
+    "away": "Alianza Lima",
+    "homeScore": 1,
+    "awayScore": 2
+  },
+  {
+    "date": "2025-03-02",
+    "home": "Ayacucho FC",
+    "away": "Sport Huancayo",
+    "homeScore": 1,
+    "awayScore": 1
+  },
+  {
+    "date": "2025-03-02",
+    "home": "Universitario de Deportes",
+    "away": "Alianza Universidad",
+    "homeScore": 4,
+    "awayScore": 0
+  },
+  {
+    "date": "2025-03-23",
+    "home": "Los Chankas CYC",
+    "away": "Cienciano",
+    "homeScore": 0,
+    "awayScore": 0
+  },
+  {
+    "date": "2025-06-08",
+    "home": "CD Juan Pablo II",
+    "away": "Melgar",
+    "homeScore": 0,
+    "awayScore": 0
+  },
+  {
+    "date": "2025-07-02",
+    "home": "CD Juan Pablo II",
+    "away": "Melgar",
+    "homeScore": 1,
+    "awayScore": 1
+  },
+  {
+    "date": "2025-03-07",
+    "home": "Alianza Universidad",
+    "away": "Deportivo Garcilaso",
+    "homeScore": 0,
+    "awayScore": 0
+  },
+  {
+    "date": "2025-03-08",
+    "home": "Alianza Lima",
+    "away": "Ayacucho FC",
+    "homeScore": 2,
+    "awayScore": 0
+  },
+  {
+    "date": "2025-03-08",
+    "home": "Universidad Técnica de Cajamarca",
+    "away": "Alianza Atlético de Sullana",
+    "homeScore": 0,
+    "awayScore": 0
+  },
+  {
+    "date": "2025-03-08",
+    "home": "Sport Huancayo",
+    "away": "Asociación Deportiva Tarma",
+    "homeScore": 2,
+    "awayScore": 1
+  },
+  {
+    "date": "2025-03-08",
+    "home": "Melgar",
+    "away": "Club Sporting Cristal",
+    "homeScore": 1,
+    "awayScore": 0
+  },
+  {
+    "date": "2025-03-09",
+    "home": "Sport Boys",
+    "away": "Universitario de Deportes",
+    "homeScore": 0,
+    "awayScore": 2
+  },
+  {
+    "date": "2025-03-10",
+    "home": "Cienciano",
+    "away": "Comerciantes Unidos",
+    "homeScore": 3,
+    "awayScore": 2
+  },
+  {
+    "date": "2025-03-10",
+    "home": "Club Atlético Grau",
+    "away": "Los Chankas CYC",
+    "homeScore": 2,
+    "awayScore": 1
+  },
+  {
+    "date": "2025-03-10",
+    "home": "Deportivo Binacional",
+    "away": "CD Juan Pablo II",
+    "homeScore": 2,
+    "awayScore": 0
+  },
+  {
+    "date": "2025-03-27",
+    "home": "Comerciantes Unidos",
+    "away": "Club Atlético Grau",
+    "homeScore": 2,
+    "awayScore": 2
+  },
+  {
+    "date": "2025-03-27",
+    "home": "Ayacucho FC",
+    "away": "Melgar",
+    "homeScore": 2,
+    "awayScore": 3
+  },
+  {
+    "date": "2025-03-28",
+    "home": "Alianza Atlético de Sullana",
+    "away": "Cusco FC",
+    "homeScore": 2,
+    "awayScore": 4
+  },
+  {
+    "date": "2025-03-29",
+    "home": "Universitario de Deportes",
+    "away": "Sport Huancayo",
+    "homeScore": 3,
+    "awayScore": 1
+  },
+  {
+    "date": "2025-03-29",
+    "home": "Asociación Deportiva Tarma",
+    "away": "Alianza Lima",
+    "homeScore": 3,
+    "awayScore": 0
+  },
+  {
+    "date": "2025-03-29",
+    "home": "Club Sporting Cristal",
+    "away": "Deportivo Binacional",
+    "homeScore": 5,
+    "awayScore": 0
+  },
+  {
+    "date": "2025-03-29",
+    "home": "Deportivo Garcilaso",
+    "away": "Sport Boys",
+    "homeScore": 4,
+    "awayScore": 0
+  },
+  {
+    "date": "2025-03-30",
+    "home": "Los Chankas CYC",
+    "away": "Alianza Universidad",
+    "homeScore": 3,
+    "awayScore": 1
+  },
+  {
+    "date": "2025-03-30",
+    "home": "CD Juan Pablo II",
+    "away": "Universidad Técnica de Cajamarca",
+    "homeScore": 4,
+    "awayScore": 2
+  },
+  {
+    "date": "2025-04-04",
+    "home": "Deportivo Binacional",
+    "away": "Ayacucho FC",
+    "homeScore": 1,
+    "awayScore": 1
+  },
+  {
+    "date": "2025-04-05",
+    "home": "Sport Huancayo",
+    "away": "Deportivo Garcilaso",
+    "homeScore": 0,
+    "awayScore": 3
+  },
+  {
+    "date": "2025-04-05",
+    "home": "Club Atlético Grau",
+    "away": "Cienciano",
+    "homeScore": 1,
+    "awayScore": 1
+  },
+  {
+    "date": "2025-04-05",
+    "home": "Melgar",
+    "away": "Asociación Deportiva Tarma",
+    "homeScore": 4,
+    "awayScore": 0
+  },
+  {
+    "date": "2025-04-06",
+    "home": "Alianza Lima",
+    "away": "Universitario de Deportes",
+    "homeScore": 1,
+    "awayScore": 1
+  },
+  {
+    "date": "2025-04-06",
+    "home": "Cusco FC",
+    "away": "CD Juan Pablo II",
+    "homeScore": 4,
+    "awayScore": 2
+  },
+  {
+    "date": "2025-04-06",
+    "home": "Sport Boys",
+    "away": "Los Chankas CYC",
+    "homeScore": 1,
+    "awayScore": 1
+  },
+  {
+    "date": "2025-04-06",
+    "home": "Universidad Técnica de Cajamarca",
+    "away": "Club Sporting Cristal",
+    "homeScore": 4,
+    "awayScore": 1
+  },
+  {
+    "date": "2025-04-06",
+    "home": "Alianza Universidad",
+    "away": "Comerciantes Unidos",
+    "homeScore": 0,
+    "awayScore": 2
+  },
+  {
+    "date": "2025-04-11",
+    "home": "Ayacucho FC",
+    "away": "Universidad Técnica de Cajamarca",
+    "homeScore": 0,
+    "awayScore": 1
+  },
+  {
+    "date": "2025-04-11",
+    "home": "Los Chankas CYC",
+    "away": "Sport Huancayo",
+    "homeScore": 1,
+    "awayScore": 3
+  },
+  {
+    "date": "2025-04-12",
+    "home": "CD Juan Pablo II",
+    "away": "Alianza Atlético de Sullana",
+    "homeScore": 1,
+    "awayScore": 0
+  },
+  {
+    "date": "2025-04-13",
+    "home": "Cienciano",
+    "away": "Alianza Universidad",
+    "homeScore": 0,
+    "awayScore": 1
+  },
+  {
+    "date": "2025-04-13",
+    "home": "Club Sporting Cristal",
+    "away": "Cusco FC",
+    "homeScore": 1,
+    "awayScore": 0
+  },
+  {
+    "date": "2025-04-13",
+    "home": "Comerciantes Unidos",
+    "away": "Sport Boys",
+    "homeScore": 0,
+    "awayScore": 4
+  },
+  {
+    "date": "2025-04-13",
+    "home": "Asociación Deportiva Tarma",
+    "away": "Deportivo Binacional",
+    "homeScore": 1,
+    "awayScore": 1
+  },
+  {
+    "date": "2025-04-14",
+    "home": "Universitario de Deportes",
+    "away": "Melgar",
+    "homeScore": 4,
+    "awayScore": 1
+  },
+  {
+    "date": "2025-04-15",
+    "home": "Deportivo Garcilaso",
+    "away": "Alianza Lima",
+    "homeScore": 0,
+    "awayScore": 1
+  },
+  {
+    "date": "2025-04-18",
+    "home": "Alianza Universidad",
+    "away": "Club Atlético Grau",
+    "homeScore": 0,
+    "awayScore": 0
+  },
+  {
+    "date": "2025-04-18",
+    "home": "Melgar",
+    "away": "Deportivo Garcilaso",
+    "homeScore": 1,
+    "awayScore": 2
+  },
+  {
+    "date": "2025-04-18",
+    "home": "Deportivo Binacional",
+    "away": "Universitario de Deportes",
+    "homeScore": 1,
+    "awayScore": 3
+  },
+  {
+    "date": "2025-04-19",
+    "home": "Alianza Lima",
+    "away": "Los Chankas CYC",
+    "homeScore": 1,
+    "awayScore": 0
+  },
+  {
+    "date": "2025-04-19",
+    "home": "Sport Boys",
+    "away": "Cienciano",
+    "homeScore": 2,
+    "awayScore": 2
+  },
+  {
+    "date": "2025-04-19",
+    "home": "Alianza Atlético de Sullana",
+    "away": "Club Sporting Cristal",
+    "homeScore": 1,
+    "awayScore": 0
+  },
+  {
+    "date": "2025-04-20",
+    "home": "Cusco FC",
+    "away": "Ayacucho FC",
+    "homeScore": 3,
+    "awayScore": 0
+  },
+  {
+    "date": "2025-04-20",
+    "home": "Universidad Técnica de Cajamarca",
+    "away": "Asociación Deportiva Tarma",
+    "homeScore": 0,
+    "awayScore": 1
+  },
+  {
+    "date": "2025-04-20",
+    "home": "Sport Huancayo",
+    "away": "Comerciantes Unidos",
+    "homeScore": 4,
+    "awayScore": 2
+  },
+  {
+    "date": "2025-04-26",
+    "home": "Ayacucho FC",
+    "away": "Alianza Atlético de Sullana",
+    "homeScore": 0,
+    "awayScore": 2
+  },
+  {
+    "date": "2025-04-26",
+    "home": "Comerciantes Unidos",
+    "away": "Alianza Lima",
+    "homeScore": 0,
+    "awayScore": 0
+  },
+  {
+    "date": "2025-04-26",
+    "home": "Deportivo Garcilaso",
+    "away": "Deportivo Binacional",
+    "homeScore": 0,
+    "awayScore": 1
+  },
+  {
+    "date": "2025-04-27",
+    "home": "Los Chankas CYC",
+    "away": "Melgar",
+    "homeScore": 1,
+    "awayScore": 1
+  },
+  {
+    "date": "2025-04-27",
+    "home": "Club Atlético Grau",
+    "away": "Sport Boys",
+    "homeScore": 3,
+    "awayScore": 3
+  },
+  {
+    "date": "2025-04-27",
+    "home": "Universitario de Deportes",
+    "away": "Universidad Técnica de Cajamarca",
+    "homeScore": 6,
+    "awayScore": 0
+  },
+  {
+    "date": "2025-04-28",
+    "home": "Club Sporting Cristal",
+    "away": "CD Juan Pablo II",
+    "homeScore": 3,
+    "awayScore": 2
+  },
+  {
+    "date": "2025-04-28",
+    "home": "Asociación Deportiva Tarma",
+    "away": "Cusco FC",
+    "homeScore": 2,
+    "awayScore": 1
+  },
+  {
+    "date": "2025-04-29",
+    "home": "Cienciano",
+    "away": "Sport Huancayo",
+    "homeScore": 2,
+    "awayScore": 1
+  },
+  {
+    "date": "2025-06-19",
+    "home": "Comerciantes Unidos",
+    "away": "Alianza Lima",
+    "homeScore": 0,
+    "awayScore": 1
+  },
+  {
+    "date": "2025-05-02",
+    "home": "Melgar",
+    "away": "Comerciantes Unidos",
+    "homeScore": 1,
+    "awayScore": 1
+  },
+  {
+    "date": "2025-05-02",
+    "home": "Sport Huancayo",
+    "away": "Club Atlético Grau",
+    "homeScore": 3,
+    "awayScore": 0
+  },
+  {
+    "date": "2025-05-03",
+    "home": "Alianza Lima",
+    "away": "Cienciano",
+    "homeScore": 0,
+    "awayScore": 1
+  },
+  {
+    "date": "2025-05-03",
+    "home": "Universidad Técnica de Cajamarca",
+    "away": "Deportivo Garcilaso",
+    "homeScore": 2,
+    "awayScore": 1
+  },
+  {
+    "date": "2025-05-03",
+    "home": "CD Juan Pablo II",
+    "away": "Ayacucho FC",
+    "homeScore": 0,
+    "awayScore": 0
+  },
+  {
+    "date": "2025-05-03",
+    "home": "Cusco FC",
+    "away": "Universitario de Deportes",
+    "homeScore": 2,
+    "awayScore": 0
+  },
+  {
+    "date": "2025-05-04",
+    "home": "Sport Boys",
+    "away": "Alianza Universidad",
+    "homeScore": 4,
+    "awayScore": 2
+  },
+  {
+    "date": "2025-05-04",
+    "home": "Alianza Atlético de Sullana",
+    "away": "Asociación Deportiva Tarma",
+    "homeScore": 2,
+    "awayScore": 0
+  },
+  {
+    "date": "2025-05-04",
+    "home": "Deportivo Binacional",
+    "away": "Los Chankas CYC",
+    "homeScore": 1,
+    "awayScore": 2
+  },
+  {
+    "date": "2025-05-09",
+    "home": "Comerciantes Unidos",
+    "away": "Deportivo Binacional",
+    "homeScore": 1,
+    "awayScore": 1
+  },
+  {
+    "date": "2025-05-10",
+    "home": "Ayacucho FC",
+    "away": "Club Sporting Cristal",
+    "homeScore": 1,
+    "awayScore": 4
+  },
+  {
+    "date": "2025-05-10",
+    "home": "Club Atlético Grau",
+    "away": "Alianza Lima",
+    "homeScore": 1,
+    "awayScore": 1
+  },
+  {
+    "date": "2025-05-11",
+    "home": "Cienciano",
+    "away": "Melgar",
+    "homeScore": 1,
+    "awayScore": 2
+  },
+  {
+    "date": "2025-05-11",
+    "home": "Los Chankas CYC",
+    "away": "Universidad Técnica de Cajamarca",
+    "homeScore": 2,
+    "awayScore": 1
+  },
+  {
+    "date": "2025-05-11",
+    "home": "Asociación Deportiva Tarma",
+    "away": "CD Juan Pablo II",
+    "homeScore": 2,
+    "awayScore": 2
+  },
+  {
+    "date": "2025-05-11",
+    "home": "Deportivo Garcilaso",
+    "away": "Cusco FC",
+    "homeScore": 1,
+    "awayScore": 3
+  },
+  {
+    "date": "2025-05-11",
+    "home": "Universitario de Deportes",
+    "away": "Alianza Atlético de Sullana",
+    "homeScore": 0,
+    "awayScore": 1
+  },
+  {
+    "date": "2025-05-12",
+    "home": "Alianza Universidad",
+    "away": "Sport Huancayo",
+    "homeScore": 0,
+    "awayScore": 1
+  },
+  {
+    "date": "2025-05-16",
+    "home": "Alianza Atlético de Sullana",
+    "away": "Deportivo Garcilaso",
+    "homeScore": 1,
+    "awayScore": 0
+  },
+  {
+    "date": "2025-05-17",
+    "home": "Universidad Técnica de Cajamarca",
+    "away": "Comerciantes Unidos",
+    "homeScore": 2,
+    "awayScore": 0
+  },
+  {
+    "date": "2025-05-17",
+    "home": "Club Sporting Cristal",
+    "away": "Asociación Deportiva Tarma",
+    "homeScore": 2,
+    "awayScore": 1
+  },
+  {
+    "date": "2025-05-17",
+    "home": "Cusco FC",
+    "away": "Los Chankas CYC",
+    "homeScore": 3,
+    "awayScore": 3
+  },
+  {
+    "date": "2025-05-18",
+    "home": "Sport Huancayo",
+    "away": "Sport Boys",
+    "homeScore": 1,
+    "awayScore": 0
+  },
+  {
+    "date": "2025-05-18",
+    "home": "CD Juan Pablo II",
+    "away": "Universitario de Deportes",
+    "homeScore": 2,
+    "awayScore": 0
+  },
+  {
+    "date": "2025-05-18",
+    "home": "Melgar",
+    "away": "Club Atlético Grau",
+    "homeScore": 1,
+    "awayScore": 1
+  },
+  {
+    "date": "2025-05-19",
+    "home": "Deportivo Binacional",
+    "away": "Cienciano",
+    "homeScore": 1,
+    "awayScore": 1
+  },
+  {
+    "date": "2025-05-20",
+    "home": "Alianza Lima",
+    "away": "Alianza Universidad",
+    "homeScore": 2,
+    "awayScore": 0
+  },
+  {
+    "date": "2025-05-23",
+    "home": "Universitario de Deportes",
+    "away": "Club Sporting Cristal",
+    "homeScore": 2,
+    "awayScore": 0
+  },
+  {
+    "date": "2025-05-23",
+    "home": "Alianza Universidad",
+    "away": "Melgar",
+    "homeScore": 1,
+    "awayScore": 1
+  },
+  {
+    "date": "2025-05-24",
+    "home": "Sport Boys",
+    "away": "Alianza Lima",
+    "homeScore": 0,
+    "awayScore": 1
+  },
+  {
+    "date": "2025-05-24",
+    "home": "Comerciantes Unidos",
+    "away": "Cusco FC",
+    "homeScore": 1,
+    "awayScore": 2
+  },
+  {
+    "date": "2025-05-24",
+    "home": "Club Atlético Grau",
+    "away": "Deportivo Binacional",
+    "homeScore": 3,
+    "awayScore": 0
+  },
+  {
+    "date": "2025-05-24",
+    "home": "Cienciano",
+    "away": "Universidad Técnica de Cajamarca",
+    "homeScore": 6,
+    "awayScore": 1
+  },
+  {
+    "date": "2025-05-25",
+    "home": "Asociación Deportiva Tarma",
+    "away": "Ayacucho FC",
+    "homeScore": 0,
+    "awayScore": 1
+  },
+  {
+    "date": "2025-05-25",
+    "home": "Deportivo Garcilaso",
+    "away": "CD Juan Pablo II",
+    "homeScore": 4,
+    "awayScore": 0
+  },
+  {
+    "date": "2025-06-01",
+    "home": "Los Chankas CYC",
+    "away": "Alianza Atlético de Sullana",
+    "homeScore": 1,
+    "awayScore": 2
+  },
+  {
+    "date": "2025-06-12",
+    "home": "Alianza Atlético de Sullana",
+    "away": "Comerciantes Unidos",
+    "homeScore": 3,
+    "awayScore": 0
+  },
+  {
+    "date": "2025-06-13",
+    "home": "Universidad Técnica de Cajamarca",
+    "away": "Club Atlético Grau",
+    "homeScore": 0,
+    "awayScore": 2
+  },
+  {
+    "date": "2025-06-14",
+    "home": "Cusco FC",
+    "away": "Cienciano",
+    "homeScore": 0,
+    "awayScore": 0
+  },
+  {
+    "date": "2025-06-14",
+    "home": "Melgar",
+    "away": "Sport Boys",
+    "homeScore": 2,
+    "awayScore": 1
+  },
+  {
+    "date": "2025-06-14",
+    "home": "CD Juan Pablo II",
+    "away": "Los Chankas CYC",
+    "homeScore": 3,
+    "awayScore": 0
+  },
+  {
+    "date": "2025-06-15",
+    "home": "Alianza Lima",
+    "away": "Sport Huancayo",
+    "homeScore": 0,
+    "awayScore": 0
+  },
+  {
+    "date": "2025-06-15",
+    "home": "Club Sporting Cristal",
+    "away": "Deportivo Garcilaso",
+    "homeScore": 3,
+    "awayScore": 2
+  },
+  {
+    "date": "2025-06-15",
+    "home": "Ayacucho FC",
+    "away": "Universitario de Deportes",
+    "homeScore": 0,
+    "awayScore": 1
+  },
+  {
+    "date": "2025-06-15",
+    "home": "Deportivo Binacional",
+    "away": "Alianza Universidad",
+    "homeScore": 1,
+    "awayScore": 1
+  },
+  {
+    "date": "2025-06-19",
+    "home": "Club Atlético Grau",
+    "away": "Cusco FC",
+    "homeScore": 0,
+    "awayScore": 0
+  },
+  {
+    "date": "2025-06-20",
+    "home": "Alianza Universidad",
+    "away": "Universidad Técnica de Cajamarca",
+    "homeScore": 1,
+    "awayScore": 2
+  },
+  {
+    "date": "2025-06-21",
+    "home": "Universitario de Deportes",
+    "away": "Asociación Deportiva Tarma",
+    "homeScore": 5,
+    "awayScore": 0
+  },
+  {
+    "date": "2025-06-21",
+    "home": "Sport Huancayo",
+    "away": "Melgar",
+    "homeScore": 2,
+    "awayScore": 2
+  },
+  {
+    "date": "2025-06-21",
+    "home": "Los Chankas CYC",
+    "away": "Club Sporting Cristal",
+    "homeScore": 3,
+    "awayScore": 1
+  },
+  {
+    "date": "2025-06-22",
+    "home": "Deportivo Garcilaso",
+    "away": "Ayacucho FC",
+    "homeScore": 2,
+    "awayScore": 1
+  },
+  {
+    "date": "2025-06-22",
+    "home": "Sport Boys",
+    "away": "Deportivo Binacional",
+    "homeScore": 3,
+    "awayScore": 1
+  },
+  {
+    "date": "2025-06-22",
+    "home": "Comerciantes Unidos",
+    "away": "CD Juan Pablo II",
+    "homeScore": 3,
+    "awayScore": 0
+  },
+  {
+    "date": "2025-06-22",
+    "home": "Cienciano",
+    "away": "Alianza Atlético de Sullana",
+    "homeScore": 3,
+    "awayScore": 2
+  },
+  {
+    "date": "2025-06-27",
+    "home": "Ayacucho FC",
+    "away": "Los Chankas CYC",
+    "homeScore": 1,
+    "awayScore": 2
+  },
+  {
+    "date": "2025-06-27",
+    "home": "CD Juan Pablo II",
+    "away": "Cienciano",
+    "homeScore": 2,
+    "awayScore": 2
+  },
+  {
+    "date": "2025-06-27",
+    "home": "Deportivo Binacional",
+    "away": "Sport Huancayo",
+    "homeScore": 1,
+    "awayScore": 0
+  },
+  {
+    "date": "2025-06-28",
+    "home": "Asociación Deportiva Tarma",
+    "away": "Deportivo Garcilaso",
+    "homeScore": 0,
+    "awayScore": 0
+  },
+  {
+    "date": "2025-06-28",
+    "home": "Universidad Técnica de Cajamarca",
+    "away": "Sport Boys",
+    "homeScore": 1,
+    "awayScore": 1
+  },
+  {
+    "date": "2025-06-28",
+    "home": "Melgar",
+    "away": "Alianza Lima",
+    "homeScore": 0,
+    "awayScore": 1
+  },
+  {
+    "date": "2025-06-29",
+    "home": "Club Sporting Cristal",
+    "away": "Comerciantes Unidos",
+    "homeScore": 2,
+    "awayScore": 0
+  },
+  {
+    "date": "2025-06-29",
+    "home": "Alianza Atlético de Sullana",
+    "away": "Club Atlético Grau",
+    "homeScore": 2,
+    "awayScore": 1
+  },
+  {
+    "date": "2025-06-29",
+    "home": "Cusco FC",
+    "away": "Alianza Universidad",
+    "homeScore": 4,
+    "awayScore": 1
+  },
+  {
+    "date": "2025-07-04",
+    "home": "Sport Huancayo",
+    "away": "Universidad Técnica de Cajamarca",
+    "homeScore": 1,
+    "awayScore": 0
+  },
+  {
+    "date": "2025-07-04",
+    "home": "Los Chankas CYC",
+    "away": "Asociación Deportiva Tarma",
+    "homeScore": 1,
+    "awayScore": 1
+  },
+  {
+    "date": "2025-07-05",
+    "home": "Comerciantes Unidos",
+    "away": "Ayacucho FC",
+    "homeScore": 0,
+    "awayScore": 1
+  },
+  {
+    "date": "2025-07-05",
+    "home": "Cienciano",
+    "away": "Club Sporting Cristal",
+    "homeScore": 1,
+    "awayScore": 1
+  },
+  {
+    "date": "2025-07-05",
+    "home": "Alianza Universidad",
+    "away": "Alianza Atlético de Sullana",
+    "homeScore": 2,
+    "awayScore": 0
+  },
+  {
+    "date": "2025-07-06",
+    "home": "Alianza Lima",
+    "away": "Deportivo Binacional",
+    "homeScore": 5,
+    "awayScore": 1
+  },
+  {
+    "date": "2025-07-06",
+    "home": "Sport Boys",
+    "away": "Cusco FC",
+    "homeScore": 1,
+    "awayScore": 2
+  },
+  {
+    "date": "2025-07-06",
+    "home": "Club Atlético Grau",
+    "away": "CD Juan Pablo II",
+    "homeScore": 2,
+    "awayScore": 0
+  },
+  {
+    "date": "2025-07-06",
+    "home": "Deportivo Garcilaso",
+    "away": "Universitario de Deportes",
+    "homeScore": 0,
+    "awayScore": 1
+  },
+  {
+    "date": "2025-07-11",
+    "home": "Asociación Deportiva Tarma",
+    "away": "Comerciantes Unidos",
+    "homeScore": 1,
+    "awayScore": 0
+  },
+  {
+    "date": "2025-07-12",
+    "home": "Deportivo Binacional",
+    "away": "Melgar",
+    "homeScore": 1,
+    "awayScore": 1
+  },
+  {
+    "date": "2025-07-12",
+    "home": "Universidad Técnica de Cajamarca",
+    "away": "Alianza Lima",
+    "homeScore": 0,
+    "awayScore": 0
+  },
+  {
+    "date": "2025-07-12",
+    "home": "Universitario de Deportes",
+    "away": "Los Chankas CYC",
+    "homeScore": 0,
+    "awayScore": 0
+  },
+  {
+    "date": "2025-07-12",
+    "home": "Alianza Atlético de Sullana",
+    "away": "Sport Boys",
+    "homeScore": 1,
+    "awayScore": 0
+  },
+  {
+    "date": "2025-07-13",
+    "home": "Club Sporting Cristal",
+    "away": "Club Atlético Grau",
+    "homeScore": 2,
+    "awayScore": 1
+  },
+  {
+    "date": "2025-07-13",
+    "home": "Ayacucho FC",
+    "away": "Cienciano",
+    "homeScore": 1,
+    "awayScore": 0
+  },
+  {
+    "date": "2025-07-13",
+    "home": "CD Juan Pablo II",
+    "away": "Alianza Universidad",
+    "homeScore": 1,
+    "awayScore": 0
+  },
+  {
+    "date": "2025-07-13",
+    "home": "Cusco FC",
+    "away": "Sport Huancayo",
+    "homeScore": 3,
+    "awayScore": 0
+  },
+  {
+    "date": "2025-07-18",
+    "home": "Alianza Atlético de Sullana",
+    "away": "Sport Huancayo",
+    "homeScore": 0,
+    "awayScore": 0
+  },
+  {
+    "date": "2025-07-19",
+    "home": "Deportivo Garcilaso",
+    "away": "Los Chankas CYC",
+    "homeScore": 3,
+    "awayScore": 0
+  },
+  {
+    "date": "2025-07-19",
+    "home": "Universitario de Deportes",
+    "away": "Comerciantes Unidos",
+    "homeScore": 3,
+    "awayScore": 1
+  },
+  {
+    "date": "2025-07-19",
+    "home": "Universidad Técnica de Cajamarca",
+    "away": "Melgar",
+    "homeScore": 1,
+    "awayScore": 2
+  },
+  {
+    "date": "2025-07-19",
+    "home": "Asociación Deportiva Tarma",
+    "away": "Cienciano",
+    "homeScore": 1,
+    "awayScore": 0
+  },
+  {
+    "date": "2025-07-19",
+    "home": "Cusco FC",
+    "away": "Alianza Lima",
+    "homeScore": 2,
+    "awayScore": 0
+  },
+  {
+    "date": "2025-07-20",
+    "home": "Club Sporting Cristal",
+    "away": "Alianza Universidad",
+    "homeScore": 3,
+    "awayScore": 0
+  },
+  {
+    "date": "2025-07-20",
+    "home": "Ayacucho FC",
+    "away": "Club Atlético Grau",
+    "homeScore": 1,
+    "awayScore": 2
+  },
+  {
+    "date": "2025-07-20",
+    "home": "CD Juan Pablo II",
+    "away": "Sport Boys",
+    "homeScore": 3,
+    "awayScore": 0
+  },
+  {
+    "date": "2025-07-25",
+    "home": "Sport Huancayo",
+    "away": "CD Juan Pablo II",
+    "homeScore": 5,
+    "awayScore": 1
+  },
+  {
+    "date": "2025-07-25",
+    "home": "Deportivo Binacional",
+    "away": "Universidad Técnica de Cajamarca",
+    "homeScore": 0,
+    "awayScore": 0
+  },
+  {
+    "date": "2025-07-26",
+    "home": "Alianza Universidad",
+    "away": "Ayacucho FC",
+    "homeScore": 1,
+    "awayScore": 2
+  },
+  {
+    "date": "2025-07-26",
+    "home": "Club Atlético Grau",
+    "away": "Asociación Deportiva Tarma",
+    "homeScore": 0,
+    "awayScore": 0
+  },
+  {
+    "date": "2025-07-26",
+    "home": "Sport Boys",
+    "away": "Club Sporting Cristal",
+    "homeScore": 0,
+    "awayScore": 2
+  },
+  {
+    "date": "2025-07-26",
+    "home": "Cienciano",
+    "away": "Universitario de Deportes",
+    "homeScore": 1,
+    "awayScore": 1
+  },
+  {
+    "date": "2025-07-27",
+    "home": "Melgar",
+    "away": "Cusco FC",
+    "homeScore": 0,
+    "awayScore": 2
+  },
+  {
+    "date": "2025-07-27",
+    "home": "Comerciantes Unidos",
+    "away": "Deportivo Garcilaso",
+    "homeScore": 0,
+    "awayScore": 0
+  },
+  {
+    "date": "2025-07-27",
+    "home": "Alianza Lima",
+    "away": "Alianza Atlético de Sullana",
+    "homeScore": 1,
+    "awayScore": 1
+  },
+  {
+    "date": "2025-08-31",
+    "home": "Club Atlético Grau",
+    "away": "Asociación Deportiva Tarma",
+    "homeScore": 2,
+    "awayScore": 0
+  },
+  {
+    "date": "2025-07-30",
+    "home": "Ayacucho FC",
+    "away": "Sport Boys",
+    "homeScore": 0,
+    "awayScore": 0
+  },
+  {
+    "date": "2025-07-30",
+    "home": "Club Sporting Cristal",
+    "away": "Sport Huancayo",
+    "homeScore": 5,
+    "awayScore": 0
+  },
+  {
+    "date": "2025-07-31",
+    "home": "Asociación Deportiva Tarma",
+    "away": "Alianza Universidad",
+    "homeScore": 0,
+    "awayScore": 3
+  },
+  {
+    "date": "2025-07-31",
+    "home": "Cusco FC",
+    "away": "Deportivo Binacional",
+    "homeScore": 2,
+    "awayScore": 0
+  },
+  {
+    "date": "2025-08-01",
+    "home": "CD Juan Pablo II",
+    "away": "Alianza Lima",
+    "homeScore": 1,
+    "awayScore": 2
+  },
+  {
+    "date": "2025-08-01",
+    "home": "Universitario de Deportes",
+    "away": "Club Atlético Grau",
+    "homeScore": 3,
+    "awayScore": 1
+  },
+  {
+    "date": "2025-08-01",
+    "home": "Los Chankas CYC",
+    "away": "Comerciantes Unidos",
+    "homeScore": 3,
+    "awayScore": 2
+  },
+  {
+    "date": "2025-08-01",
+    "home": "Alianza Atlético de Sullana",
+    "away": "Melgar",
+    "homeScore": 0,
+    "awayScore": 0
+  },
+  {
+    "date": "2025-08-02",
+    "home": "Deportivo Garcilaso",
+    "away": "Cienciano",
+    "homeScore": 2,
+    "awayScore": 1
+  },
+  {
+    "date": "2025-08-03",
+    "home": "Sport Huancayo",
+    "away": "Ayacucho FC",
+    "homeScore": 3,
+    "awayScore": 1
+  },
+  {
+    "date": "2025-08-04",
+    "home": "Universidad Técnica de Cajamarca",
+    "away": "Cusco FC",
+    "homeScore": 1,
+    "awayScore": 2
+  },
+  {
+    "date": "2025-08-04",
+    "home": "Sport Boys",
+    "away": "Asociación Deportiva Tarma",
+    "homeScore": 1,
+    "awayScore": 0
+  },
+  {
+    "date": "2025-08-05",
+    "home": "Cienciano",
+    "away": "Los Chankas CYC",
+    "homeScore": 3,
+    "awayScore": 0
+  },
+  {
+    "date": "2025-08-05",
+    "home": "Alianza Universidad",
+    "away": "Universitario de Deportes",
+    "homeScore": 0,
+    "awayScore": 2
+  },
+  {
+    "date": "2025-08-05",
+    "home": "Melgar",
+    "away": "CD Juan Pablo II",
+    "homeScore": 1,
+    "awayScore": 1
+  },
+  {
+    "date": "2025-08-06",
+    "home": "Alianza Lima",
+    "away": "Club Sporting Cristal",
+    "homeScore": 0,
+    "awayScore": 0
+  },
+  {
+    "date": "2025-08-06",
+    "home": "Club Atlético Grau",
+    "away": "Deportivo Garcilaso",
+    "homeScore": 1,
+    "awayScore": 1
+  },
+  {
+    "date": "2025-08-06",
+    "home": "Deportivo Binacional",
+    "away": "Alianza Atlético de Sullana",
+    "homeScore": 2,
+    "awayScore": 0
+  },
+  {
+    "date": "2025-08-08",
+    "home": "Comerciantes Unidos",
+    "away": "Cienciano",
+    "homeScore": 1,
+    "awayScore": 1
+  },
+  {
+    "date": "2025-08-09",
+    "home": "Ayacucho FC",
+    "away": "Alianza Lima",
+    "homeScore": 0,
+    "awayScore": 1
+  },
+  {
+    "date": "2025-08-09",
+    "home": "Asociación Deportiva Tarma",
+    "away": "Sport Huancayo",
+    "homeScore": 1,
+    "awayScore": 0
+  },
+  {
+    "date": "2025-08-09",
+    "home": "Universitario de Deportes",
+    "away": "Sport Boys",
+    "homeScore": 1,
+    "awayScore": 0
+  },
+  {
+    "date": "2025-08-10",
+    "home": "Club Sporting Cristal",
+    "away": "Melgar",
+    "homeScore": 1,
+    "awayScore": 0
+  },
+  {
+    "date": "2025-08-10",
+    "home": "Los Chankas CYC",
+    "away": "Club Atlético Grau",
+    "homeScore": 3,
+    "awayScore": 2
+  },
+  {
+    "date": "2025-08-10",
+    "home": "CD Juan Pablo II",
+    "away": "Deportivo Binacional",
+    "homeScore": 0,
+    "awayScore": 0
+  },
+  {
+    "date": "2025-08-11",
+    "home": "Alianza Atlético de Sullana",
+    "away": "Universidad Técnica de Cajamarca",
+    "homeScore": 2,
+    "awayScore": 0
+  },
+  {
+    "date": "2025-08-12",
+    "home": "Deportivo Garcilaso",
+    "away": "Alianza Universidad",
+    "homeScore": 1,
+    "awayScore": 1
+  },
+  {
+    "date": "2025-08-15",
+    "home": "Club Atlético Grau",
+    "away": "Comerciantes Unidos",
+    "homeScore": 1,
+    "awayScore": 2
+  },
+  {
+    "date": "2025-08-16",
+    "home": "Sport Boys",
+    "away": "Deportivo Garcilaso",
+    "homeScore": 0,
+    "awayScore": 1
+  },
+  {
+    "date": "2025-08-16",
+    "home": "Universidad Técnica de Cajamarca",
+    "away": "CD Juan Pablo II",
+    "homeScore": 0,
+    "awayScore": 0
+  },
+  {
+    "date": "2025-08-16",
+    "home": "Deportivo Binacional",
+    "away": "Club Sporting Cristal",
+    "homeScore": 1,
+    "awayScore": 3
+  },
+  {
+    "date": "2025-08-17",
+    "home": "Alianza Lima",
+    "away": "Asociación Deportiva Tarma",
+    "homeScore": 3,
+    "awayScore": 1
+  },
+  {
+    "date": "2025-08-17",
+    "home": "Sport Huancayo",
+    "away": "Universitario de Deportes",
+    "homeScore": 1,
+    "awayScore": 1
+  },
+  {
+    "date": "2025-08-17",
+    "home": "Melgar",
+    "away": "Ayacucho FC",
+    "homeScore": 2,
+    "awayScore": 1
+  },
+  {
+    "date": "2025-08-17",
+    "home": "Cusco FC",
+    "away": "Alianza Atlético de Sullana",
+    "homeScore": 1,
+    "awayScore": 0
+  },
+  {
+    "date": "2025-08-30",
+    "home": "Alianza Universidad",
+    "away": "Los Chankas CYC",
+    "homeScore": 2,
+    "awayScore": 1
+  },
+  {
+    "date": "2025-08-22",
+    "home": "Ayacucho FC",
+    "away": "Deportivo Binacional",
+    "homeScore": 0,
+    "awayScore": 0
+  },
+  {
+    "date": "2025-08-22",
+    "home": "CD Juan Pablo II",
+    "away": "Cusco FC",
+    "homeScore": 0,
+    "awayScore": 0
+  },
+  {
+    "date": "2025-08-23",
+    "home": "Club Sporting Cristal",
+    "away": "Universidad Técnica de Cajamarca",
+    "homeScore": 2,
+    "awayScore": 2
+  },
+  {
+    "date": "2025-08-23",
+    "home": "Los Chankas CYC",
+    "away": "Sport Boys",
+    "homeScore": 2,
+    "awayScore": 1
+  },
+  {
+    "date": "2025-08-23",
+    "home": "Comerciantes Unidos",
+    "away": "Alianza Universidad",
+    "homeScore": 1,
+    "awayScore": 2
+  },
+  {
+    "date": "2025-08-23",
+    "home": "Deportivo Garcilaso",
+    "away": "Sport Huancayo",
+    "homeScore": 1,
+    "awayScore": 1
+  },
+  {
+    "date": "2025-08-24",
+    "home": "Asociación Deportiva Tarma",
+    "away": "Melgar",
+    "homeScore": 2,
+    "awayScore": 2
+  },
+  {
+    "date": "2025-08-24",
+    "home": "Cienciano",
+    "away": "Club Atlético Grau",
+    "homeScore": 1,
+    "awayScore": 0
+  },
+  {
+    "date": "2025-08-24",
+    "home": "Universitario de Deportes",
+    "away": "Alianza Lima",
+    "homeScore": 0,
+    "awayScore": 0
+  },
+  {
+    "date": "2025-09-12",
+    "home": "Universidad Técnica de Cajamarca",
+    "away": "Ayacucho FC",
+    "homeScore": 0,
+    "awayScore": 1
+  },
+  {
+    "date": "2025-09-12",
+    "home": "Sport Huancayo",
+    "away": "Los Chankas CYC",
+    "homeScore": 1,
+    "awayScore": 2
+  },
+  {
+    "date": "2025-09-13",
+    "home": "Sport Boys",
+    "away": "Comerciantes Unidos",
+    "homeScore": 0,
+    "awayScore": 1
+  },
+  {
+    "date": "2025-09-13",
+    "home": "Alianza Atlético de Sullana",
+    "away": "CD Juan Pablo II",
+    "homeScore": 0,
+    "awayScore": 1
+  },
+  {
+    "date": "2025-09-14",
+    "home": "Alianza Lima",
+    "away": "Deportivo Garcilaso",
+    "homeScore": 3,
+    "awayScore": 4
+  },
+  {
+    "date": "2025-09-14",
+    "home": "Alianza Universidad",
+    "away": "Cienciano",
+    "homeScore": 0,
+    "awayScore": 3
+  },
+  {
+    "date": "2025-09-14",
+    "home": "Deportivo Binacional",
+    "away": "Asociación Deportiva Tarma",
+    "homeScore": 0,
+    "awayScore": 0
+  },
+  {
+    "date": "2025-09-14",
+    "home": "Melgar",
+    "away": "Universitario de Deportes",
+    "homeScore": 1,
+    "awayScore": 2
+  },
+  {
+    "date": "2025-09-14",
+    "home": "Cusco FC",
+    "away": "Club Sporting Cristal",
+    "homeScore": 3,
+    "awayScore": 2
+  },
+  {
+    "date": "2025-09-16",
+    "home": "Asociación Deportiva Tarma",
+    "away": "Universidad Técnica de Cajamarca",
+    "homeScore": 3,
+    "awayScore": 1
+  },
+  {
+    "date": "2025-09-16",
+    "home": "Los Chankas CYC",
+    "away": "Alianza Lima",
+    "homeScore": 0,
+    "awayScore": 0
+  },
+  {
+    "date": "2025-09-17",
+    "home": "Club Sporting Cristal",
+    "away": "Alianza Atlético de Sullana",
+    "homeScore": 0,
+    "awayScore": 0
+  },
+  {
+    "date": "2025-09-17",
+    "home": "Comerciantes Unidos",
+    "away": "Sport Huancayo",
+    "homeScore": 2,
+    "awayScore": 0
+  },
+  {
+    "date": "2025-09-18",
+    "home": "Cienciano",
+    "away": "Sport Boys",
+    "homeScore": 2,
+    "awayScore": 2
+  },
+  {
+    "date": "2025-09-18",
+    "home": "Ayacucho FC",
+    "away": "Cusco FC",
+    "homeScore": 0,
+    "awayScore": 1
+  },
+  {
+    "date": "2025-09-18",
+    "home": "Club Atlético Grau",
+    "away": "Alianza Universidad",
+    "homeScore": 2,
+    "awayScore": 0
+  },
+  {
+    "date": "2025-09-19",
+    "home": "Deportivo Garcilaso",
+    "away": "Melgar",
+    "homeScore": 1,
+    "awayScore": 1
+  },
+  {
+    "date": "2025-11-05",
+    "home": "Los Chankas CYC",
+    "away": "Alianza Lima",
+    "homeScore": 1,
+    "awayScore": 2
+  },
+  {
+    "date": "2025-09-21",
+    "home": "Universidad Técnica de Cajamarca",
+    "away": "Universitario de Deportes",
+    "homeScore": 1,
+    "awayScore": 2
+  },
+  {
+    "date": "2025-09-21",
+    "home": "Melgar",
+    "away": "Los Chankas CYC",
+    "homeScore": 6,
+    "awayScore": 1
+  },
+  {
+    "date": "2025-09-21",
+    "home": "CD Juan Pablo II",
+    "away": "Club Sporting Cristal",
+    "homeScore": 0,
+    "awayScore": 0
+  },
+  {
+    "date": "2025-09-21",
+    "home": "Sport Huancayo",
+    "away": "Cienciano",
+    "homeScore": 5,
+    "awayScore": 2
+  },
+  {
+    "date": "2025-09-22",
+    "home": "Alianza Lima",
+    "away": "Comerciantes Unidos",
+    "homeScore": 4,
+    "awayScore": 0
+  },
+  {
+    "date": "2025-09-22",
+    "home": "Alianza Atlético de Sullana",
+    "away": "Ayacucho FC",
+    "homeScore": 3,
+    "awayScore": 0
+  },
+  {
+    "date": "2025-09-23",
+    "home": "Cusco FC",
+    "away": "Asociación Deportiva Tarma",
+    "homeScore": 0,
+    "awayScore": 2
+  },
+  {
+    "date": "2025-09-23",
+    "home": "Sport Boys",
+    "away": "Club Atlético Grau",
+    "homeScore": 1,
+    "awayScore": 1
+  },
+  {
+    "date": "2025-09-25",
+    "home": "Ayacucho FC",
+    "away": "CD Juan Pablo II",
+    "homeScore": 2,
+    "awayScore": 1
+  },
+  {
+    "date": "2025-09-26",
+    "home": "Deportivo Garcilaso",
+    "away": "Universidad Técnica de Cajamarca",
+    "homeScore": 0,
+    "awayScore": 0
+  },
+  {
+    "date": "2025-09-26",
+    "home": "Alianza Universidad",
+    "away": "Sport Boys",
+    "homeScore": 2,
+    "awayScore": 3
+  },
+  {
+    "date": "2025-09-26",
+    "home": "Asociación Deportiva Tarma",
+    "away": "Alianza Atlético de Sullana",
+    "homeScore": 1,
+    "awayScore": 0
+  },
+  {
+    "date": "2025-09-26",
+    "home": "Club Atlético Grau",
+    "away": "Sport Huancayo",
+    "homeScore": 3,
+    "awayScore": 1
+  },
+  {
+    "date": "2025-09-27",
+    "home": "Comerciantes Unidos",
+    "away": "Melgar",
+    "homeScore": 1,
+    "awayScore": 1
+  },
+  {
+    "date": "2025-09-27",
+    "home": "Universitario de Deportes",
+    "away": "Cusco FC",
+    "homeScore": 3,
+    "awayScore": 2
+  },
+  {
+    "date": "2025-09-28",
+    "home": "Cienciano",
+    "away": "Alianza Lima",
+    "homeScore": 2,
+    "awayScore": 1
+  },
+  {
+    "date": "2025-09-29",
+    "home": "Universidad Técnica de Cajamarca",
+    "away": "Los Chankas CYC",
+    "homeScore": 2,
+    "awayScore": 0
+  },
+  {
+    "date": "2025-09-29",
+    "home": "Club Sporting Cristal",
+    "away": "Ayacucho FC",
+    "homeScore": 3,
+    "awayScore": 0
+  },
+  {
+    "date": "2025-09-30",
+    "home": "Sport Huancayo",
+    "away": "Alianza Universidad",
+    "homeScore": 5,
+    "awayScore": 1
+  },
+  {
+    "date": "2025-09-30",
+    "home": "CD Juan Pablo II",
+    "away": "Asociación Deportiva Tarma",
+    "homeScore": 1,
+    "awayScore": 1
+  },
+  {
+    "date": "2025-10-01",
+    "home": "Cusco FC",
+    "away": "Deportivo Garcilaso",
+    "homeScore": 4,
+    "awayScore": 0
+  },
+  {
+    "date": "2025-10-01",
+    "home": "Alianza Atlético de Sullana",
+    "away": "Universitario de Deportes",
+    "homeScore": 0,
+    "awayScore": 2
+  },
+  {
+    "date": "2025-10-02",
+    "home": "Alianza Lima",
+    "away": "Club Atlético Grau",
+    "homeScore": 2,
+    "awayScore": 1
+  },
+  {
+    "date": "2025-10-03",
+    "home": "Melgar",
+    "away": "Cienciano",
+    "homeScore": 2,
+    "awayScore": 0
+  },
+  {
+    "date": "2025-10-03",
+    "home": "Comerciantes Unidos",
+    "away": "Universidad Técnica de Cajamarca",
+    "homeScore": 2,
+    "awayScore": 1
+  },
+  {
+    "date": "2025-10-04",
+    "home": "Los Chankas CYC",
+    "away": "Cusco FC",
+    "homeScore": 2,
+    "awayScore": 1
+  },
+  {
+    "date": "2025-10-04",
+    "home": "Asociación Deportiva Tarma",
+    "away": "Club Sporting Cristal",
+    "homeScore": 3,
+    "awayScore": 2
+  },
+  {
+    "date": "2025-10-05",
+    "home": "Sport Boys",
+    "away": "Sport Huancayo",
+    "homeScore": 2,
+    "awayScore": 1
+  },
+  {
+    "date": "2025-10-05",
+    "home": "Alianza Universidad",
+    "away": "Alianza Lima",
+    "homeScore": 2,
+    "awayScore": 1
+  },
+  {
+    "date": "2025-10-05",
+    "home": "Club Atlético Grau",
+    "away": "Melgar",
+    "homeScore": 0,
+    "awayScore": 0
+  },
+  {
+    "date": "2025-10-05",
+    "home": "Deportivo Garcilaso",
+    "away": "Alianza Atlético de Sullana",
+    "homeScore": 2,
+    "awayScore": 4
+  },
+  {
+    "date": "2025-10-05",
+    "home": "Universitario de Deportes",
+    "away": "CD Juan Pablo II",
+    "homeScore": 3,
+    "awayScore": 0
+  },
+  {
+    "date": "2025-10-12",
+    "home": "Ayacucho FC",
+    "away": "Asociación Deportiva Tarma",
+    "homeScore": 2,
+    "awayScore": 2
+  },
+  {
+    "date": "2025-10-12",
+    "home": "Alianza Atlético de Sullana",
+    "away": "Los Chankas CYC",
+    "homeScore": 1,
+    "awayScore": 0
+  },
+  {
+    "date": "2025-10-12",
+    "home": "Cusco FC",
+    "away": "Comerciantes Unidos",
+    "homeScore": 1,
+    "awayScore": 1
+  },
+  {
+    "date": "2025-10-13",
+    "home": "Universidad Técnica de Cajamarca",
+    "away": "Cienciano",
+    "homeScore": 0,
+    "awayScore": 2
+  },
+  {
+    "date": "2025-10-13",
+    "home": "CD Juan Pablo II",
+    "away": "Deportivo Garcilaso",
+    "homeScore": 0,
+    "awayScore": 1
+  },
+  {
+    "date": "2025-10-14",
+    "home": "Melgar",
+    "away": "Alianza Universidad",
+    "homeScore": 2,
+    "awayScore": 1
+  },
+  {
+    "date": "2025-10-16",
+    "home": "Club Sporting Cristal",
+    "away": "Universitario de Deportes",
+    "homeScore": 0,
+    "awayScore": 0
+  },
+  {
+    "date": "2025-10-17",
+    "home": "Alianza Lima",
+    "away": "Sport Boys",
+    "homeScore": 3,
+    "awayScore": 1
+  },
+  {
+    "date": "2025-10-24",
+    "home": "Club Sporting Cristal",
+    "away": "Universitario de Deportes",
+    "homeScore": 0,
+    "awayScore": 1
+  },
+  {
+    "date": "2025-10-18",
+    "home": "Los Chankas CYC",
+    "away": "CD Juan Pablo II",
+    "homeScore": 1,
+    "awayScore": 0
+  },
+  {
+    "date": "2025-10-18",
+    "home": "Comerciantes Unidos",
+    "away": "Alianza Atlético de Sullana",
+    "homeScore": 1,
+    "awayScore": 0
+  },
+  {
+    "date": "2025-10-18",
+    "home": "Cienciano",
+    "away": "Cusco FC",
+    "homeScore": 1,
+    "awayScore": 2
+  },
+  {
+    "date": "2025-10-19",
+    "home": "Club Atlético Grau",
+    "away": "Universidad Técnica de Cajamarca",
+    "homeScore": 0,
+    "awayScore": 2
+  },
+  {
+    "date": "2025-10-19",
+    "home": "Deportivo Garcilaso",
+    "away": "Club Sporting Cristal",
+    "homeScore": 0,
+    "awayScore": 1
+  },
+  {
+    "date": "2025-10-20",
+    "home": "Sport Huancayo",
+    "away": "Alianza Lima",
+    "homeScore": 1,
+    "awayScore": 2
+  },
+  {
+    "date": "2025-10-20",
+    "home": "Sport Boys",
+    "away": "Melgar",
+    "homeScore": 1,
+    "awayScore": 0
+  },
+  {
+    "date": "2025-10-21",
+    "home": "Universitario de Deportes",
+    "away": "Ayacucho FC",
+    "homeScore": 2,
+    "awayScore": 1
+  },
+  {
+    "date": "2025-10-24",
+    "home": "CD Juan Pablo II",
+    "away": "Comerciantes Unidos",
+    "homeScore": 0,
+    "awayScore": 1
+  },
+  {
+    "date": "2025-10-25",
+    "home": "Ayacucho FC",
+    "away": "Deportivo Garcilaso",
+    "homeScore": 4,
+    "awayScore": 2
+  },
+  {
+    "date": "2025-10-25",
+    "home": "Alianza Atlético de Sullana",
+    "away": "Cienciano",
+    "homeScore": 0,
+    "awayScore": 1
+  },
+  {
+    "date": "2025-10-25",
+    "home": "Cusco FC",
+    "away": "Club Atlético Grau",
+    "homeScore": 1,
+    "awayScore": 0
+  },
+  {
+    "date": "2025-10-26",
+    "home": "Club Sporting Cristal",
+    "away": "Los Chankas CYC",
+    "homeScore": 0,
+    "awayScore": 1
+  },
+  {
+    "date": "2025-10-26",
+    "home": "Universidad Técnica de Cajamarca",
+    "away": "Alianza Universidad",
+    "homeScore": 3,
+    "awayScore": 2
+  },
+  {
+    "date": "2025-10-26",
+    "home": "Asociación Deportiva Tarma",
+    "away": "Universitario de Deportes",
+    "homeScore": 1,
+    "awayScore": 2
+  },
+  {
+    "date": "2025-10-26",
+    "home": "Melgar",
+    "away": "Sport Huancayo",
+    "homeScore": 2,
+    "awayScore": 0
+  },
+  {
+    "date": "2025-11-01",
+    "home": "Alianza Lima",
+    "away": "Melgar",
+    "homeScore": 2,
+    "awayScore": 2
+  },
+  {
+    "date": "2025-11-01",
+    "home": "Los Chankas CYC",
+    "away": "Ayacucho FC",
+    "homeScore": 1,
+    "awayScore": 0
+  },
+  {
+    "date": "2025-11-01",
+    "home": "Comerciantes Unidos",
+    "away": "Club Sporting Cristal",
+    "homeScore": 1,
+    "awayScore": 4
+  },
+  {
+    "date": "2025-11-01",
+    "home": "Deportivo Garcilaso",
+    "away": "Asociación Deportiva Tarma",
+    "homeScore": 1,
+    "awayScore": 0
+  },
+  {
+    "date": "2025-11-02",
+    "home": "Alianza Universidad",
+    "away": "Cusco FC",
+    "homeScore": 2,
+    "awayScore": 2
+  },
+  {
+    "date": "2025-11-02",
+    "home": "Club Atlético Grau",
+    "away": "Alianza Atlético de Sullana",
+    "homeScore": 1,
+    "awayScore": 1
+  },
+  {
+    "date": "2025-11-02",
+    "home": "Cienciano",
+    "away": "CD Juan Pablo II",
+    "homeScore": 2,
+    "awayScore": 1
+  },
+  {
+    "date": "2025-11-02",
+    "home": "Sport Boys",
+    "away": "Universidad Técnica de Cajamarca",
+    "homeScore": 2,
+    "awayScore": 2
+  },
+  {
+    "date": "2025-11-07",
+    "home": "Cusco FC",
+    "away": "Sport Boys",
+    "homeScore": 3,
+    "awayScore": 0
+  },
+  {
+    "date": "2025-11-07",
+    "home": "Club Sporting Cristal",
+    "away": "Cienciano",
+    "homeScore": 2,
+    "awayScore": 1
+  },
+  {
+    "date": "2025-11-08",
+    "home": "Universitario de Deportes",
+    "away": "Deportivo Garcilaso",
+    "homeScore": 0,
+    "awayScore": 0
+  },
+  {
+    "date": "2025-11-08",
+    "home": "Ayacucho FC",
+    "away": "Comerciantes Unidos",
+    "homeScore": 1,
+    "awayScore": 0
+  },
+  {
+    "date": "2025-11-08",
+    "home": "CD Juan Pablo II",
+    "away": "Club Atlético Grau",
+    "homeScore": 3,
+    "awayScore": 1
+  },
+  {
+    "date": "2025-11-09",
+    "home": "Universidad Técnica de Cajamarca",
+    "away": "Sport Huancayo",
+    "homeScore": 0,
+    "awayScore": 3
+  },
+  {
+    "date": "2025-11-09",
+    "home": "Alianza Atlético de Sullana",
+    "away": "Alianza Universidad",
+    "homeScore": 2,
+    "awayScore": 1
+  },
+  {
+    "date": "2025-11-10",
+    "home": "Asociación Deportiva Tarma",
+    "away": "Los Chankas CYC",
+    "homeScore": 1,
+    "awayScore": 0
+  },
+  {
+    "date": "2025-11-16",
+    "home": "Sport Boys",
+    "away": "Alianza Atlético de Sullana",
+    "homeScore": 0,
+    "awayScore": 1
+  },
+  {
+    "date": "2025-11-19",
+    "home": "Club Atlético Grau",
+    "away": "Club Sporting Cristal",
+    "homeScore": 1,
+    "awayScore": 2
+  },
+  {
+    "date": "2025-11-22",
+    "home": "Los Chankas CYC",
+    "away": "Universitario de Deportes",
+    "homeScore": 3,
+    "awayScore": 1
+  },
+  {
+    "date": "2025-11-23",
+    "home": "Alianza Lima",
+    "away": "Universidad Técnica de Cajamarca",
+    "homeScore": 3,
+    "awayScore": 0
+  },
+  {
+    "date": "2025-11-23",
+    "home": "Alianza Universidad",
+    "away": "CD Juan Pablo II",
+    "homeScore": 3,
+    "awayScore": 0
+  },
+  {
+    "date": "2025-11-23",
+    "home": "Cienciano",
+    "away": "Ayacucho FC",
+    "homeScore": 2,
+    "awayScore": 1
+  },
+  {
+    "date": "2025-11-23",
+    "home": "Comerciantes Unidos",
+    "away": "Asociación Deportiva Tarma",
+    "homeScore": 0,
+    "awayScore": 0
+  },
+  {
+    "date": "2025-11-23",
+    "home": "Sport Huancayo",
+    "away": "Cusco FC",
+    "homeScore": 1,
+    "awayScore": 2
+  },
+  {
+    "date": "2026-01-30",
+    "home": "Sport Huancayo",
+    "away": "Alianza Lima",
+    "homeScore": 1,
+    "awayScore": 2
+  },
+  {
+    "date": "2026-01-30",
+    "home": "Universidad Técnica de Cajamarca",
+    "away": "Club Atlético Grau",
+    "homeScore": 2,
+    "awayScore": 0
+  },
+  {
+    "date": "2026-01-30",
+    "home": "Comerciantes Unidos",
+    "away": "CD Moquegua",
+    "homeScore": 0,
+    "awayScore": 0
+  },
+  {
+    "date": "2026-01-31",
+    "home": "Sport Boys",
+    "away": "Los Chankas CYC",
+    "homeScore": 1,
+    "awayScore": 1
+  },
+  {
+    "date": "2026-01-31",
+    "home": "CD Juan Pablo II",
+    "away": "FC Cajamarca",
+    "homeScore": 3,
+    "awayScore": 3
+  },
+  {
+    "date": "2026-01-31",
+    "home": "Melgar",
+    "away": "Cienciano",
+    "homeScore": 2,
+    "awayScore": 0
+  },
+  {
+    "date": "2026-02-01",
+    "home": "Deportivo Garcilaso",
+    "away": "Club Sporting Cristal",
+    "homeScore": 1,
+    "awayScore": 1
+  },
+  {
+    "date": "2026-02-01",
+    "home": "Alianza Atlético de Sullana",
+    "away": "Cusco FC",
+    "homeScore": 1,
+    "awayScore": 0
+  },
+  {
+    "date": "2026-02-01",
+    "home": "Universitario de Deportes",
+    "away": "Asociación Deportiva Tarma",
+    "homeScore": 2,
+    "awayScore": 0
+  },
+  {
+    "date": "2026-02-02",
+    "home": "Comerciantes Unidos",
+    "away": "CD Moquegua",
+    "homeScore": 1,
+    "awayScore": 0
+  },
+  {
+    "date": "2026-02-06",
+    "home": "CD Moquegua",
+    "away": "Universidad Técnica de Cajamarca",
+    "homeScore": 2,
+    "awayScore": 3
+  },
+  {
+    "date": "2026-02-07",
+    "home": "Asociación Deportiva Tarma",
+    "away": "Sport Boys",
+    "homeScore": 1,
+    "awayScore": 0
+  },
+  {
+    "date": "2026-02-07",
+    "home": "Club Atlético Grau",
+    "away": "Sport Huancayo",
+    "homeScore": 0,
+    "awayScore": 0
+  },
+  {
+    "date": "2026-02-08",
+    "home": "Cusco FC",
+    "away": "Universitario de Deportes",
+    "homeScore": 1,
+    "awayScore": 1
+  },
+  {
+    "date": "2026-02-08",
+    "home": "Club Sporting Cristal",
+    "away": "Melgar",
+    "homeScore": 1,
+    "awayScore": 2
+  },
+  {
+    "date": "2026-02-08",
+    "home": "Los Chankas CYC",
+    "away": "Alianza Atlético de Sullana",
+    "homeScore": 1,
+    "awayScore": 0
+  },
+  {
+    "date": "2026-02-08",
+    "home": "Cienciano",
+    "away": "CD Juan Pablo II",
+    "homeScore": 6,
+    "awayScore": 1
+  },
+  {
+    "date": "2026-02-08",
+    "home": "Alianza Lima",
+    "away": "Comerciantes Unidos",
+    "homeScore": 2,
+    "awayScore": 1
+  },
+  {
+    "date": "2026-02-09",
+    "home": "FC Cajamarca",
+    "away": "Deportivo Garcilaso",
+    "homeScore": 1,
+    "awayScore": 1
+  },
+  {
+    "date": "2026-02-13",
+    "home": "Universidad Técnica de Cajamarca",
+    "away": "Cusco FC",
+    "homeScore": 1,
+    "awayScore": 0
+  },
+  {
+    "date": "2026-02-14",
+    "home": "Universitario de Deportes",
+    "away": "Cienciano",
+    "homeScore": 2,
+    "awayScore": 1
+  },
+  {
+    "date": "2026-02-14",
+    "home": "Deportivo Garcilaso",
+    "away": "Asociación Deportiva Tarma",
+    "homeScore": 1,
+    "awayScore": 0
+  },
+  {
+    "date": "2026-02-14",
+    "home": "CD Juan Pablo II",
+    "away": "Club Sporting Cristal",
+    "homeScore": 0,
+    "awayScore": 2
+  },
+  {
+    "date": "2026-02-14",
+    "home": "Sport Boys",
+    "away": "Club Atlético Grau",
+    "homeScore": 1,
+    "awayScore": 0
+  },
+  {
+    "date": "2026-02-15",
+    "home": "Alianza Atlético de Sullana",
+    "away": "Alianza Lima",
+    "homeScore": 0,
+    "awayScore": 0
+  },
+  {
+    "date": "2026-02-15",
+    "home": "Sport Huancayo",
+    "away": "FC Cajamarca",
+    "homeScore": 2,
+    "awayScore": 0
+  },
+  {
+    "date": "2026-02-15",
+    "home": "Comerciantes Unidos",
+    "away": "Los Chankas CYC",
+    "homeScore": 1,
+    "awayScore": 1
+  },
+  {
+    "date": "2026-02-15",
+    "home": "Melgar",
+    "away": "CD Moquegua",
+    "homeScore": 4,
+    "awayScore": 0
+  },
+  {
+    "date": "2026-02-21",
+    "home": "Alianza Lima",
+    "away": "Sport Boys",
+    "homeScore": 1,
+    "awayScore": 0
+  },
+  {
+    "date": "2026-02-21",
+    "home": "FC Cajamarca",
+    "away": "Melgar",
+    "homeScore": 3,
+    "awayScore": 1
+  },
+  {
+    "date": "2026-02-21",
+    "home": "Club Sporting Cristal",
+    "away": "Universitario de Deportes",
+    "homeScore": 2,
+    "awayScore": 2
+  },
+  {
+    "date": "2026-02-22",
+    "home": "Cienciano",
+    "away": "Alianza Atlético de Sullana",
+    "homeScore": 1,
+    "awayScore": 1
+  },
+  {
+    "date": "2026-02-22",
+    "home": "Asociación Deportiva Tarma",
+    "away": "Universidad Técnica de Cajamarca",
+    "homeScore": 2,
+    "awayScore": 2
+  },
+  {
+    "date": "2026-02-22",
+    "home": "Los Chankas CYC",
+    "away": "Sport Huancayo",
+    "homeScore": 3,
+    "awayScore": 2
+  },
+  {
+    "date": "2026-02-22",
+    "home": "Club Atlético Grau",
+    "away": "CD Juan Pablo II",
+    "homeScore": 1,
+    "awayScore": 2
+  },
+  {
+    "date": "2026-02-22",
+    "home": "Cusco FC",
+    "away": "Comerciantes Unidos",
+    "homeScore": 3,
+    "awayScore": 1
+  },
+  {
+    "date": "2026-02-23",
+    "home": "CD Moquegua",
+    "away": "Deportivo Garcilaso",
+    "homeScore": 1,
+    "awayScore": 0
+  },
+  {
+    "date": "2026-02-27",
+    "home": "Alianza Atlético de Sullana",
+    "away": "Asociación Deportiva Tarma",
+    "homeScore": 0,
+    "awayScore": 0
+  },
+  {
+    "date": "2026-02-27",
+    "home": "Melgar",
+    "away": "Los Chankas CYC",
+    "homeScore": 1,
+    "awayScore": 2
+  },
+  {
+    "date": "2026-02-28",
+    "home": "Deportivo Garcilaso",
+    "away": "Cienciano",
+    "homeScore": 2,
+    "awayScore": 3
+  },
+  {
+    "date": "2026-02-28",
+    "home": "Sport Huancayo",
+    "away": "Club Sporting Cristal",
+    "homeScore": 2,
+    "awayScore": 1
+  },
+  {
+    "date": "2026-02-28",
+    "home": "Universidad Técnica de Cajamarca",
+    "away": "Alianza Lima",
+    "homeScore": 0,
+    "awayScore": 1
+  },
+  {
+    "date": "2026-03-01",
+    "home": "Sport Boys",
+    "away": "CD Moquegua",
+    "homeScore": 0,
+    "awayScore": 0
+  },
+  {
+    "date": "2026-03-01",
+    "home": "Comerciantes Unidos",
+    "away": "Club Atlético Grau",
+    "homeScore": 3,
+    "awayScore": 1
+  },
+  {
+    "date": "2026-03-01",
+    "home": "CD Juan Pablo II",
+    "away": "Cusco FC",
+    "homeScore": 2,
+    "awayScore": 1
+  },
+  {
+    "date": "2026-03-01",
+    "home": "Universitario de Deportes",
+    "away": "FC Cajamarca",
+    "homeScore": 1,
+    "awayScore": 0
+  },
+  {
+    "date": "2026-03-06",
+    "home": "Club Atlético Grau",
+    "away": "FC Cajamarca",
+    "homeScore": 1,
+    "awayScore": 0
+  },
+  {
+    "date": "2026-03-07",
+    "home": "CD Moquegua",
+    "away": "Sport Huancayo",
+    "homeScore": 2,
+    "awayScore": 1
+  },
+  {
+    "date": "2026-03-07",
+    "home": "Comerciantes Unidos",
+    "away": "Universidad Técnica de Cajamarca",
+    "homeScore": 1,
+    "awayScore": 2
+  },
+  {
+    "date": "2026-03-07",
+    "home": "Club Sporting Cristal",
+    "away": "Alianza Atlético de Sullana",
+    "homeScore": 3,
+    "awayScore": 1
+  },
+  {
+    "date": "2026-03-08",
+    "home": "Cusco FC",
+    "away": "Deportivo Garcilaso",
+    "homeScore": 1,
+    "awayScore": 0
+  },
+  {
+    "date": "2026-03-08",
+    "home": "Asociación Deportiva Tarma",
+    "away": "CD Juan Pablo II",
+    "homeScore": 2,
+    "awayScore": 3
+  },
+  {
+    "date": "2026-03-08",
+    "home": "Los Chankas CYC",
+    "away": "Universitario de Deportes",
+    "homeScore": 3,
+    "awayScore": 1
+  },
+  {
+    "date": "2026-03-09",
+    "home": "Cienciano",
+    "away": "Sport Boys",
+    "homeScore": 3,
+    "awayScore": 1
+  },
+  {
+    "date": "2026-03-10",
+    "home": "Alianza Lima",
+    "away": "Melgar",
+    "homeScore": 3,
+    "awayScore": 1
+  },
+  {
+    "date": "2026-03-13",
+    "home": "FC Cajamarca",
+    "away": "Comerciantes Unidos",
+    "homeScore": 3,
+    "awayScore": 4
+  },
+  {
+    "date": "2026-03-14",
+    "home": "Sport Huancayo",
+    "away": "Asociación Deportiva Tarma",
+    "homeScore": 0,
+    "awayScore": 1
+  },
+  {
+    "date": "2026-03-14",
+    "home": "CD Juan Pablo II",
+    "away": "Los Chankas CYC",
+    "homeScore": 2,
+    "awayScore": 3
+  },
+  {
+    "date": "2026-03-14",
+    "home": "Deportivo Garcilaso",
+    "away": "Alianza Lima",
+    "homeScore": 1,
+    "awayScore": 1
+  },
+  {
+    "date": "2026-03-15",
+    "home": "Universitario de Deportes",
+    "away": "Universidad Técnica de Cajamarca",
+    "homeScore": 2,
+    "awayScore": 0
+  },
+  {
+    "date": "2026-03-15",
+    "home": "Club Sporting Cristal",
+    "away": "Sport Boys",
+    "homeScore": 3,
+    "awayScore": 0
+  },
+  {
+    "date": "2026-03-15",
+    "home": "Melgar",
+    "away": "Club Atlético Grau",
+    "homeScore": 0,
+    "awayScore": 0
+  },
+  {
+    "date": "2026-03-15",
+    "home": "Alianza Atlético de Sullana",
+    "away": "CD Moquegua",
+    "homeScore": 3,
+    "awayScore": 0
+  },
+  {
+    "date": "2026-03-15",
+    "home": "Cusco FC",
+    "away": "Cienciano",
+    "homeScore": 1,
+    "awayScore": 2
+  },
+  {
+    "date": "2026-03-20",
+    "home": "Asociación Deportiva Tarma",
+    "away": "Melgar",
+    "homeScore": 1,
+    "awayScore": 1
+  },
+  {
+    "date": "2026-03-21",
+    "home": "Cienciano",
+    "away": "FC Cajamarca",
+    "homeScore": 3,
+    "awayScore": 0
+  },
+  {
+    "date": "2026-03-21",
+    "home": "CD Moquegua",
+    "away": "Cusco FC",
+    "homeScore": 1,
+    "awayScore": 2
+  },
+  {
+    "date": "2026-03-21",
+    "home": "Comerciantes Unidos",
+    "away": "Universitario de Deportes",
+    "homeScore": 0,
+    "awayScore": 0
+  },
+  {
+    "date": "2026-03-21",
+    "home": "Los Chankas CYC",
+    "away": "Club Sporting Cristal",
+    "homeScore": 3,
+    "awayScore": 2
+  },
+  {
+    "date": "2026-03-21",
+    "home": "Alianza Lima",
+    "away": "CD Juan Pablo II",
+    "homeScore": 2,
+    "awayScore": 0
+  },
+  {
+    "date": "2026-03-22",
+    "home": "Universidad Técnica de Cajamarca",
+    "away": "Alianza Atlético de Sullana",
+    "homeScore": 1,
+    "awayScore": 1
+  },
+  {
+    "date": "2026-03-22",
+    "home": "Club Atlético Grau",
+    "away": "Deportivo Garcilaso",
+    "homeScore": 0,
+    "awayScore": 0
+  },
+  {
+    "date": "2026-03-22",
+    "home": "Sport Boys",
+    "away": "Sport Huancayo",
+    "homeScore": 3,
+    "awayScore": 0
+  },
+  {
+    "date": "2026-04-03",
+    "home": "Club Sporting Cristal",
+    "away": "CD Moquegua",
+    "homeScore": 1,
+    "awayScore": 2
+  },
+  {
+    "date": "2026-04-03",
+    "home": "Alianza Atlético de Sullana",
+    "away": "Club Atlético Grau",
+    "homeScore": 2,
+    "awayScore": 2
+  },
+  {
+    "date": "2026-04-03",
+    "home": "Cienciano",
+    "away": "Asociación Deportiva Tarma",
+    "homeScore": 3,
+    "awayScore": 2
+  },
+  {
+    "date": "2026-04-04",
+    "home": "Deportivo Garcilaso",
+    "away": "Sport Boys",
+    "homeScore": 3,
+    "awayScore": 2
+  },
+  {
+    "date": "2026-04-04",
+    "home": "Melgar",
+    "away": "Cusco FC",
+    "homeScore": 1,
+    "awayScore": 3
+  },
+  {
+    "date": "2026-04-05",
+    "home": "Universitario de Deportes",
+    "away": "Alianza Lima",
+    "homeScore": 1,
+    "awayScore": 0
+  },
+  {
+    "date": "2026-04-05",
+    "home": "Sport Huancayo",
+    "away": "Comerciantes Unidos",
+    "homeScore": 1,
+    "awayScore": 1
+  },
+  {
+    "date": "2026-04-05",
+    "home": "CD Juan Pablo II",
+    "away": "Universidad Técnica de Cajamarca",
+    "homeScore": 2,
+    "awayScore": 1
+  },
+  {
+    "date": "2026-04-06",
+    "home": "FC Cajamarca",
+    "away": "Los Chankas CYC",
+    "homeScore": 0,
+    "awayScore": 1
+  },
+  {
+    "date": "2026-04-14",
+    "home": "CD Moquegua",
+    "away": "CD Juan Pablo II",
+    "homeScore": 3,
+    "awayScore": 0
+  },
+  {
+    "date": "2026-04-14",
+    "home": "Asociación Deportiva Tarma",
+    "away": "Alianza Lima",
+    "homeScore": 0,
+    "awayScore": 1
+  },
+  {
+    "date": "2026-04-15",
+    "home": "Sport Boys",
+    "away": "Melgar",
+    "homeScore": 1,
+    "awayScore": 3
+  },
+  {
+    "date": "2026-04-15",
+    "home": "Universidad Técnica de Cajamarca",
+    "away": "Sport Huancayo",
+    "homeScore": 2,
+    "awayScore": 2
+  },
+  {
+    "date": "2026-04-22",
+    "home": "Comerciantes Unidos",
+    "away": "Alianza Atlético de Sullana",
+    "homeScore": 1,
+    "awayScore": 0
+  },
+  {
+    "date": "2026-04-22",
+    "home": "Club Atlético Grau",
+    "away": "Club Sporting Cristal",
+    "homeScore": 4,
+    "awayScore": 1
+  },
+  {
+    "date": "2026-04-22",
+    "home": "Cusco FC",
+    "away": "FC Cajamarca",
+    "homeScore": 1,
+    "awayScore": 0
+  },
+  {
+    "date": "2026-04-23",
+    "home": "Universitario de Deportes",
+    "away": "Deportivo Garcilaso",
+    "homeScore": 4,
+    "awayScore": 1
+  },
+  {
+    "date": "2026-04-23",
+    "home": "Los Chankas CYC",
+    "away": "Cienciano",
+    "homeScore": 1,
+    "awayScore": 0
+  },
+  {
+    "date": "2026-04-17",
+    "home": "Los Chankas CYC",
+    "away": "Club Atlético Grau",
+    "homeScore": 2,
+    "awayScore": 0
+  },
+  {
+    "date": "2026-04-18",
+    "home": "FC Cajamarca",
+    "away": "Asociación Deportiva Tarma",
+    "homeScore": 2,
+    "awayScore": 2
+  },
+  {
+    "date": "2026-04-18",
+    "home": "CD Juan Pablo II",
+    "away": "Comerciantes Unidos",
+    "homeScore": 2,
+    "awayScore": 2
+  },
+  {
+    "date": "2026-04-18",
+    "home": "Sport Huancayo",
+    "away": "Deportivo Garcilaso",
+    "homeScore": 2,
+    "awayScore": 1
+  },
+  {
+    "date": "2026-04-19",
+    "home": "Alianza Lima",
+    "away": "Cusco FC",
+    "homeScore": 8,
+    "awayScore": 0
+  },
+  {
+    "date": "2026-04-19",
+    "home": "Club Sporting Cristal",
+    "away": "Universidad Técnica de Cajamarca",
+    "homeScore": 3,
+    "awayScore": 2
+  },
+  {
+    "date": "2026-04-19",
+    "home": "Alianza Atlético de Sullana",
+    "away": "Sport Boys",
+    "homeScore": 0,
+    "awayScore": 1
+  },
+  {
+    "date": "2026-04-19",
+    "home": "Melgar",
+    "away": "Universitario de Deportes",
+    "homeScore": 2,
+    "awayScore": 1
+  },
+  {
+    "date": "2026-04-20",
+    "home": "Cienciano",
+    "away": "CD Moquegua",
+    "homeScore": 2,
+    "awayScore": 1
+  },
+  {
+    "date": "2026-04-25",
+    "home": "CD Moquegua",
+    "away": "FC Cajamarca",
+    "homeScore": 2,
+    "awayScore": 1
+  },
+  {
+    "date": "2026-04-25",
+    "home": "Comerciantes Unidos",
+    "away": "Club Sporting Cristal",
+    "homeScore": 1,
+    "awayScore": 0
+  },
+  {
+    "date": "2026-04-26",
+    "home": "Sport Boys",
+    "away": "CD Juan Pablo II",
+    "homeScore": 1,
+    "awayScore": 1
+  },
+  {
+    "date": "2026-04-26",
+    "home": "Universidad Técnica de Cajamarca",
+    "away": "Cienciano",
+    "homeScore": 2,
+    "awayScore": 2
+  },
+  {
+    "date": "2026-04-26",
+    "home": "Cusco FC",
+    "away": "Sport Huancayo",
+    "homeScore": 2,
+    "awayScore": 1
+  },
+  {
+    "date": "2026-04-26",
+    "home": "Club Atlético Grau",
+    "away": "Alianza Lima",
+    "homeScore": 0,
+    "awayScore": 1
+  },
+  {
+    "date": "2026-04-26",
+    "home": "Universitario de Deportes",
+    "away": "Alianza Atlético de Sullana",
+    "homeScore": 1,
+    "awayScore": 2
+  },
+  {
+    "date": "2026-04-27",
+    "home": "Asociación Deportiva Tarma",
+    "away": "Los Chankas CYC",
+    "homeScore": 4,
+    "awayScore": 0
+  },
+  {
+    "date": "2026-04-28",
+    "home": "Deportivo Garcilaso",
+    "away": "Melgar",
+    "homeScore": 1,
+    "awayScore": 0
+  },
+  {
+    "date": "2026-05-02",
+    "home": "FC Cajamarca",
+    "away": "Sport Boys",
+    "homeScore": 3,
+    "awayScore": 2
+  },
+  {
+    "date": "2026-05-02",
+    "home": "Asociación Deportiva Tarma",
+    "away": "Club Atlético Grau",
+    "homeScore": 1,
+    "awayScore": 0
+  },
+  {
+    "date": "2026-05-02",
+    "home": "Cienciano",
+    "away": "Comerciantes Unidos",
+    "homeScore": 1,
+    "awayScore": 0
+  },
+  {
+    "date": "2026-05-03",
+    "home": "Alianza Lima",
+    "away": "CD Moquegua",
+    "homeScore": 2,
+    "awayScore": 1
+  },
+  {
+    "date": "2026-05-03",
+    "home": "Club Sporting Cristal",
+    "away": "Cusco FC",
+    "homeScore": 2,
+    "awayScore": 2
+  },
+  {
+    "date": "2026-05-03",
+    "home": "CD Juan Pablo II",
+    "away": "Universitario de Deportes",
+    "homeScore": 1,
+    "awayScore": 4
+  },
+  {
+    "date": "2026-05-03",
+    "home": "Alianza Atlético de Sullana",
+    "away": "Sport Huancayo",
+    "homeScore": 4,
+    "awayScore": 1
+  },
+  {
+    "date": "2026-05-03",
+    "home": "Melgar",
+    "away": "Universidad Técnica de Cajamarca",
+    "homeScore": 2,
+    "awayScore": 0
+  },
+  {
+    "date": "2026-05-04",
+    "home": "Los Chankas CYC",
+    "away": "Deportivo Garcilaso",
+    "homeScore": 0,
+    "awayScore": 1
+  },
+  {
+    "date": "2026-05-08",
+    "home": "Universidad Técnica de Cajamarca",
+    "away": "FC Cajamarca",
+    "homeScore": 1,
+    "awayScore": 2
+  },
+  {
+    "date": "2026-05-09",
+    "home": "CD Moquegua",
+    "away": "Asociación Deportiva Tarma",
+    "homeScore": 2,
+    "awayScore": 2
+  },
+  {
+    "date": "2026-05-09",
+    "home": "Club Atlético Grau",
+    "away": "Cienciano",
+    "homeScore": 1,
+    "awayScore": 2
+  },
+  {
+    "date": "2026-05-10",
+    "home": "Alianza Lima",
+    "away": "Club Sporting Cristal",
+    "homeScore": 1,
+    "awayScore": 1
+  },
+  {
+    "date": "2026-05-10",
+    "home": "Sport Huancayo",
+    "away": "CD Juan Pablo II",
+    "homeScore": 2,
+    "awayScore": 1
+  },
+  {
+    "date": "2026-05-10",
+    "home": "Comerciantes Unidos",
+    "away": "Melgar",
+    "homeScore": 1,
+    "awayScore": 1
+  },
+  {
+    "date": "2026-05-10",
+    "home": "Cusco FC",
+    "away": "Los Chankas CYC",
+    "homeScore": 1,
+    "awayScore": 1
+  },
+  {
+    "date": "2026-05-11",
+    "home": "Deportivo Garcilaso",
+    "away": "Alianza Atlético de Sullana",
+    "homeScore": 2,
+    "awayScore": 1
+  },
+  {
+    "date": "2026-05-12",
+    "home": "Sport Boys",
+    "away": "Universitario de Deportes",
+    "homeScore": 0,
+    "awayScore": 0
+  },
+  {
+    "date": "2026-05-15",
+    "home": "FC Cajamarca",
+    "away": "Club Sporting Cristal",
+    "homeScore": 3,
+    "awayScore": 1
+  },
+  {
+    "date": "2026-05-16",
+    "home": "Universitario de Deportes",
+    "away": "Club Atlético Grau",
+    "homeScore": 0,
+    "awayScore": 1
+  },
+  {
+    "date": "2026-05-16",
+    "home": "Melgar",
+    "away": "Sport Huancayo",
+    "homeScore": 4,
+    "awayScore": 1
+  },
+  {
+    "date": "2026-05-16",
+    "home": "CD Juan Pablo II",
+    "away": "Alianza Atlético de Sullana",
+    "homeScore": 0,
+    "awayScore": 2
+  },
+  {
+    "date": "2026-05-16",
+    "home": "Cienciano",
+    "away": "Alianza Lima",
+    "homeScore": 0,
+    "awayScore": 1
+  },
+  {
+    "date": "2026-05-17",
+    "home": "Sport Boys",
+    "away": "Cusco FC",
+    "homeScore": 1,
+    "awayScore": 0
+  },
+  {
+    "date": "2026-05-17",
+    "home": "Asociación Deportiva Tarma",
+    "away": "Comerciantes Unidos",
+    "homeScore": 2,
+    "awayScore": 0
+  },
+  {
+    "date": "2026-05-17",
+    "home": "Deportivo Garcilaso",
+    "away": "Universidad Técnica de Cajamarca",
+    "homeScore": 2,
+    "awayScore": 0
+  },
+  {
+    "date": "2026-05-17",
+    "home": "Los Chankas CYC",
+    "away": "CD Moquegua",
+    "homeScore": 1,
+    "awayScore": 0
+  },
+  {
+    "date": "2026-05-22",
+    "home": "CD Juan Pablo II",
+    "away": "Melgar",
+    "homeScore": 1,
+    "awayScore": 1
+  },
+  {
+    "date": "2026-05-23",
+    "home": "CD Moquegua",
+    "away": "Universitario de Deportes",
+    "homeScore": 0,
+    "awayScore": 0
+  },
+  {
+    "date": "2026-05-23",
+    "home": "Universidad Técnica de Cajamarca",
+    "away": "Sport Boys",
+    "homeScore": 0,
+    "awayScore": 0
+  },
+  {
+    "date": "2026-05-23",
+    "home": "Cusco FC",
+    "away": "Club Atlético Grau",
+    "homeScore": 1,
+    "awayScore": 0
+  },
+  {
+    "date": "2026-05-24",
+    "home": "Alianza Lima",
+    "away": "Los Chankas CYC",
+    "homeScore": 3,
+    "awayScore": 0
+  },
+  {
+    "date": "2026-05-24",
+    "home": "Club Sporting Cristal",
+    "away": "Asociación Deportiva Tarma",
+    "homeScore": 2,
+    "awayScore": 1
+  },
+  {
+    "date": "2026-05-24",
+    "home": "Sport Huancayo",
+    "away": "Cienciano",
+    "homeScore": 2,
+    "awayScore": 2
+  },
+  {
+    "date": "2026-05-24",
+    "home": "Alianza Atlético de Sullana",
+    "away": "FC Cajamarca",
+    "homeScore": 1,
+    "awayScore": 1
+  },
+  {
+    "date": "2026-05-25",
+    "home": "Comerciantes Unidos",
+    "away": "Deportivo Garcilaso",
+    "homeScore": 0,
+    "awayScore": 0
+  },
+  {
+    "date": "2026-05-29",
+    "home": "Club Atlético Grau",
+    "away": "CD Moquegua",
+    "homeScore": 1,
+    "awayScore": 0
+  },
+  {
+    "date": "2026-05-30",
+    "home": "Asociación Deportiva Tarma",
+    "away": "Cusco FC",
+    "homeScore": 1,
+    "awayScore": 2
+  },
+  {
+    "date": "2026-05-30",
+    "home": "Deportivo Garcilaso",
+    "away": "CD Juan Pablo II",
+    "homeScore": 4,
+    "awayScore": 1
+  },
+  {
+    "date": "2026-05-30",
+    "home": "Sport Boys",
+    "away": "Comerciantes Unidos",
+    "homeScore": 1,
+    "awayScore": 0
+  },
+  {
+    "date": "2026-05-31",
+    "home": "Universitario de Deportes",
+    "away": "Sport Huancayo",
+    "homeScore": 2,
+    "awayScore": 1
+  },
+  {
+    "date": "2026-05-31",
+    "home": "Melgar",
+    "away": "Alianza Atlético de Sullana",
+    "homeScore": 3,
+    "awayScore": 1
+  },
+  {
+    "date": "2026-05-31",
+    "home": "FC Cajamarca",
+    "away": "Alianza Lima",
+    "homeScore": 1,
+    "awayScore": 1
+  },
+  {
+    "date": "2026-05-31",
+    "home": "Los Chankas CYC",
+    "away": "Universidad Técnica de Cajamarca",
+    "homeScore": 2,
+    "awayScore": 2
+  },
+  {
+    "date": "2026-05-31",
+    "home": "Cienciano",
+    "away": "Club Sporting Cristal",
+    "homeScore": 3,
+    "awayScore": 2
+  },
+  {
+    "date": "2026-07-17",
+    "home": "FC Cajamarca",
+    "away": "CD Juan Pablo II",
+    "homeScore": 2,
+    "awayScore": 2
+  },
+  {
+    "date": "2026-07-17",
+    "home": "Club Sporting Cristal",
+    "away": "Deportivo Garcilaso",
+    "homeScore": 1,
+    "awayScore": 0
+  },
+  {
+    "date": "2026-07-18",
+    "home": "Cienciano",
+    "away": "Melgar",
+    "homeScore": 1,
+    "awayScore": 3
+  },
+  {
+    "date": "2026-07-18",
+    "home": "CD Moquegua",
+    "away": "Comerciantes Unidos",
+    "homeScore": 2,
+    "awayScore": 2
+  },
+  {
+    "date": "2026-07-18",
+    "home": "Asociación Deportiva Tarma",
+    "away": "Universitario de Deportes",
+    "homeScore": 1,
+    "awayScore": 2
+  },
+  {
+    "date": "2026-07-18",
+    "home": "Club Atlético Grau",
+    "away": "Universidad Técnica de Cajamarca",
+    "homeScore": 3,
+    "awayScore": 1
+  },
+  {
+    "date": "2026-07-18",
+    "home": "Cusco FC",
+    "away": "Alianza Atlético de Sullana",
+    "homeScore": 4,
+    "awayScore": 1
+  },
+  {
+    "date": "2026-07-19",
+    "home": "Los Chankas CYC",
+    "away": "Sport Boys",
+    "homeScore": 1,
+    "awayScore": 0
+  },
+  {
+    "date": "2026-07-20",
+    "home": "Alianza Lima",
+    "away": "Sport Huancayo",
+    "homeScore": 2,
+    "awayScore": 1
+  },
+  {
+    "date": "2026-07-24",
+    "home": "Alianza Atlético de Sullana",
+    "away": "Los Chankas CYC",
+    "homeScore": 3,
+    "awayScore": 1
+  },
+  {
+    "date": "2026-07-25",
+    "home": "Universitario de Deportes",
+    "away": "Cusco FC",
+    "homeScore": 2,
+    "awayScore": 1
+  },
+  {
+    "date": "2026-07-25",
+    "home": "Sport Boys",
+    "away": "Asociación Deportiva Tarma",
+    "homeScore": 2,
+    "awayScore": 0
+  },
+  {
+    "date": "2026-07-25",
+    "home": "Sport Huancayo",
+    "away": "Club Atlético Grau",
+    "homeScore": 2,
+    "awayScore": 0
+  },
+  {
+    "date": "2026-07-25",
+    "home": "CD Juan Pablo II",
+    "away": "Cienciano",
+    "homeScore": 2,
+    "awayScore": 0
+  },
+  {
+    "date": "2026-07-26",
+    "home": "Melgar",
+    "away": "Club Sporting Cristal",
+    "homeScore": 2,
+    "awayScore": 1
+  },
+  {
+    "date": "2026-07-26",
+    "home": "Universidad Técnica de Cajamarca",
+    "away": "CD Moquegua",
+    "homeScore": 0,
+    "awayScore": 0
+  },
+  {
+    "date": "2026-07-26",
+    "home": "Comerciantes Unidos",
+    "away": "Alianza Lima",
+    "homeScore": 2,
+    "awayScore": 2
+  },
+  {
+    "date": "2026-07-27",
+    "home": "Deportivo Garcilaso",
+    "away": "FC Cajamarca",
+    "homeScore": 2,
+    "awayScore": 1
+  },
+  {
+    "date": "2026-07-31",
+    "home": "Los Chankas CYC",
+    "away": "Comerciantes Unidos",
+    "homeScore": 3,
+    "awayScore": 2
+  },
+  {
+    "date": "2026-08-01",
+    "home": "FC Cajamarca",
+    "away": "Sport Huancayo",
+    "homeScore": 0,
+    "awayScore": 2
+  },
+  {
+    "date": "2026-08-01",
+    "home": "Club Atlético Grau",
+    "away": "Sport Boys",
+    "homeScore": 0,
+    "awayScore": 1
+  },
+  {
+    "date": "2026-08-01",
+    "home": "Cusco FC",
+    "away": "Universidad Técnica de Cajamarca",
+    "homeScore": 4,
+    "awayScore": 1
+  },
+  {
+    "date": "2026-08-02",
+    "home": "Alianza Lima",
+    "away": "Alianza Atlético de Sullana",
+    "homeScore": 3,
+    "awayScore": 1
+  },
+  {
+    "date": "2026-08-02",
+    "home": "Club Sporting Cristal",
+    "away": "CD Juan Pablo II",
+    "homeScore": 2,
+    "awayScore": 0
+  },
+  {
+    "date": "2026-08-02",
+    "home": "Asociación Deportiva Tarma",
+    "away": "Deportivo Garcilaso",
+    "homeScore": 0,
+    "awayScore": 1
+  },
+  {
+    "date": "2026-08-02",
+    "home": "CD Moquegua",
+    "away": "Melgar",
+    "homeScore": 0,
+    "awayScore": 0
+  },
+  {
+    "date": "2026-08-02",
+    "home": "Cienciano",
+    "away": "Universitario de Deportes",
+    "homeScore": 2,
+    "awayScore": 0
+  },
+  {
+    "date": "2026-08-06",
+    "home": "Alianza Atlético de Sullana",
+    "away": "Cienciano",
+    "homeScore": 1,
+    "awayScore": 0
+  },
+  {
+    "date": "2026-08-07",
+    "home": "Sport Huancayo",
+    "away": "Los Chankas CYC",
+    "homeScore": 1,
+    "awayScore": 1
+  },
+  {
+    "date": "2026-08-07",
+    "home": "Comerciantes Unidos",
+    "away": "Cusco FC",
+    "homeScore": 3,
+    "awayScore": 1
+  },
+  {
+    "date": "2026-08-08",
+    "home": "Universitario de Deportes",
+    "away": "Club Sporting Cristal",
+    "homeScore": 1,
+    "awayScore": 1
+  },
+  {
+    "date": "2026-08-08",
+    "home": "Universidad Técnica de Cajamarca",
+    "away": "Asociación Deportiva Tarma",
+    "homeScore": 1,
+    "awayScore": 1
+  },
+  {
+    "date": "2026-08-08",
+    "home": "CD Juan Pablo II",
+    "away": "Club Atlético Grau",
+    "homeScore": 0,
+    "awayScore": 0
+  },
+  {
+    "date": "2026-08-09",
+    "home": "Sport Boys",
+    "away": "Alianza Lima",
+    "homeScore": 1,
+    "awayScore": 1
+  },
+  {
+    "date": "2026-08-09",
+    "home": "Deportivo Garcilaso",
+    "away": "CD Moquegua",
+    "homeScore": 2,
+    "awayScore": 0
+  },
+  {
+    "date": "2026-08-09",
+    "home": "Melgar",
+    "away": "FC Cajamarca",
+    "homeScore": 2,
+    "awayScore": 4
+  },
+  {
+    "date": "2026-08-14",
+    "home": "Club Atlético Grau",
+    "away": "Comerciantes Unidos",
+    "homeScore": 1,
+    "awayScore": 0
+  },
+  {
+    "date": "2026-08-14",
+    "home": "Cusco FC",
+    "away": "CD Juan Pablo II",
+    "homeScore": 2,
+    "awayScore": 0
+  },
+  {
+    "date": "2026-08-15",
+    "home": "Asociación Deportiva Tarma",
+    "away": "Alianza Atlético de Sullana",
+    "homeScore": 1,
+    "awayScore": 1
+  },
+  {
+    "date": "2026-08-15",
+    "home": "Los Chankas CYC",
+    "away": "Melgar",
+    "homeScore": 0,
+    "awayScore": 3
+  },
+  {
+    "date": "2026-08-16",
+    "home": "Alianza Lima",
+    "away": "Universidad Técnica de Cajamarca",
+    "homeScore": 1,
+    "awayScore": 0
+  },
+  {
+    "date": "2026-08-16",
+    "home": "Club Sporting Cristal",
+    "away": "Sport Huancayo",
+    "homeScore": 4,
+    "awayScore": 1
+  },
+  {
+    "date": "2026-08-16",
+    "home": "CD Moquegua",
+    "away": "Sport Boys",
+    "homeScore": 1,
+    "awayScore": 1
+  },
+  {
+    "date": "2026-08-16",
+    "home": "FC Cajamarca",
+    "away": "Universitario de Deportes",
+    "homeScore": 2,
+    "awayScore": 3
+  },
+  {
+    "date": "2026-08-16",
+    "home": "Cienciano",
+    "away": "Deportivo Garcilaso",
+    "homeScore": 0,
+    "awayScore": 0
+  },
+  {
+    "date": "2026-08-21",
+    "home": "FC Cajamarca",
+    "away": "Club Atlético Grau",
+    "homeScore": 1,
+    "awayScore": 3
+  },
+  {
+    "date": "2026-08-21",
+    "home": "Alianza Atlético de Sullana",
+    "away": "Club Sporting Cristal",
+    "homeScore": 3,
+    "awayScore": 1
+  },
+  {
+    "date": "2026-08-22",
+    "home": "Sport Huancayo",
+    "away": "CD Moquegua",
+    "homeScore": 0,
+    "awayScore": 2
+  },
+  {
+    "date": "2026-08-22",
+    "home": "Universidad Técnica de Cajamarca",
+    "away": "Comerciantes Unidos",
+    "homeScore": 1,
+    "awayScore": 3
+  },
+  {
+    "date": "2026-08-22",
+    "home": "CD Juan Pablo II",
+    "away": "Asociación Deportiva Tarma",
+    "homeScore": 5,
+    "awayScore": 1
+  },
+  {
+    "date": "2026-08-23",
+    "home": "Deportivo Garcilaso",
+    "away": "Cusco FC",
+    "homeScore": 4,
+    "awayScore": 1
+  },
+  {
+    "date": "2026-08-23",
+    "home": "Sport Boys",
+    "away": "Cienciano",
+    "homeScore": 5,
+    "awayScore": 1
+  },
+  {
+    "date": "2026-08-23",
+    "home": "Melgar",
+    "away": "Alianza Lima",
+    "homeScore": 1,
+    "awayScore": 1
+  },
+  {
+    "date": "2026-08-23",
+    "home": "Universitario de Deportes",
+    "away": "Los Chankas CYC",
+    "homeScore": 3,
+    "awayScore": 0
+  },
+  {
+    "date": "2026-08-28",
+    "home": "Comerciantes Unidos",
+    "away": "FC Cajamarca",
+    "homeScore": 2,
+    "awayScore": 3
+  },
+  {
+    "date": "2026-08-29",
+    "home": "Los Chankas CYC",
+    "away": "CD Juan Pablo II",
+    "homeScore": 3,
+    "awayScore": 4
+  },
+  {
+    "date": "2026-08-29",
+    "home": "Universidad Técnica de Cajamarca",
+    "away": "Universitario de Deportes",
+    "homeScore": 2,
+    "awayScore": 4
+  },
+  {
+    "date": "2026-08-30",
+    "home": "Alianza Lima",
+    "away": "Deportivo Garcilaso",
+    "homeScore": 0,
+    "awayScore": 1
+  },
+  {
+    "date": "2026-08-30",
+    "home": "CD Moquegua",
+    "away": "Alianza Atlético de Sullana",
+    "homeScore": 1,
+    "awayScore": 4
+  },
+  {
+    "date": "2026-08-30",
+    "home": "Asociación Deportiva Tarma",
+    "away": "Sport Huancayo",
+    "homeScore": 1,
+    "awayScore": 3
+  },
+  {
+    "date": "2026-08-30",
+    "home": "Sport Boys",
+    "away": "Club Sporting Cristal",
+    "homeScore": 1,
+    "awayScore": 0
+  },
+  {
+    "date": "2026-08-31",
+    "home": "Cienciano",
+    "away": "Cusco FC",
+    "homeScore": 1,
+    "awayScore": 2
+  },
+  {
+    "date": "2026-09-01",
+    "home": "Club Atlético Grau",
+    "away": "Melgar",
+    "homeScore": 1,
+    "awayScore": 0
+  },
+  {
+    "date": "2026-09-04",
+    "home": "FC Cajamarca",
+    "away": "Cienciano",
+    "homeScore": 2,
+    "awayScore": 5
+  },
+  {
+    "date": "2026-09-04",
+    "home": "Alianza Atlético de Sullana",
+    "away": "Universidad Técnica de Cajamarca",
+    "homeScore": 3,
+    "awayScore": 2
+  },
+  {
+    "date": "2026-09-05",
+    "home": "Sport Huancayo",
+    "away": "Sport Boys",
+    "homeScore": 2,
+    "awayScore": 1
+  },
+  {
+    "date": "2026-09-05",
+    "home": "Cusco FC",
+    "away": "CD Moquegua",
+    "homeScore": 1,
+    "awayScore": 0
+  },
+  {
+    "date": "2026-09-06",
+    "home": "Universitario de Deportes",
+    "away": "Comerciantes Unidos",
+    "homeScore": 0,
+    "awayScore": 0
+  },
+  {
+    "date": "2026-09-06",
+    "home": "Club Sporting Cristal",
+    "away": "Los Chankas CYC",
+    "homeScore": 0,
+    "awayScore": 0
+  },
+  {
+    "date": "2026-09-06",
+    "home": "Deportivo Garcilaso",
+    "away": "Club Atlético Grau",
+    "homeScore": 0,
+    "awayScore": 0
+  },
+  {
+    "date": "2026-09-06",
+    "home": "CD Juan Pablo II",
+    "away": "Alianza Lima",
+    "homeScore": 0,
+    "awayScore": 0
+  },
+  {
+    "date": "2026-09-06",
+    "home": "Melgar",
+    "away": "Asociación Deportiva Tarma",
+    "homeScore": 0,
+    "awayScore": 0
+  },
+  {
+    "date": "2026-09-11",
+    "home": "Universidad Técnica de Cajamarca",
+    "away": "CD Juan Pablo II",
+    "homeScore": 0,
+    "awayScore": 0
+  },
+  {
+    "date": "2026-09-12",
+    "home": "Cusco FC",
+    "away": "Melgar",
+    "homeScore": 0,
+    "awayScore": 0
+  },
+  {
+    "date": "2026-09-12",
+    "home": "Los Chankas CYC",
+    "away": "FC Cajamarca",
+    "homeScore": 0,
+    "awayScore": 0
+  },
+  {
+    "date": "2026-09-12",
+    "home": "Comerciantes Unidos",
+    "away": "Sport Huancayo",
+    "homeScore": 0,
+    "awayScore": 0
+  },
+  {
+    "date": "2026-09-12",
+    "home": "CD Moquegua",
+    "away": "Club Sporting Cristal",
+    "homeScore": 0,
+    "awayScore": 0
+  },
+  {
+    "date": "2026-09-13",
+    "home": "Alianza Lima",
+    "away": "Universitario de Deportes",
+    "homeScore": 0,
+    "awayScore": 0
+  },
+  {
+    "date": "2026-09-13",
+    "home": "Asociación Deportiva Tarma",
+    "away": "Cienciano",
+    "homeScore": 0,
+    "awayScore": 0
+  },
+  {
+    "date": "2026-09-13",
+    "home": "Sport Boys",
+    "away": "Deportivo Garcilaso",
+    "homeScore": 0,
+    "awayScore": 0
+  },
+  {
+    "date": "2026-09-13",
+    "home": "Club Atlético Grau",
+    "away": "Alianza Atlético de Sullana",
+    "homeScore": 0,
+    "awayScore": 0
+  },
+  {
+    "date": "2026-09-23",
+    "home": "Asociación Deportiva Tarma",
+    "away": "Cienciano",
+    "homeScore": 0,
+    "awayScore": 0
+  },
+  {
+    "date": "2026-09-18",
+    "home": "Alianza Atlético de Sullana",
+    "away": "Comerciantes Unidos",
+    "homeScore": 0,
+    "awayScore": 0
+  },
+  {
+    "date": "2026-09-19",
+    "home": "Alianza Lima",
+    "away": "Asociación Deportiva Tarma",
+    "homeScore": 0,
+    "awayScore": 0
+  },
+  {
+    "date": "2026-09-19",
+    "home": "FC Cajamarca",
+    "away": "Cusco FC",
+    "homeScore": 0,
+    "awayScore": 0
+  },
+  {
+    "date": "2026-09-19",
+    "home": "Club Sporting Cristal",
+    "away": "Club Atlético Grau",
+    "homeScore": 0,
+    "awayScore": 0
+  },
+  {
+    "date": "2026-09-19",
+    "home": "Deportivo Garcilaso",
+    "away": "Universitario de Deportes",
+    "homeScore": 0,
+    "awayScore": 0
+  },
+  {
+    "date": "2026-09-20",
+    "home": "Melgar",
+    "away": "Sport Boys",
+    "homeScore": 0,
+    "awayScore": 0
+  },
+  {
+    "date": "2026-09-20",
+    "home": "Sport Huancayo",
+    "away": "Universidad Técnica de Cajamarca",
+    "homeScore": 0,
+    "awayScore": 0
+  },
+  {
+    "date": "2026-09-20",
+    "home": "CD Juan Pablo II",
+    "away": "CD Moquegua",
+    "homeScore": 0,
+    "awayScore": 0
+  },
+  {
+    "date": "2026-09-20",
+    "home": "Cienciano",
+    "away": "Los Chankas CYC",
+    "homeScore": 0,
+    "awayScore": 0
+  },
+  {
+    "date": "2026-09-30",
+    "home": "Cienciano",
+    "away": "Los Chankas CYC",
+    "homeScore": 0,
+    "awayScore": 0
+  },
+  {
+    "date": "2026-09-26",
+    "home": "Asociación Deportiva Tarma",
+    "away": "FC Cajamarca",
+    "homeScore": 0,
+    "awayScore": 0
+  },
+  {
+    "date": "2026-10-08",
+    "home": "CD Moquegua",
+    "away": "Cienciano",
+    "homeScore": 0,
+    "awayScore": 0
+  },
+  {
+    "date": "2026-10-08",
+    "home": "Club Atlético Grau",
+    "away": "Los Chankas CYC",
+    "homeScore": 0,
+    "awayScore": 0
+  },
+  {
+    "date": "2026-10-08",
+    "home": "Comerciantes Unidos",
+    "away": "CD Juan Pablo II",
+    "homeScore": 0,
+    "awayScore": 0
+  },
+  {
+    "date": "2026-10-08",
+    "home": "Cusco FC",
+    "away": "Alianza Lima",
+    "homeScore": 0,
+    "awayScore": 0
+  },
+  {
+    "date": "2026-10-08",
+    "home": "Deportivo Garcilaso",
+    "away": "Sport Huancayo",
+    "homeScore": 0,
+    "awayScore": 0
+  },
+  {
+    "date": "2026-10-08",
+    "home": "Sport Boys",
+    "away": "Alianza Atlético de Sullana",
+    "homeScore": 0,
+    "awayScore": 0
+  },
+  {
+    "date": "2026-10-08",
+    "home": "Universidad Técnica de Cajamarca",
+    "away": "Club Sporting Cristal",
+    "homeScore": 0,
+    "awayScore": 0
+  },
+  {
+    "date": "2026-10-08",
+    "home": "Universitario de Deportes",
+    "away": "Melgar",
+    "homeScore": 0,
+    "awayScore": 0
+  },
+  {
+    "date": "2026-10-16",
+    "home": "Alianza Atlético de Sullana",
+    "away": "Universitario de Deportes",
+    "homeScore": 0,
+    "awayScore": 0
+  },
+  {
+    "date": "2026-10-16",
+    "home": "Alianza Lima",
+    "away": "Club Atlético Grau",
+    "homeScore": 0,
+    "awayScore": 0
+  },
+  {
+    "date": "2026-10-16",
+    "home": "CD Juan Pablo II",
+    "away": "Sport Boys",
+    "homeScore": 0,
+    "awayScore": 0
+  },
+  {
+    "date": "2026-10-16",
+    "home": "Cienciano",
+    "away": "Universidad Técnica de Cajamarca",
+    "homeScore": 0,
+    "awayScore": 0
+  },
+  {
+    "date": "2026-10-16",
+    "home": "Club Sporting Cristal",
+    "away": "Comerciantes Unidos",
+    "homeScore": 0,
+    "awayScore": 0
+  },
+  {
+    "date": "2026-10-16",
+    "home": "FC Cajamarca",
+    "away": "CD Moquegua",
+    "homeScore": 0,
+    "awayScore": 0
+  },
+  {
+    "date": "2026-10-16",
+    "home": "Los Chankas CYC",
+    "away": "Asociación Deportiva Tarma",
+    "homeScore": 0,
+    "awayScore": 0
+  },
+  {
+    "date": "2026-10-16",
+    "home": "Melgar",
+    "away": "Deportivo Garcilaso",
+    "homeScore": 0,
+    "awayScore": 0
+  },
+  {
+    "date": "2026-10-16",
+    "home": "Sport Huancayo",
+    "away": "Cusco FC",
+    "homeScore": 0,
+    "awayScore": 0
+  },
+  {
+    "date": "2026-10-23",
+    "home": "CD Moquegua",
+    "away": "Alianza Lima",
+    "homeScore": 0,
+    "awayScore": 0
+  },
+  {
+    "date": "2026-10-23",
+    "home": "Club Atlético Grau",
+    "away": "Asociación Deportiva Tarma",
+    "homeScore": 0,
+    "awayScore": 0
+  },
+  {
+    "date": "2026-10-23",
+    "home": "Comerciantes Unidos",
+    "away": "Cienciano",
+    "homeScore": 0,
+    "awayScore": 0
+  },
+  {
+    "date": "2026-10-23",
+    "home": "Cusco FC",
+    "away": "Club Sporting Cristal",
+    "homeScore": 0,
+    "awayScore": 0
+  },
+  {
+    "date": "2026-10-23",
+    "home": "Deportivo Garcilaso",
+    "away": "Los Chankas CYC",
+    "homeScore": 0,
+    "awayScore": 0
+  },
+  {
+    "date": "2026-10-23",
+    "home": "Sport Boys",
+    "away": "FC Cajamarca",
+    "homeScore": 0,
+    "awayScore": 0
+  },
+  {
+    "date": "2026-10-23",
+    "home": "Sport Huancayo",
+    "away": "Alianza Atlético de Sullana",
+    "homeScore": 0,
+    "awayScore": 0
+  },
+  {
+    "date": "2026-10-23",
+    "home": "Universidad Técnica de Cajamarca",
+    "away": "Melgar",
+    "homeScore": 0,
+    "awayScore": 0
+  },
+  {
+    "date": "2026-10-23",
+    "home": "Universitario de Deportes",
+    "away": "CD Juan Pablo II",
+    "homeScore": 0,
+    "awayScore": 0
+  },
+  {
+    "date": "2026-10-27",
+    "home": "Alianza Atlético de Sullana",
+    "away": "Deportivo Garcilaso",
+    "homeScore": 0,
+    "awayScore": 0
+  },
+  {
+    "date": "2026-10-27",
+    "home": "Asociación Deportiva Tarma",
+    "away": "CD Moquegua",
+    "homeScore": 0,
+    "awayScore": 0
+  },
+  {
+    "date": "2026-10-27",
+    "home": "CD Juan Pablo II",
+    "away": "Sport Huancayo",
+    "homeScore": 0,
+    "awayScore": 0
+  },
+  {
+    "date": "2026-10-27",
+    "home": "Cienciano",
+    "away": "Club Atlético Grau",
+    "homeScore": 0,
+    "awayScore": 0
+  },
+  {
+    "date": "2026-10-27",
+    "home": "Club Sporting Cristal",
+    "away": "Alianza Lima",
+    "homeScore": 0,
+    "awayScore": 0
+  },
+  {
+    "date": "2026-10-27",
+    "home": "FC Cajamarca",
+    "away": "Universidad Técnica de Cajamarca",
+    "homeScore": 0,
+    "awayScore": 0
+  },
+  {
+    "date": "2026-10-27",
+    "home": "Los Chankas CYC",
+    "away": "Cusco FC",
+    "homeScore": 0,
+    "awayScore": 0
+  },
+  {
+    "date": "2026-10-27",
+    "home": "Melgar",
+    "away": "Comerciantes Unidos",
+    "homeScore": 0,
+    "awayScore": 0
+  },
+  {
+    "date": "2026-10-27",
+    "home": "Universitario de Deportes",
+    "away": "Sport Boys",
+    "homeScore": 0,
+    "awayScore": 0
+  },
+  {
+    "date": "2026-10-30",
+    "home": "Alianza Atlético de Sullana",
+    "away": "CD Juan Pablo II",
+    "homeScore": 0,
+    "awayScore": 0
+  },
+  {
+    "date": "2026-10-30",
+    "home": "Alianza Lima",
+    "away": "Cienciano",
+    "homeScore": 0,
+    "awayScore": 0
+  },
+  {
+    "date": "2026-10-30",
+    "home": "CD Moquegua",
+    "away": "Los Chankas CYC",
+    "homeScore": 0,
+    "awayScore": 0
+  },
+  {
+    "date": "2026-10-30",
+    "home": "Club Atlético Grau",
+    "away": "Universitario de Deportes",
+    "homeScore": 0,
+    "awayScore": 0
+  },
+  {
+    "date": "2026-10-30",
+    "home": "Club Sporting Cristal",
+    "away": "FC Cajamarca",
+    "homeScore": 0,
+    "awayScore": 0
+  },
+  {
+    "date": "2026-10-30",
+    "home": "Comerciantes Unidos",
+    "away": "Asociación Deportiva Tarma",
+    "homeScore": 0,
+    "awayScore": 0
+  },
+  {
+    "date": "2026-10-30",
+    "home": "Cusco FC",
+    "away": "Sport Boys",
+    "homeScore": 0,
+    "awayScore": 0
+  },
+  {
+    "date": "2026-10-30",
+    "home": "Sport Huancayo",
+    "away": "Melgar",
+    "homeScore": 0,
+    "awayScore": 0
+  },
+  {
+    "date": "2026-10-30",
+    "home": "Universidad Técnica de Cajamarca",
+    "away": "Deportivo Garcilaso",
+    "homeScore": 0,
+    "awayScore": 0
+  },
+  {
+    "date": "2026-11-06",
+    "home": "Asociación Deportiva Tarma",
+    "away": "Club Sporting Cristal",
+    "homeScore": 0,
+    "awayScore": 0
+  },
+  {
+    "date": "2026-11-06",
+    "home": "Cienciano",
+    "away": "Sport Huancayo",
+    "homeScore": 0,
+    "awayScore": 0
+  },
+  {
+    "date": "2026-11-06",
+    "home": "Club Atlético Grau",
+    "away": "Cusco FC",
+    "homeScore": 0,
+    "awayScore": 0
+  },
+  {
+    "date": "2026-11-06",
+    "home": "Deportivo Garcilaso",
+    "away": "Comerciantes Unidos",
+    "homeScore": 0,
+    "awayScore": 0
+  },
+  {
+    "date": "2026-11-06",
+    "home": "FC Cajamarca",
+    "away": "Alianza Atlético de Sullana",
+    "homeScore": 0,
+    "awayScore": 0
+  },
+  {
+    "date": "2026-11-06",
+    "home": "Los Chankas CYC",
+    "away": "Alianza Lima",
+    "homeScore": 0,
+    "awayScore": 0
+  },
+  {
+    "date": "2026-11-06",
+    "home": "Melgar",
+    "away": "CD Juan Pablo II",
+    "homeScore": 0,
+    "awayScore": 0
+  },
+  {
+    "date": "2026-11-06",
+    "home": "Sport Boys",
+    "away": "Universidad Técnica de Cajamarca",
+    "homeScore": 0,
+    "awayScore": 0
+  },
+  {
+    "date": "2026-11-06",
+    "home": "Universitario de Deportes",
+    "away": "CD Moquegua",
+    "homeScore": 0,
+    "awayScore": 0
+  },
+  {
+    "date": "2026-11-14",
+    "home": "Alianza Atlético de Sullana",
+    "away": "Melgar",
+    "homeScore": 0,
+    "awayScore": 0
+  },
+  {
+    "date": "2026-11-14",
+    "home": "Alianza Lima",
+    "away": "FC Cajamarca",
+    "homeScore": 0,
+    "awayScore": 0
+  },
+  {
+    "date": "2026-11-14",
+    "home": "CD Juan Pablo II",
+    "away": "Deportivo Garcilaso",
+    "homeScore": 0,
+    "awayScore": 0
+  },
+  {
+    "date": "2026-11-14",
+    "home": "CD Moquegua",
+    "away": "Club Atlético Grau",
+    "homeScore": 0,
+    "awayScore": 0
+  },
+  {
+    "date": "2026-11-14",
+    "home": "Club Sporting Cristal",
+    "away": "Cienciano",
+    "homeScore": 0,
+    "awayScore": 0
+  },
+  {
+    "date": "2026-11-14",
+    "home": "Comerciantes Unidos",
+    "away": "Sport Boys",
+    "homeScore": 0,
+    "awayScore": 0
+  },
+  {
+    "date": "2026-11-14",
+    "home": "Cusco FC",
+    "away": "Asociación Deportiva Tarma",
+    "homeScore": 0,
+    "awayScore": 0
+  },
+  {
+    "date": "2026-11-14",
+    "home": "Sport Huancayo",
+    "away": "Universitario de Deportes",
+    "homeScore": 0,
+    "awayScore": 0
+  },
+  {
+    "date": "2026-11-14",
+    "home": "Universidad Técnica de Cajamarca",
+    "away": "Los Chankas CYC",
+    "homeScore": 0,
+    "awayScore": 0
+  }
+]

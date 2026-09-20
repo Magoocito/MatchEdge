@@ -6,6 +6,7 @@ using MatchEdge.Application.UseCases.Lambda;
 using MatchEdge.Application.UseCases.OddsImport;
 using MatchEdge.Application.UseCases.Probability;
 using MatchEdge.Application.UseCases.Statistics;
+using MatchEdge.Domain.Odds;
 using Microsoft.Extensions.Options;
 
 namespace MatchEdge.Application.UseCases.Backtesting;
@@ -20,6 +21,7 @@ public class BacktestingService : IBacktestingService
     private readonly ICalibrationCurveCalculator _calibrationCalculator;
     private readonly IHistoricalOddsService _historicalOddsService;
     private readonly IMatchMappingProvider _matchMappingProvider;
+    private readonly ITeamMappingProvider _teamMappingProvider;
 
     private static readonly string[] Prefixes = ["Apertura", "Clausura"];
     private const int FromRound = 1;
@@ -33,7 +35,8 @@ public class BacktestingService : IBacktestingService
         IProbabilityEngine probabilityEngine,
         ICalibrationCurveCalculator calibrationCalculator,
         IHistoricalOddsService historicalOddsService,
-        IMatchMappingProvider matchMappingProvider)
+        IMatchMappingProvider matchMappingProvider,
+        ITeamMappingProvider teamMappingProvider)
     {
         _seasonService = seasonService;
         _matchEnumerator = matchEnumerator;
@@ -43,6 +46,7 @@ public class BacktestingService : IBacktestingService
         _calibrationCalculator = calibrationCalculator;
         _historicalOddsService = historicalOddsService;
         _matchMappingProvider = matchMappingProvider;
+        _teamMappingProvider = teamMappingProvider;
     }
 
     public async Task<(BacktestSummary Summary, IReadOnlyList<BacktestMatchResult> Details)> RunAsync(
@@ -107,6 +111,16 @@ public class BacktestingService : IBacktestingService
         var matchMappingLookup = matchMappings.ToDictionary(m => m.SofaScoreEventId, m => m.SourceMatchId);
         var allOdds = _historicalOddsService.GetAll();
         var oddsLookup = allOdds.ToDictionary(o => o.MatchId, o => o);
+
+        var teamMappings = _teamMappingProvider.GetAllTeamMappings();
+        var ssIdToFootyStatsName = teamMappings
+            .Where(tm => tm.Source == "FootyStats")
+            .GroupBy(tm => tm.SofaScoreTeamId)
+            .ToDictionary(g => g.Key, g => g.First().SourceTeamName);
+        var ssIdToSofaScoreName = teamMappings
+            .Where(tm => tm.Source == "FootyStats")
+            .GroupBy(tm => tm.SofaScoreTeamId)
+            .ToDictionary(g => g.Key, g => g.First().SofaScoreTeamName);
 
         for (var i = 0; i < filteredMatches.Count; i++)
         {
@@ -184,26 +198,56 @@ public class BacktestingService : IBacktestingService
                 }
                 else
                 {
-                    var normalizedHome = NormalizeTeamName(match.Event.HomeTeam.Name);
-                    var normalizedAway = NormalizeTeamName(match.Event.AwayTeam.Name);
+                    // Try FootyStats names first, then SofaScore names as fallback
+                    ssIdToFootyStatsName.TryGetValue(homeTeamId, out var fsHomeName);
+                    ssIdToFootyStatsName.TryGetValue(awayTeamId, out var fsAwayName);
+                    ssIdToSofaScoreName.TryGetValue(homeTeamId, out var ssHomeName);
+                    ssIdToSofaScoreName.TryGetValue(awayTeamId, out var ssAwayName);
 
-                    var candidate = allOdds.FirstOrDefault(o =>
-                        o.MatchDate.Date == matchDate.Date &&
-                        NormalizeTeamName(o.HomeTeamName) == normalizedHome &&
-                        NormalizeTeamName(o.AwayTeamName) == normalizedAway);
-
-                    if (candidate != null)
+                    if (fsHomeName != null && fsAwayName != null)
                     {
-                        var totalImplied = candidate.ImpliedHomeWinProbability + candidate.ImpliedDrawProbability + candidate.ImpliedAwayWinProbability;
-                        if (totalImplied > 0)
+                        var nH = NormalizeTeamName(fsHomeName);
+                        var nA = NormalizeTeamName(fsAwayName);
+
+                        // Exact date
+                        var candidate = allOdds.FirstOrDefault(o =>
+                            o.MatchDate.Date == matchDate.Date &&
+                            NormalizeTeamName(o.HomeTeamName) == nH &&
+                            NormalizeTeamName(o.AwayTeamName) == nA);
+
+                        // ±1 day
+                        if (candidate == null)
                         {
-                            result = result with
+                            candidate = allOdds.FirstOrDefault(o =>
+                                Math.Abs((o.MatchDate.Date - matchDate.Date).TotalDays) <= 1 &&
+                                NormalizeTeamName(o.HomeTeamName) == nH &&
+                                NormalizeTeamName(o.AwayTeamName) == nA);
+                        }
+
+                        // SofaScore names as fallback
+                        if (candidate == null && ssHomeName != null && ssAwayName != null)
+                        {
+                            var nSH = NormalizeTeamName(ssHomeName);
+                            var nSA = NormalizeTeamName(ssAwayName);
+                            candidate = allOdds.FirstOrDefault(o =>
+                                o.MatchDate.Date == matchDate.Date &&
+                                NormalizeTeamName(o.HomeTeamName) == nSH &&
+                                NormalizeTeamName(o.AwayTeamName) == nSA);
+                        }
+
+                        if (candidate != null)
+                        {
+                            var totalImplied = candidate.ImpliedHomeWinProbability + candidate.ImpliedDrawProbability + candidate.ImpliedAwayWinProbability;
+                            if (totalImplied > 0)
                             {
-                                Market_HomeWinProb = candidate.ImpliedHomeWinProbability / totalImplied,
-                                Market_DrawProb = candidate.ImpliedDrawProbability / totalImplied,
-                                Market_AwayWinProb = candidate.ImpliedAwayWinProbability / totalImplied,
-                                MarketOddsId = candidate.MatchId
-                            };
+                                result = result with
+                                {
+                                    Market_HomeWinProb = candidate.ImpliedHomeWinProbability / totalImplied,
+                                    Market_DrawProb = candidate.ImpliedDrawProbability / totalImplied,
+                                    Market_AwayWinProb = candidate.ImpliedAwayWinProbability / totalImplied,
+                                    MarketOddsId = candidate.MatchId
+                                };
+                            }
                         }
                     }
                 }

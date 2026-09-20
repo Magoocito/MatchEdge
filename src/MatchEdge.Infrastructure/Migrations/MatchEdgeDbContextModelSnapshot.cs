@@ -15,7 +15,85 @@ namespace MatchEdge.Infrastructure.Migrations
         protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
-            modelBuilder.HasAnnotation("ProductVersion", "8.0.30");
+            modelBuilder.HasAnnotation("ProductVersion", "8.0.31");
+
+            modelBuilder.Entity("MatchEdge.Infrastructure.Data.Entities.DailyPickEntity", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Classification")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<double>("Edge")
+                        .HasPrecision(10, 4)
+                        .HasColumnType("REAL");
+
+                    b.Property<double>("HitRate")
+                        .HasColumnType("REAL");
+
+                    b.Property<string>("Market")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<double>("Odds")
+                        .HasPrecision(10, 4)
+                        .HasColumnType("REAL");
+
+                    b.Property<int?>("PickOutcomeId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("SampleSize")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<double>("Score")
+                        .HasPrecision(10, 4)
+                        .HasColumnType("REAL");
+
+                    b.Property<string>("Source")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<double>("StakeUnits")
+                        .HasPrecision(10, 4)
+                        .HasColumnType("REAL");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Team")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("TrendResultId")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Date");
+
+                    b.HasIndex("Status");
+
+                    b.HasIndex("TrendResultId");
+
+                    b.HasIndex("Date", "Team", "Market")
+                        .IsUnique();
+
+                    b.ToTable("DailyPicks");
+                });
 
             modelBuilder.Entity("MatchEdge.Infrastructure.Data.Entities.HistoricalOddsEntity", b =>
                 {
@@ -127,6 +205,63 @@ namespace MatchEdge.Infrastructure.Migrations
                     b.ToTable("MatchMappings");
                 });
 
+            modelBuilder.Entity("MatchEdge.Infrastructure.Data.Entities.PickOutcomeEntity", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<double>("BalanceAfter")
+                        .HasPrecision(10, 4)
+                        .HasColumnType("REAL");
+
+                    b.Property<int>("DailyPickId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime>("EvaluatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Market")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("MatchDate")
+                        .HasColumnType("TEXT");
+
+                    b.Property<double>("Odds")
+                        .HasPrecision(10, 4)
+                        .HasColumnType("REAL");
+
+                    b.Property<double>("Profit")
+                        .HasPrecision(10, 4)
+                        .HasColumnType("REAL");
+
+                    b.Property<double>("ProfitUnits")
+                        .HasPrecision(10, 4)
+                        .HasColumnType("REAL");
+
+                    b.Property<string>("ResultDetail")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Team")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("Won")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DailyPickId");
+
+                    b.HasIndex("MatchDate");
+
+                    b.HasIndex("Won");
+
+                    b.ToTable("PickOutcomes");
+                });
+
             modelBuilder.Entity("MatchEdge.Infrastructure.Data.Entities.TeamMappingEntity", b =>
                 {
                     b.Property<int>("Id")
@@ -165,6 +300,117 @@ namespace MatchEdge.Infrastructure.Migrations
                         .IsUnique();
 
                     b.ToTable("TeamMappings");
+                });
+
+            modelBuilder.Entity("MatchEdge.Infrastructure.Data.Entities.TrendResultEntity", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<double>("AvgValue")
+                        .HasColumnType("REAL");
+
+                    b.Property<string>("AwayTeam")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Classification")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<int?>("DailyPickId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<double>("Edge")
+                        .HasPrecision(10, 4)
+                        .HasColumnType("REAL");
+
+                    b.Property<string>("Fixture")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<long>("FixtureApid")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("FixtureSlug")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("HitCount")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("HitDenominator")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("HitNumerator")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<double>("HitRate")
+                        .HasColumnType("REAL");
+
+                    b.Property<string>("HomeTeam")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("IsSelected")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("League")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Market")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<double>("Odds")
+                        .HasPrecision(10, 4)
+                        .HasColumnType("REAL");
+
+                    b.Property<int>("OppHitRate")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<double>("RatePercentage")
+                        .HasColumnType("REAL");
+
+                    b.Property<double>("Score")
+                        .HasPrecision(10, 4)
+                        .HasColumnType("REAL");
+
+                    b.Property<DateTime>("ScrapedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Team")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("TeamSlug")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Venue")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Classification");
+
+                    b.HasIndex("FixtureApid");
+
+                    b.HasIndex("IsSelected");
+
+                    b.HasIndex("ScrapedAt");
+
+                    b.HasIndex("FixtureApid", "Team", "Market");
+
+                    b.ToTable("TrendResults");
                 });
 #pragma warning restore 612, 618
         }
