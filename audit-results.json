@@ -1,0 +1,14 @@
+{
+  "total": 25,
+  "exactMatch": 2,
+  "fuzzyOnly": 6,
+  "notFound": 17,
+  "scoreCorrect": 6,
+  "scoreWrong": 2,
+  "nameMap": {
+    "Atlético Grau -> Club Atlético Grau": 2,
+    "César Vallejo -> Universidad César Vallejo": 2,
+    "Carlos Manucci -> Carlos A. Mannucci": 1,
+    "Ayacucho -> Ayacucho FC": 1
+  }
+}

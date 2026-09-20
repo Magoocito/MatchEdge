@@ -1,0 +1,822 @@
+﻿{
+    "data":  [
+                 {
+                     "id":  "1008523934",
+                     "timestamp":  "2026-09-19T19:30:00.000Z",
+                     "name":  "Juventude",
+                     "slug":  "319541-juventude",
+                     "logo":  "https://cdn.footymetrics.com/teams/48.webp",
+                     "line":  "14.5",
+                     "direction":  "under",
+                     "key":  "corners",
+                     "type":  "under_145_corners_total",
+                     "party":  "total",
+                     "market":  "total_corners",
+                     "vt":  172,
+                     "va":  "8.60",
+                     "percentage":  100,
+                     "bestCount":  20,
+                     "oppHitRate":  "60.0",
+                     "oppCount":  6,
+                     "oppTotal":  10,
+                     "bestTotal":  20,
+                     "history":  [
+                                     {
+                                         "h":  true,
+                                         "l":  {
+                                                   "logo":  "https://cdn.footymetrics.com/leagues/651.webp",
+                                                   "name":  "Serie B"
+                                               },
+                                         "t":  "2026-09-13T21:00:00.000Z",
+                                         "va":  3,
+                                         "vf":  3,
+                                         "vt":  6,
+                                         "met":  true,
+                                         "opp":  {
+                                                     "code":  "ACL",
+                                                     "logo":  "https://cdn.footymetrics.com/teams/234948.webp",
+                                                     "name":  "Athletic Club"
+                                                 }
+                                     },
+                                     {
+                                         "h":  false,
+                                         "l":  {
+                                                   "logo":  "https://cdn.footymetrics.com/leagues/651.webp",
+                                                   "name":  "Serie B"
+                                               },
+                                         "t":  "2026-09-09T00:00:00.000Z",
+                                         "va":  10,
+                                         "vf":  2,
+                                         "vt":  12,
+                                         "met":  true,
+                                         "opp":  {
+                                                     "code":  "CEC",
+                                                     "logo":  "https://cdn.footymetrics.com/teams/6036.webp",
+                                                     "name":  "CriciÃºma"
+                                                 }
+                                     },
+                                     {
+                                         "h":  true,
+                                         "l":  {
+                                                   "logo":  "https://cdn.footymetrics.com/leagues/651.webp",
+                                                   "name":  "Serie B"
+                                               },
+                                         "t":  "2026-09-05T21:00:00.000Z",
+                                         "va":  3,
+                                         "vf":  3,
+                                         "vt":  6,
+                                         "met":  true,
+                                         "opp":  {
+                                                     "code":  "AGO",
+                                                     "logo":  "https://cdn.footymetrics.com/teams/8331.webp",
+                                                     "name":  "AtlÃ©tico GO"
+                                                 }
+                                     },
+                                     {
+                                         "h":  false,
+                                         "l":  {
+                                                   "logo":  "https://cdn.footymetrics.com/leagues/651.webp",
+                                                   "name":  "Serie B"
+                                               },
+                                         "t":  "2026-09-01T22:30:00.000Z",
+                                         "va":  5,
+                                         "vf":  1,
+                                         "vt":  6,
+                                         "met":  true,
+                                         "opp":  {
+                                                     "code":  "LON",
+                                                     "logo":  "https://cdn.footymetrics.com/teams/9181.webp",
+                                                     "name":  "Londrina"
+                                                 }
+                                     },
+                                     {
+                                         "h":  true,
+                                         "l":  {
+                                                   "logo":  "https://cdn.footymetrics.com/leagues/651.webp",
+                                                   "name":  "Serie B"
+                                               },
+                                         "t":  "2026-08-25T22:30:00.000Z",
+                                         "va":  8,
+                                         "vf":  5,
+                                         "vt":  13,
+                                         "met":  true,
+                                         "opp":  {
+                                                     "code":  "CRB",
+                                                     "logo":  "https://cdn.footymetrics.com/teams/6188.webp",
+                                                     "name":  "CRB"
+                                                 }
+                                     },
+                                     {
+                                         "h":  false,
+                                         "l":  {
+                                                   "logo":  "https://cdn.footymetrics.com/leagues/651.webp",
+                                                   "name":  "Serie B"
+                                               },
+                                         "t":  "2026-08-19T00:35:00.000Z",
+                                         "va":  4,
+                                         "vf":  3,
+                                         "vt":  7,
+                                         "met":  true,
+                                         "opp":  {
+                                                     "code":  "GOI",
+                                                     "logo":  "https://cdn.footymetrics.com/teams/9323.webp",
+                                                     "name":  "GoiÃ¡s"
+                                                 }
+                                     },
+                                     {
+                                         "h":  true,
+                                         "l":  {
+                                                   "logo":  "https://cdn.footymetrics.com/leagues/651.webp",
+                                                   "name":  "Serie B"
+                                               },
+                                         "t":  "2026-08-15T21:30:00.000Z",
+                                         "va":  4,
+                                         "vf":  5,
+                                         "vt":  9,
+                                         "met":  true,
+                                         "opp":  {
+                                                     "code":  "FOR",
+                                                     "logo":  "https://cdn.footymetrics.com/teams/3621.webp",
+                                                     "name":  "Fortaleza"
+                                                 }
+                                     },
+                                     {
+                                         "h":  false,
+                                         "l":  {
+                                                   "logo":  "https://cdn.footymetrics.com/leagues/651.webp",
+                                                   "name":  "Serie B"
+                                               },
+                                         "t":  "2026-08-09T19:00:00.000Z",
+                                         "va":  8,
+                                         "vf":  6,
+                                         "vt":  14,
+                                         "met":  true,
+                                         "opp":  {
+                                                     "code":  "NOV",
+                                                     "logo":  "https://cdn.footymetrics.com/teams/6370.webp",
+                                                     "name":  "Novorizontino"
+                                                 }
+                                     },
+                                     {
+                                         "h":  true,
+                                         "l":  {
+                                                   "logo":  "https://cdn.footymetrics.com/leagues/654.webp",
+                                                   "name":  "Copa do Brasil"
+                                               },
+                                         "t":  "2026-08-04T22:30:00.000Z",
+                                         "va":  4,
+                                         "vf":  3,
+                                         "vt":  7,
+                                         "met":  true,
+                                         "opp":  {
+                                                     "code":  "AMN",
+                                                     "logo":  "https://cdn.footymetrics.com/teams/3427.webp",
+                                                     "name":  "AtlÃ©tico Mineiro"
+                                                 }
+                                     },
+                                     {
+                                         "h":  false,
+                                         "l":  {
+                                                   "logo":  "https://cdn.footymetrics.com/leagues/654.webp",
+                                                   "name":  "Copa do Brasil"
+                                               },
+                                         "t":  "2026-08-01T22:30:00.000Z",
+                                         "va":  7,
+                                         "vf":  1,
+                                         "vt":  8,
+                                         "met":  true,
+                                         "opp":  {
+                                                     "code":  "AMN",
+                                                     "logo":  "https://cdn.footymetrics.com/teams/3427.webp",
+                                                     "name":  "AtlÃ©tico Mineiro"
+                                                 }
+                                     },
+                                     {
+                                         "h":  true,
+                                         "l":  {
+                                                   "logo":  "https://cdn.footymetrics.com/leagues/651.webp",
+                                                   "name":  "Serie B"
+                                               },
+                                         "t":  "2026-07-28T22:30:00.000Z",
+                                         "va":  3,
+                                         "vf":  3,
+                                         "vt":  6,
+                                         "met":  true,
+                                         "opp":  {
+                                                     "code":  "AVA",
+                                                     "logo":  "https://cdn.footymetrics.com/teams/6468.webp",
+                                                     "name":  "AvaÃ­"
+                                                 }
+                                     },
+                                     {
+                                         "h":  false,
+                                         "l":  {
+                                                   "logo":  "https://cdn.footymetrics.com/leagues/651.webp",
+                                                   "name":  "Serie B"
+                                               },
+                                         "t":  "2026-07-24T00:30:00.000Z",
+                                         "va":  4,
+                                         "vf":  9,
+                                         "vt":  13,
+                                         "met":  true,
+                                         "opp":  {
+                                                     "code":  "BOT",
+                                                     "logo":  "https://cdn.footymetrics.com/teams/104.webp",
+                                                     "name":  "Botafogo SP"
+                                                 }
+                                     },
+                                     {
+                                         "h":  true,
+                                         "l":  {
+                                                   "logo":  "https://cdn.footymetrics.com/leagues/651.webp",
+                                                   "name":  "Serie B"
+                                               },
+                                         "t":  "2026-07-17T22:00:00.000Z",
+                                         "va":  5,
+                                         "vf":  3,
+                                         "vt":  8,
+                                         "met":  true,
+                                         "opp":  {
+                                                     "code":  "CUI",
+                                                     "logo":  "https://cdn.footymetrics.com/teams/5463.webp",
+                                                     "name":  "CuiabÃ¡"
+                                                 }
+                                     },
+                                     {
+                                         "h":  true,
+                                         "l":  {
+                                                   "logo":  "https://cdn.footymetrics.com/leagues/651.webp",
+                                                   "name":  "Serie B"
+                                               },
+                                         "t":  "2026-07-10T22:00:00.000Z",
+                                         "va":  2,
+                                         "vf":  5,
+                                         "vt":  7,
+                                         "met":  true,
+                                         "opp":  {
+                                                     "code":  "VNO",
+                                                     "logo":  "https://cdn.footymetrics.com/teams/11941.webp",
+                                                     "name":  "Vila Nova"
+                                                 }
+                                     },
+                                     {
+                                         "h":  false,
+                                         "l":  {
+                                                   "logo":  "https://cdn.footymetrics.com/leagues/651.webp",
+                                                   "name":  "Serie B"
+                                               },
+                                         "t":  "2026-07-05T23:30:00.000Z",
+                                         "va":  6,
+                                         "vf":  2,
+                                         "vt":  8,
+                                         "met":  true,
+                                         "opp":  {
+                                                     "code":  "NÃU",
+                                                     "logo":  "https://cdn.footymetrics.com/teams/12157.webp",
+                                                     "name":  "NÃ¡utico"
+                                                 }
+                                     },
+                                     {
+                                         "h":  true,
+                                         "l":  {
+                                                   "logo":  "https://cdn.footymetrics.com/leagues/651.webp",
+                                                   "name":  "Serie B"
+                                               },
+                                         "t":  "2026-06-28T19:00:00.000Z",
+                                         "va":  4,
+                                         "vf":  6,
+                                         "vt":  10,
+                                         "met":  true,
+                                         "opp":  {
+                                                     "code":  "CEA",
+                                                     "logo":  "https://cdn.footymetrics.com/teams/12220.webp",
+                                                     "name":  "CearÃ¡"
+                                                 }
+                                     },
+                                     {
+                                         "h":  false,
+                                         "l":  {
+                                                   "logo":  "https://cdn.footymetrics.com/leagues/651.webp",
+                                                   "name":  "Serie B"
+                                               },
+                                         "t":  "2026-06-21T20:00:00.000Z",
+                                         "va":  1,
+                                         "vf":  4,
+                                         "vt":  5,
+                                         "met":  true,
+                                         "opp":  {
+                                                     "code":  "SBE",
+                                                     "logo":  "https://cdn.footymetrics.com/teams/6276.webp",
+                                                     "name":  "SÃ£o Bernardo"
+                                                 }
+                                     },
+                                     {
+                                         "h":  true,
+                                         "l":  {
+                                                   "logo":  "https://cdn.footymetrics.com/leagues/651.webp",
+                                                   "name":  "Serie B"
+                                               },
+                                         "t":  "2026-06-14T14:00:00.000Z",
+                                         "va":  2,
+                                         "vf":  7,
+                                         "vt":  9,
+                                         "met":  true,
+                                         "opp":  {
+                                                     "code":  "PPR",
+                                                     "logo":  "https://cdn.footymetrics.com/teams/3931.webp",
+                                                     "name":  "Ponte Preta"
+                                                 }
+                                     },
+                                     {
+                                         "h":  false,
+                                         "l":  {
+                                                   "logo":  "https://cdn.footymetrics.com/leagues/651.webp",
+                                                   "name":  "Serie B"
+                                               },
+                                         "t":  "2026-06-05T23:00:00.000Z",
+                                         "va":  4,
+                                         "vf":  4,
+                                         "vt":  8,
+                                         "met":  true,
+                                         "opp":  {
+                                                     "code":  "OPR",
+                                                     "logo":  "https://cdn.footymetrics.com/teams/14710.webp",
+                                                     "name":  "OperÃ¡rio PR"
+                                                 }
+                                     },
+                                     {
+                                         "h":  true,
+                                         "l":  {
+                                                   "logo":  "https://cdn.footymetrics.com/leagues/651.webp",
+                                                   "name":  "Serie B"
+                                               },
+                                         "t":  "2026-05-30T00:00:00.000Z",
+                                         "va":  5,
+                                         "vf":  5,
+                                         "vt":  10,
+                                         "met":  true,
+                                         "opp":  {
+                                                     "code":  "AMI",
+                                                     "logo":  "https://cdn.footymetrics.com/teams/6325.webp",
+                                                     "name":  "AmÃ©rica Mineiro"
+                                                 }
+                                     }
+                                 ],
+                     "isNational":  false,
+                     "Fixture":  {
+                                     "timestamp":  "2026-09-19T19:30:00+00:00",
+                                     "slug":  "32833743-serie-b-sport-recife-juventude",
+                                     "Home":  {
+                                                  "code":  "SCR",
+                                                  "name":  "Sport Recife",
+                                                  "logo":  "https://cdn.footymetrics.com/teams/2352.webp",
+                                                  "isNational":  false
+                                              },
+                                     "Away":  {
+                                                  "code":  "ECJ",
+                                                  "name":  "Juventude",
+                                                  "logo":  "https://cdn.footymetrics.com/teams/48.webp",
+                                                  "isNational":  false
+                                              },
+                                     "h":  false
+                                 },
+                     "Team":  {
+                                  "logo":  "https://cdn.footymetrics.com/teams/48.webp",
+                                  "name":  "Juventude",
+                                  "code":  "ECJ",
+                                  "slug":  "juventude",
+                                  "id":  319541
+                              },
+                     "odds":  [
+                                  {
+                                      "bk":  2,
+                                      "yes":  null,
+                                      "no":  null,
+                                      "over":  5.5,
+                                      "under":  1.1,
+                                      "most":  null
+                                  }
+                              ],
+                     "seasonAvg":  "10.50",
+                     "homeSeasonAvg":  "10.50",
+                     "awaySeasonAvg":  "10.50",
+                     "oppAvg":  10.8,
+                     "oppHomeAvg":  10.8,
+                     "oppAwayAvg":  10.8,
+                     "loc":  "all",
+                     "apid":  48
+                 },
+                 {
+                     "id":  "1037993981",
+                     "timestamp":  "2026-09-19T23:30:00.000Z",
+                     "name":  "Vasco da Gama",
+                     "slug":  "319555-vasco-da-gama",
+                     "logo":  "https://cdn.footymetrics.com/teams/696.webp",
+                     "line":  "14.5",
+                     "direction":  "under",
+                     "key":  "corners",
+                     "type":  "under_145_corners_total",
+                     "party":  "total",
+                     "market":  "total_corners",
+                     "vt":  167,
+                     "va":  "8.35",
+                     "percentage":  100,
+                     "bestCount":  20,
+                     "oppHitRate":  "90.0",
+                     "oppCount":  9,
+                     "oppTotal":  10,
+                     "bestTotal":  20,
+                     "history":  [
+                                     {
+                                         "h":  true,
+                                         "l":  {
+                                                   "logo":  "https://cdn.footymetrics.com/leagues/1116.webp",
+                                                   "name":  "Copa Sudamericana"
+                                               },
+                                         "t":  "2026-09-15T22:00:00.000Z",
+                                         "va":  5,
+                                         "vf":  3,
+                                         "vt":  8,
+                                         "met":  true,
+                                         "opp":  {
+                                                     "code":  "SAN",
+                                                     "logo":  "https://cdn.footymetrics.com/teams/12506.webp",
+                                                     "name":  "Santa Fe"
+                                                 }
+                                     },
+                                     {
+                                         "h":  false,
+                                         "l":  {
+                                                   "logo":  "https://cdn.footymetrics.com/leagues/648.webp",
+                                                   "name":  "Serie A"
+                                               },
+                                         "t":  "2026-09-12T19:00:00.000Z",
+                                         "va":  3,
+                                         "vf":  5,
+                                         "vt":  8,
+                                         "met":  true,
+                                         "opp":  {
+                                                     "code":  "GRE",
+                                                     "logo":  "https://cdn.footymetrics.com/teams/2925.webp",
+                                                     "name":  "GrÃªmio"
+                                                 }
+                                     },
+                                     {
+                                         "h":  false,
+                                         "l":  {
+                                                   "logo":  "https://cdn.footymetrics.com/leagues/1116.webp",
+                                                   "name":  "Copa Sudamericana"
+                                               },
+                                         "t":  "2026-09-08T22:00:00.000Z",
+                                         "va":  5,
+                                         "vf":  5,
+                                         "vt":  10,
+                                         "met":  true,
+                                         "opp":  {
+                                                     "code":  "SAN",
+                                                     "logo":  "https://cdn.footymetrics.com/teams/12506.webp",
+                                                     "name":  "Santa Fe"
+                                                 }
+                                     },
+                                     {
+                                         "h":  false,
+                                         "l":  {
+                                                   "logo":  "https://cdn.footymetrics.com/leagues/648.webp",
+                                                   "name":  "Serie A"
+                                               },
+                                         "t":  "2026-09-06T00:00:00.000Z",
+                                         "va":  6,
+                                         "vf":  6,
+                                         "vt":  12,
+                                         "met":  true,
+                                         "opp":  {
+                                                     "code":  "FLU",
+                                                     "logo":  "https://cdn.footymetrics.com/teams/1095.webp",
+                                                     "name":  "Fluminense"
+                                                 }
+                                     },
+                                     {
+                                         "h":  false,
+                                         "l":  {
+                                                   "logo":  "https://cdn.footymetrics.com/leagues/654.webp",
+                                                   "name":  "Copa do Brasil"
+                                               },
+                                         "t":  "2026-09-03T00:30:00.000Z",
+                                         "va":  0,
+                                         "vf":  3,
+                                         "vt":  3,
+                                         "met":  true,
+                                         "opp":  {
+                                                     "code":  "VTO",
+                                                     "logo":  "https://cdn.footymetrics.com/teams/3440.webp",
+                                                     "name":  "VitÃ³ria"
+                                                 }
+                                     },
+                                     {
+                                         "h":  true,
+                                         "l":  {
+                                                   "logo":  "https://cdn.footymetrics.com/leagues/648.webp",
+                                                   "name":  "Serie A"
+                                               },
+                                         "t":  "2026-08-30T00:20:00.000Z",
+                                         "va":  3,
+                                         "vf":  11,
+                                         "vt":  14,
+                                         "met":  true,
+                                         "opp":  {
+                                                     "code":  "CRZ",
+                                                     "logo":  "https://cdn.footymetrics.com/teams/3371.webp",
+                                                     "name":  "Cruzeiro"
+                                                 }
+                                     },
+                                     {
+                                         "h":  true,
+                                         "l":  {
+                                                   "logo":  "https://cdn.footymetrics.com/leagues/654.webp",
+                                                   "name":  "Copa do Brasil"
+                                               },
+                                         "t":  "2026-08-27T00:30:00.000Z",
+                                         "va":  5,
+                                         "vf":  1,
+                                         "vt":  6,
+                                         "met":  true,
+                                         "opp":  {
+                                                     "code":  "VTO",
+                                                     "logo":  "https://cdn.footymetrics.com/teams/3440.webp",
+                                                     "name":  "VitÃ³ria"
+                                                 }
+                                     },
+                                     {
+                                         "h":  false,
+                                         "l":  {
+                                                   "logo":  "https://cdn.footymetrics.com/leagues/648.webp",
+                                                   "name":  "Serie A"
+                                               },
+                                         "t":  "2026-08-23T19:00:00.000Z",
+                                         "va":  5,
+                                         "vf":  3,
+                                         "vt":  8,
+                                         "met":  true,
+                                         "opp":  {
+                                                     "code":  "PAL",
+                                                     "logo":  "https://cdn.footymetrics.com/teams/3422.webp",
+                                                     "name":  "Palmeiras"
+                                                 }
+                                     },
+                                     {
+                                         "h":  false,
+                                         "l":  {
+                                                   "logo":  "https://cdn.footymetrics.com/leagues/1116.webp",
+                                                   "name":  "Copa Sudamericana"
+                                               },
+                                         "t":  "2026-08-20T22:00:00.000Z",
+                                         "va":  7,
+                                         "vf":  3,
+                                         "vt":  10,
+                                         "met":  true,
+                                         "opp":  {
+                                                     "code":  "OLI",
+                                                     "logo":  "https://cdn.footymetrics.com/teams/15606.webp",
+                                                     "name":  "Olimpia"
+                                                 }
+                                     },
+                                     {
+                                         "h":  true,
+                                         "l":  {
+                                                   "logo":  "https://cdn.footymetrics.com/leagues/648.webp",
+                                                   "name":  "Serie A"
+                                               },
+                                         "t":  "2026-08-16T19:00:00.000Z",
+                                         "va":  2,
+                                         "vf":  4,
+                                         "vt":  6,
+                                         "met":  true,
+                                         "opp":  {
+                                                     "code":  "STS",
+                                                     "logo":  "https://cdn.footymetrics.com/teams/3684.webp",
+                                                     "name":  "Santos"
+                                                 }
+                                     },
+                                     {
+                                         "h":  true,
+                                         "l":  {
+                                                   "logo":  "https://cdn.footymetrics.com/leagues/1116.webp",
+                                                   "name":  "Copa Sudamericana"
+                                               },
+                                         "t":  "2026-08-13T22:00:00.000Z",
+                                         "va":  0,
+                                         "vf":  11,
+                                         "vt":  11,
+                                         "met":  true,
+                                         "opp":  {
+                                                     "code":  "OLI",
+                                                     "logo":  "https://cdn.footymetrics.com/teams/15606.webp",
+                                                     "name":  "Olimpia"
+                                                 }
+                                     },
+                                     {
+                                         "h":  false,
+                                         "l":  {
+                                                   "logo":  "https://cdn.footymetrics.com/leagues/648.webp",
+                                                   "name":  "Serie A"
+                                               },
+                                         "t":  "2026-08-09T19:00:00.000Z",
+                                         "va":  4,
+                                         "vf":  6,
+                                         "vt":  10,
+                                         "met":  true,
+                                         "opp":  {
+                                                     "code":  "BAH",
+                                                     "logo":  "https://cdn.footymetrics.com/teams/692.webp",
+                                                     "name":  "Bahia"
+                                                 }
+                                     },
+                                     {
+                                         "h":  false,
+                                         "l":  {
+                                                   "logo":  "https://cdn.footymetrics.com/leagues/654.webp",
+                                                   "name":  "Copa do Brasil"
+                                               },
+                                         "t":  "2026-08-06T00:30:00.000Z",
+                                         "va":  1,
+                                         "vf":  5,
+                                         "vt":  6,
+                                         "met":  true,
+                                         "opp":  {
+                                                     "code":  "FLU",
+                                                     "logo":  "https://cdn.footymetrics.com/teams/1095.webp",
+                                                     "name":  "Fluminense"
+                                                 }
+                                     },
+                                     {
+                                         "h":  true,
+                                         "l":  {
+                                                   "logo":  "https://cdn.footymetrics.com/leagues/654.webp",
+                                                   "name":  "Copa do Brasil"
+                                               },
+                                         "t":  "2026-08-01T20:30:00.000Z",
+                                         "va":  3,
+                                         "vf":  2,
+                                         "vt":  5,
+                                         "met":  true,
+                                         "opp":  {
+                                                     "code":  "FLU",
+                                                     "logo":  "https://cdn.footymetrics.com/teams/1095.webp",
+                                                     "name":  "Fluminense"
+                                                 }
+                                     },
+                                     {
+                                         "h":  true,
+                                         "l":  {
+                                                   "logo":  "https://cdn.footymetrics.com/leagues/1116.webp",
+                                                   "name":  "Copa Sudamericana"
+                                               },
+                                         "t":  "2026-07-29T22:00:00.000Z",
+                                         "va":  4,
+                                         "vf":  3,
+                                         "vt":  7,
+                                         "met":  true,
+                                         "opp":  {
+                                                     "code":  "DIM",
+                                                     "logo":  "https://cdn.footymetrics.com/teams/332.webp",
+                                                     "name":  "Independiente MedellÃ­n"
+                                                 }
+                                     },
+                                     {
+                                         "h":  true,
+                                         "l":  {
+                                                   "logo":  "https://cdn.footymetrics.com/leagues/648.webp",
+                                                   "name":  "Serie A"
+                                               },
+                                         "t":  "2026-07-25T23:30:00.000Z",
+                                         "va":  5,
+                                         "vf":  9,
+                                         "vt":  14,
+                                         "met":  true,
+                                         "opp":  {
+                                                     "code":  "MIR",
+                                                     "logo":  "https://cdn.footymetrics.com/teams/11126.webp",
+                                                     "name":  "Mirassol"
+                                                 }
+                                     },
+                                     {
+                                         "h":  false,
+                                         "l":  {
+                                                   "logo":  "https://cdn.footymetrics.com/leagues/1116.webp",
+                                                   "name":  "Copa Sudamericana"
+                                               },
+                                         "t":  "2026-07-22T22:00:00.000Z",
+                                         "va":  3,
+                                         "vf":  6,
+                                         "vt":  9,
+                                         "met":  true,
+                                         "opp":  {
+                                                     "code":  "DIM",
+                                                     "logo":  "https://cdn.footymetrics.com/teams/332.webp",
+                                                     "name":  "Independiente MedellÃ­n"
+                                                 }
+                                     },
+                                     {
+                                         "h":  false,
+                                         "l":  {
+                                                   "logo":  "https://cdn.footymetrics.com/leagues/648.webp",
+                                                   "name":  "Serie A"
+                                               },
+                                         "t":  "2026-07-16T22:30:00.000Z",
+                                         "va":  3,
+                                         "vf":  2,
+                                         "vt":  5,
+                                         "met":  true,
+                                         "opp":  {
+                                                     "code":  "VTO",
+                                                     "logo":  "https://cdn.footymetrics.com/teams/3440.webp",
+                                                     "name":  "VitÃ³ria"
+                                                 }
+                                     },
+                                     {
+                                         "h":  true,
+                                         "l":  {
+                                                   "logo":  "https://cdn.footymetrics.com/leagues/648.webp",
+                                                   "name":  "Serie A"
+                                               },
+                                         "t":  "2026-05-31T19:00:00.000Z",
+                                         "va":  4,
+                                         "vf":  3,
+                                         "vt":  7,
+                                         "met":  true,
+                                         "opp":  {
+                                                     "code":  "AMN",
+                                                     "logo":  "https://cdn.footymetrics.com/teams/3427.webp",
+                                                     "name":  "AtlÃ©tico Mineiro"
+                                                 }
+                                     },
+                                     {
+                                         "h":  true,
+                                         "l":  {
+                                                   "logo":  "https://cdn.footymetrics.com/leagues/1116.webp",
+                                                   "name":  "Copa Sudamericana"
+                                               },
+                                         "t":  "2026-05-27T22:00:00.000Z",
+                                         "va":  1,
+                                         "vf":  7,
+                                         "vt":  8,
+                                         "met":  true,
+                                         "opp":  {
+                                                     "code":  "BAR",
+                                                     "logo":  "https://cdn.footymetrics.com/teams/8228.webp",
+                                                     "name":  "Barracas Central"
+                                                 }
+                                     }
+                                 ],
+                     "isNational":  false,
+                     "Fixture":  {
+                                     "timestamp":  "2026-09-19T23:30:00+00:00",
+                                     "slug":  "32833562-serie-a-vasco-da-gama-coritiba",
+                                     "Home":  {
+                                                  "code":  "VAG",
+                                                  "name":  "Vasco da Gama",
+                                                  "logo":  "https://cdn.footymetrics.com/teams/696.webp",
+                                                  "isNational":  false
+                                              },
+                                     "Away":  {
+                                                  "code":  "CFC",
+                                                  "name":  "Coritiba",
+                                                  "logo":  "https://cdn.footymetrics.com/teams/6285.webp",
+                                                  "isNational":  false
+                                              },
+                                     "h":  true
+                                 },
+                     "Team":  {
+                                  "logo":  "https://cdn.footymetrics.com/teams/696.webp",
+                                  "name":  "Vasco da Gama",
+                                  "code":  "VAG",
+                                  "slug":  "vasco-da-gama",
+                                  "id":  319555
+                              },
+                     "odds":  [
+                                  {
+                                      "bk":  2,
+                                      "yes":  null,
+                                      "no":  null,
+                                      "over":  5.3,
+                                      "under":  1.1,
+                                      "most":  null
+                                  }
+                              ],
+                     "seasonAvg":  "10.30",
+                     "homeSeasonAvg":  "10.30",
+                     "awaySeasonAvg":  "10.30",
+                     "oppAvg":  10.2,
+                     "oppHomeAvg":  10.4,
+                     "oppAwayAvg":  10,
+                     "loc":  "all",
+                     "apid":  696
+                 }
+             ],
+    "pagination":  {
+                       "pages":  154,
+                       "per_page":  10,
+                       "current":  1,
+                       "count":  14691
+                   }
+}

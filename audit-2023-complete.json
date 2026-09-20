@@ -1,0 +1,973 @@
+{
+  "total": 336,
+  "exact": 311,
+  "fuzzy": 0,
+  "notFound": 25,
+  "scoreOk": 242,
+  "scoreErr": 69,
+  "oddsErr": 27,
+  "scoreDiffs": [
+    {
+      "d": "2023-02-04",
+      "h": "UTC Cajamarca",
+      "hs": 3,
+      "a": "Cienciano",
+      "as": 0,
+      "csvHs": 1,
+      "csvAs": 1,
+      "type": "EXACT"
+    },
+    {
+      "d": "2023-02-04",
+      "h": "Universitario",
+      "hs": 4,
+      "a": "Academia Cantolao",
+      "as": 0,
+      "csvHs": 1,
+      "csvAs": 0,
+      "type": "EXACT"
+    },
+    {
+      "d": "2023-02-04",
+      "h": "Atlético Grau",
+      "hs": 3,
+      "a": "Melgar",
+      "as": 0,
+      "csvHs": 3,
+      "csvAs": 1,
+      "type": "EXACT"
+    },
+    {
+      "d": "2023-02-19",
+      "h": "Universitario",
+      "hs": 3,
+      "a": "Alianza Lima",
+      "as": 2,
+      "csvHs": 1,
+      "csvAs": 2,
+      "type": "EXACT"
+    },
+    {
+      "d": "2023-02-18",
+      "h": "Sport Boys",
+      "hs": 3,
+      "a": "Carlos Manucci",
+      "as": 1,
+      "csvHs": 2,
+      "csvAs": 0,
+      "type": "EXACT"
+    },
+    {
+      "d": "2023-02-18",
+      "h": "Sport Huancayo",
+      "hs": 0,
+      "a": "Cienciano",
+      "as": 2,
+      "csvHs": 0,
+      "csvAs": 1,
+      "type": "EXACT"
+    },
+    {
+      "d": "2023-02-27",
+      "h": "Academia Cantolao",
+      "hs": 2,
+      "a": "Real Garcilaso",
+      "as": 3,
+      "csvHs": 0,
+      "csvAs": 3,
+      "type": "EXACT"
+    },
+    {
+      "d": "2023-02-25",
+      "h": "Deportivo Garcilaso",
+      "hs": 2,
+      "a": "Atlético Grau",
+      "as": 0,
+      "csvHs": 1,
+      "csvAs": 0,
+      "type": "EXACT"
+    },
+    {
+      "d": "2023-02-20",
+      "h": "Deportivo Municipal",
+      "hs": 2,
+      "a": "Deportivo Binacional",
+      "as": 0,
+      "csvHs": 1,
+      "csvAs": 0,
+      "type": "EXACT"
+    },
+    {
+      "d": "2023-03-12",
+      "h": "Unión Comercio",
+      "hs": 2,
+      "a": "Sport Huancayo",
+      "as": 0,
+      "csvHs": 1,
+      "csvAs": 1,
+      "type": "EXACT"
+    },
+    {
+      "d": "2023-03-06",
+      "h": "Real Garcilaso",
+      "hs": 2,
+      "a": "Unión Comercio",
+      "as": 1,
+      "csvHs": 2,
+      "csvAs": 0,
+      "type": "EXACT"
+    },
+    {
+      "d": "2023-03-06",
+      "h": "Deportivo Municipal",
+      "hs": 0,
+      "a": "Deportivo Garcilaso",
+      "as": 3,
+      "csvHs": 2,
+      "csvAs": 1,
+      "type": "EXACT"
+    },
+    {
+      "d": "2023-03-05",
+      "h": "UTC Cajamarca",
+      "hs": 0,
+      "a": "Alianza Lima",
+      "as": 1,
+      "csvHs": 3,
+      "csvAs": 0,
+      "type": "EXACT"
+    },
+    {
+      "d": "2023-03-05",
+      "h": "Universitario",
+      "hs": 3,
+      "a": "Melgar",
+      "as": 0,
+      "csvHs": 2,
+      "csvAs": 1,
+      "type": "EXACT"
+    },
+    {
+      "d": "2023-03-04",
+      "h": "César Vallejo",
+      "hs": 2,
+      "a": "Carlos Manucci",
+      "as": 0,
+      "csvHs": 1,
+      "csvAs": 0,
+      "type": "EXACT"
+    },
+    {
+      "d": "2023-03-04",
+      "h": "Sporting Cristal",
+      "hs": 3,
+      "a": "ADT",
+      "as": 0,
+      "csvHs": 0,
+      "csvAs": 0,
+      "type": "EXACT"
+    },
+    {
+      "d": "2023-03-18",
+      "h": "Cienciano",
+      "hs": 3,
+      "a": "Unión Comercio",
+      "as": 0,
+      "csvHs": 3,
+      "csvAs": 1,
+      "type": "EXACT"
+    },
+    {
+      "d": "2023-03-18",
+      "h": "Alianza Atlético",
+      "hs": 3,
+      "a": "Academia Cantolao",
+      "as": 0,
+      "csvHs": 2,
+      "csvAs": 1,
+      "type": "EXACT"
+    },
+    {
+      "d": "2023-03-17",
+      "h": "Sport Boys",
+      "hs": 1,
+      "a": "Deportivo Garcilaso",
+      "as": 3,
+      "csvHs": 2,
+      "csvAs": 1,
+      "type": "EXACT"
+    },
+    {
+      "d": "2023-03-12",
+      "h": "Deportivo Garcilaso",
+      "hs": 4,
+      "a": "Sporting Cristal",
+      "as": 1,
+      "csvHs": 4,
+      "csvAs": 4,
+      "type": "EXACT"
+    },
+    {
+      "d": "2023-03-12",
+      "h": "Atlético Grau",
+      "hs": 2,
+      "a": "Deportivo Municipal",
+      "as": 1,
+      "csvHs": 1,
+      "csvAs": 1,
+      "type": "EXACT"
+    },
+    {
+      "d": "2023-04-02",
+      "h": "Atlético Grau",
+      "hs": 3,
+      "a": "Sport Boys",
+      "as": 0,
+      "csvHs": 1,
+      "csvAs": 0,
+      "type": "EXACT"
+    },
+    {
+      "d": "2023-04-02",
+      "h": "Carlos Manucci",
+      "hs": 0,
+      "a": "Sport Huancayo",
+      "as": 0,
+      "csvHs": 2,
+      "csvAs": 2,
+      "type": "EXACT"
+    },
+    {
+      "d": "2023-04-02",
+      "h": "Unión Comercio",
+      "hs": 3,
+      "a": "Alianza Atlético",
+      "as": 3,
+      "csvHs": 2,
+      "csvAs": 1,
+      "type": "EXACT"
+    },
+    {
+      "d": "2023-04-01",
+      "h": "Alianza Lima",
+      "hs": 2,
+      "a": "Cienciano",
+      "as": 0,
+      "csvHs": 1,
+      "csvAs": 0,
+      "type": "EXACT"
+    },
+    {
+      "d": "2023-03-31",
+      "h": "Deportivo Garcilaso",
+      "hs": 0,
+      "a": "Universitario",
+      "as": 1,
+      "csvHs": 0,
+      "csvAs": 0,
+      "type": "EXACT"
+    },
+    {
+      "d": "2023-03-27",
+      "h": "UTC Cajamarca",
+      "hs": 1,
+      "a": "Real Garcilaso",
+      "as": 0,
+      "csvHs": 0,
+      "csvAs": 0,
+      "type": "EXACT"
+    },
+    {
+      "d": "2023-03-26",
+      "h": "Deportivo Garcilaso",
+      "hs": 3,
+      "a": "Carlos Manucci",
+      "as": 2,
+      "csvHs": 1,
+      "csvAs": 2,
+      "type": "EXACT"
+    },
+    {
+      "d": "2023-04-16",
+      "h": "Carlos Manucci",
+      "hs": 1,
+      "a": "Alianza Atlético",
+      "as": 0,
+      "csvHs": 2,
+      "csvAs": 3,
+      "type": "EXACT"
+    },
+    {
+      "d": "2023-05-12",
+      "h": "Melgar",
+      "hs": 2,
+      "a": "Sport Boys",
+      "as": 0,
+      "csvHs": 1,
+      "csvAs": 0,
+      "type": "EXACT"
+    },
+    {
+      "d": "2023-05-06",
+      "h": "Sport Huancayo",
+      "hs": 0,
+      "a": "Atlético Grau",
+      "as": 0,
+      "csvHs": 1,
+      "csvAs": 0,
+      "type": "EXACT"
+    },
+    {
+      "d": "2023-05-05",
+      "h": "Academia Cantolao",
+      "hs": 1,
+      "a": "Deportivo Binacional",
+      "as": 0,
+      "csvHs": 3,
+      "csvAs": 1,
+      "type": "EXACT"
+    },
+    {
+      "d": "2023-05-12",
+      "h": "Deportivo Binacional",
+      "hs": 1,
+      "a": "ADT",
+      "as": 0,
+      "csvHs": 0,
+      "csvAs": 1,
+      "type": "EXACT"
+    },
+    {
+      "d": "2023-05-26",
+      "h": "Academia Cantolao",
+      "hs": 1,
+      "a": "Deportivo Garcilaso",
+      "as": 1,
+      "csvHs": 3,
+      "csvAs": 1,
+      "type": "EXACT"
+    },
+    {
+      "d": "2023-05-22",
+      "h": "Deportivo Binacional",
+      "hs": 5,
+      "a": "Unión Comercio",
+      "as": 0,
+      "csvHs": 1,
+      "csvAs": 0,
+      "type": "EXACT"
+    },
+    {
+      "d": "2023-05-22",
+      "h": "Sport Boys",
+      "hs": 3,
+      "a": "UTC Cajamarca",
+      "as": 2,
+      "csvHs": 2,
+      "csvAs": 1,
+      "type": "EXACT"
+    },
+    {
+      "d": "2023-05-21",
+      "h": "Deportivo Municipal",
+      "hs": 1,
+      "a": "Sport Huancayo",
+      "as": 2,
+      "csvHs": 2,
+      "csvAs": 0,
+      "type": "EXACT"
+    },
+    {
+      "d": "2023-05-21",
+      "h": "Atlético Grau",
+      "hs": 4,
+      "a": "Cienciano",
+      "as": 0,
+      "csvHs": 1,
+      "csvAs": 1,
+      "type": "EXACT"
+    },
+    {
+      "d": "2023-05-28",
+      "h": "Sport Huancayo",
+      "hs": 1,
+      "a": "Sporting Cristal",
+      "as": 1,
+      "csvHs": 1,
+      "csvAs": 2,
+      "type": "EXACT"
+    },
+    {
+      "d": "2023-06-03",
+      "h": "Deportivo Binacional",
+      "hs": 2,
+      "a": "Carlos Manucci",
+      "as": 1,
+      "csvHs": 3,
+      "csvAs": 0,
+      "type": "EXACT"
+    },
+    {
+      "d": "2023-06-11",
+      "h": "Sport Huancayo",
+      "hs": 1,
+      "a": "Universitario",
+      "as": 3,
+      "csvHs": 2,
+      "csvAs": 1,
+      "type": "EXACT"
+    },
+    {
+      "d": "2023-06-11",
+      "h": "Real Garcilaso",
+      "hs": 2,
+      "a": "César Vallejo",
+      "as": 0,
+      "csvHs": 1,
+      "csvAs": 1,
+      "type": "EXACT"
+    },
+    {
+      "d": "2023-06-11",
+      "h": "Alianza Atlético",
+      "hs": 0,
+      "a": "Sporting Cristal",
+      "as": 0,
+      "csvHs": 1,
+      "csvAs": 1,
+      "type": "EXACT"
+    },
+    {
+      "d": "2023-06-10",
+      "h": "Melgar",
+      "hs": 1,
+      "a": "Deportivo Binacional",
+      "as": 0,
+      "csvHs": 2,
+      "csvAs": 1,
+      "type": "EXACT"
+    },
+    {
+      "d": "2023-06-25",
+      "h": "Unión Comercio",
+      "hs": 1,
+      "a": "Deportivo Municipal",
+      "as": 3,
+      "csvHs": 1,
+      "csvAs": 2,
+      "type": "EXACT"
+    },
+    {
+      "d": "2023-06-24",
+      "h": "Carlos Manucci",
+      "hs": 1,
+      "a": "Deportivo Garcilaso",
+      "as": 2,
+      "csvHs": 1,
+      "csvAs": 1,
+      "type": "EXACT"
+    },
+    {
+      "d": "2023-06-24",
+      "h": "Sport Huancayo",
+      "hs": 2,
+      "a": "César Vallejo",
+      "as": 0,
+      "csvHs": 1,
+      "csvAs": 1,
+      "type": "EXACT"
+    },
+    {
+      "d": "2023-06-23",
+      "h": "Alianza Lima",
+      "hs": 2,
+      "a": "Atlético Grau",
+      "as": 0,
+      "csvHs": 1,
+      "csvAs": 0,
+      "type": "EXACT"
+    },
+    {
+      "d": "2023-07-08",
+      "h": "Alianza Atlético",
+      "hs": 1,
+      "a": "César Vallejo",
+      "as": 0,
+      "csvHs": 0,
+      "csvAs": 1,
+      "type": "EXACT"
+    },
+    {
+      "d": "2023-07-03",
+      "h": "Universitario",
+      "hs": 2,
+      "a": "Alianza Atlético",
+      "as": 0,
+      "csvHs": 3,
+      "csvAs": 0,
+      "type": "EXACT"
+    },
+    {
+      "d": "2023-07-03",
+      "h": "César Vallejo",
+      "hs": 0,
+      "a": "Cienciano",
+      "as": 3,
+      "csvHs": 1,
+      "csvAs": 1,
+      "type": "EXACT"
+    },
+    {
+      "d": "2023-07-02",
+      "h": "Atlético Grau",
+      "hs": 0,
+      "a": "Carlos Manucci",
+      "as": 2,
+      "csvHs": 1,
+      "csvAs": 0,
+      "type": "EXACT"
+    },
+    {
+      "d": "2023-07-16",
+      "h": "Atlético Grau",
+      "hs": 2,
+      "a": "Deportivo Binacional",
+      "as": 1,
+      "csvHs": 1,
+      "csvAs": 0,
+      "type": "EXACT"
+    },
+    {
+      "d": "2023-07-15",
+      "h": "César Vallejo",
+      "hs": 2,
+      "a": "Academia Cantolao",
+      "as": 1,
+      "csvHs": 2,
+      "csvAs": 0,
+      "type": "EXACT"
+    },
+    {
+      "d": "2023-07-14",
+      "h": "Universitario",
+      "hs": 2,
+      "a": "Unión Comercio",
+      "as": 0,
+      "csvHs": 1,
+      "csvAs": 0,
+      "type": "EXACT"
+    },
+    {
+      "d": "2023-07-14",
+      "h": "UTC Cajamarca",
+      "hs": 1,
+      "a": "Alianza Atlético",
+      "as": 0,
+      "csvHs": 1,
+      "csvAs": 1,
+      "type": "EXACT"
+    },
+    {
+      "d": "2023-07-10",
+      "h": "Sport Huancayo",
+      "hs": 3,
+      "a": "Real Garcilaso",
+      "as": 1,
+      "csvHs": 1,
+      "csvAs": 1,
+      "type": "EXACT"
+    },
+    {
+      "d": "2023-07-09",
+      "h": "Deportivo Binacional",
+      "hs": 1,
+      "a": "Deportivo Garcilaso",
+      "as": 5,
+      "csvHs": 1,
+      "csvAs": 1,
+      "type": "EXACT"
+    },
+    {
+      "d": "2023-07-09",
+      "h": "Carlos Manucci",
+      "hs": 0,
+      "a": "Deportivo Municipal",
+      "as": 0,
+      "csvHs": 1,
+      "csvAs": 5,
+      "type": "EXACT"
+    },
+    {
+      "d": "2023-07-23",
+      "h": "Carlos Manucci",
+      "hs": 0,
+      "a": "Sport Boys",
+      "as": 1,
+      "csvHs": 0,
+      "csvAs": 0,
+      "type": "EXACT"
+    },
+    {
+      "d": "2023-08-06",
+      "h": "Alianza Atlético",
+      "hs": 2,
+      "a": "Cienciano",
+      "as": 0,
+      "csvHs": 2,
+      "csvAs": 1,
+      "type": "EXACT"
+    },
+    {
+      "d": "2023-08-14",
+      "h": "Deportivo Municipal",
+      "hs": 0,
+      "a": "Atlético Grau",
+      "as": 0,
+      "csvHs": 1,
+      "csvAs": 1,
+      "type": "EXACT"
+    },
+    {
+      "d": "2023-08-13",
+      "h": "Real Garcilaso",
+      "hs": 1,
+      "a": "Alianza Lima",
+      "as": 1,
+      "csvHs": 2,
+      "csvAs": 1,
+      "type": "EXACT"
+    },
+    {
+      "d": "2023-08-16",
+      "h": "Carlos Manucci",
+      "hs": 0,
+      "a": "Real Garcilaso",
+      "as": 1,
+      "csvHs": 0,
+      "csvAs": 0,
+      "type": "EXACT"
+    },
+    {
+      "d": "2023-08-20",
+      "h": "Cienciano",
+      "hs": 0,
+      "a": "Alianza Lima",
+      "as": 1,
+      "csvHs": 0,
+      "csvAs": 0,
+      "type": "EXACT"
+    },
+    {
+      "d": "2023-08-20",
+      "h": "Sporting Cristal",
+      "hs": 1,
+      "a": "Deportivo Municipal",
+      "as": 1,
+      "csvHs": 1,
+      "csvAs": 0,
+      "type": "EXACT"
+    },
+    {
+      "d": "2023-09-10",
+      "h": "Universitario",
+      "hs": 1,
+      "a": "Deportivo Municipal",
+      "as": 0,
+      "csvHs": 2,
+      "csvAs": 0,
+      "type": "EXACT"
+    },
+    {
+      "d": "2023-09-25",
+      "h": "Atlético Grau",
+      "hs": 0,
+      "a": "Sport Huancayo",
+      "as": 0,
+      "csvHs": 1,
+      "csvAs": 1,
+      "type": "EXACT"
+    },
+    {
+      "d": "2023-09-21",
+      "h": "Sport Huancayo",
+      "hs": 2,
+      "a": "Deportivo Garcilaso",
+      "as": 1,
+      "csvHs": 0,
+      "csvAs": 0,
+      "type": "EXACT"
+    }
+  ],
+  "oddsDiffs": [
+    {
+      "d": "2023-02-07",
+      "h": "Deportivo Municipal",
+      "a": "Carlos Manucci",
+      "hs": 0,
+      "as": 3,
+      "csvOdds": "2.3/3.2/2.9",
+      "ssOdds": "2.3/3/2.9"
+    },
+    {
+      "d": "2023-02-06",
+      "h": "Sport Boys",
+      "a": "Unión Comercio",
+      "hs": 2,
+      "as": 1,
+      "csvOdds": "1.94/3.2/3.49",
+      "ssOdds": "1.94/3.6/3.49"
+    },
+    {
+      "d": "2023-02-05",
+      "h": "Sporting Cristal",
+      "a": "Alianza Lima",
+      "hs": 3,
+      "as": 0,
+      "csvOdds": "2.37/3.1/2.65",
+      "ssOdds": "2.37/2.65/2.65"
+    },
+    {
+      "d": "2023-03-03",
+      "h": "Sport Boys",
+      "a": "Deportivo Binacional",
+      "hs": 2,
+      "as": 2,
+      "csvOdds": "2.05/3.25/3.3",
+      "ssOdds": "2.05/3/3.25"
+    },
+    {
+      "d": "2023-02-26",
+      "h": "Unión Comercio",
+      "a": "UTC Cajamarca",
+      "hs": 1,
+      "as": 0,
+      "csvOdds": "2.38/3.3/2.63",
+      "ssOdds": "2.38/3/2.63"
+    },
+    {
+      "d": "2023-02-22",
+      "h": "UTC Cajamarca",
+      "a": "Academia Cantolao",
+      "hs": 1,
+      "as": 0,
+      "csvOdds": "1.56/3.62/5.25",
+      "ssOdds": "1.56/3.62/4.98"
+    },
+    {
+      "d": "2023-03-12",
+      "h": "Academia Cantolao",
+      "a": "Cienciano",
+      "hs": 1,
+      "as": 0,
+      "csvOdds": "2.9/3.4/2.3",
+      "ssOdds": "2.9/3.2/2.3"
+    },
+    {
+      "d": "2023-03-25",
+      "h": "César Vallejo",
+      "a": "Sport Huancayo",
+      "hs": 0,
+      "as": 2,
+      "csvOdds": "1.7/3.5/4.4",
+      "ssOdds": "1.7/3/4.4"
+    },
+    {
+      "d": "2023-04-01",
+      "h": "Melgar",
+      "a": "Real Garcilaso",
+      "hs": 1,
+      "as": 1,
+      "csvOdds": "1.57/3.75/4.75",
+      "ssOdds": "1.57/3.75/3.75"
+    },
+    {
+      "d": "2023-05-07",
+      "h": "César Vallejo",
+      "a": "Sport Boys",
+      "hs": 2,
+      "as": 0,
+      "csvOdds": "1.4/4.2/6.5",
+      "ssOdds": "1.4/4.2/7"
+    },
+    {
+      "d": "2023-05-14",
+      "h": "Alianza Atlético",
+      "a": "Universitario",
+      "hs": 3,
+      "as": 1,
+      "csvOdds": "2.9/3.2/2.2",
+      "ssOdds": "2.9/3.6/2.2"
+    },
+    {
+      "d": "2023-05-28",
+      "h": "UTC Cajamarca",
+      "a": "Universitario",
+      "hs": 1,
+      "as": 0,
+      "csvOdds": "3.04/3.24/2.31",
+      "ssOdds": "1.63/3.24/2.31"
+    },
+    {
+      "d": "2023-05-28",
+      "h": "Unión Comercio",
+      "a": "ADT",
+      "hs": 4,
+      "as": 3,
+      "csvOdds": "2.36/3.28/2.93",
+      "ssOdds": "1.57/3.28/2.93"
+    },
+    {
+      "d": "2023-05-26",
+      "h": "Cienciano",
+      "a": "Deportivo Municipal",
+      "hs": 1,
+      "as": 0,
+      "csvOdds": "1.45/4.15/5.5",
+      "ssOdds": "1.45/4.15/5.75"
+    },
+    {
+      "d": "2023-07-08",
+      "h": "Alianza Lima",
+      "a": "Sporting Cristal",
+      "hs": 0,
+      "as": 0,
+      "csvOdds": "1.94/2.97/3.25",
+      "ssOdds": "1.94/3.25/2.97"
+    },
+    {
+      "d": "2023-07-16",
+      "h": "Real Garcilaso",
+      "a": "Cienciano",
+      "hs": 0,
+      "as": 0,
+      "csvOdds": "2.18/3.35/3.2",
+      "ssOdds": "2.18/3.35/2.63"
+    },
+    {
+      "d": "2023-08-07",
+      "h": "Academia Cantolao",
+      "a": "Sport Huancayo",
+      "hs": 1,
+      "as": 1,
+      "csvOdds": "5.1/3.55/1.62",
+      "ssOdds": "3.55/3.1/1.62"
+    },
+    {
+      "d": "2023-08-05",
+      "h": "Alianza Lima",
+      "a": "UTC Cajamarca",
+      "hs": 1,
+      "as": 0,
+      "csvOdds": "1.3/4.7/10",
+      "ssOdds": "1.3/4.7/9"
+    },
+    {
+      "d": "2023-08-05",
+      "h": "Deportivo Binacional",
+      "a": "Sport Boys",
+      "hs": 4,
+      "as": 0,
+      "csvOdds": "1.55/4.15/5.5",
+      "ssOdds": "1.55/4.15/4.15"
+    },
+    {
+      "d": "2023-08-04",
+      "h": "Unión Comercio",
+      "a": "Real Garcilaso",
+      "hs": 2,
+      "as": 1,
+      "csvOdds": "2.24/3.07/2.72",
+      "ssOdds": "2.24/3.07/3.22"
+    },
+    {
+      "d": "2023-08-12",
+      "h": "Sport Boys",
+      "a": "ADT",
+      "hs": 1,
+      "as": 1,
+      "csvOdds": "2.37/3/2.47",
+      "ssOdds": "3/2.37/2.47"
+    },
+    {
+      "d": "2023-08-17",
+      "h": "Deportivo Binacional",
+      "a": "César Vallejo",
+      "hs": 1,
+      "as": 0,
+      "csvOdds": "2/3.25/3.65",
+      "ssOdds": "2/3.05/3.65"
+    },
+    {
+      "d": "2023-08-16",
+      "h": "Deportivo Garcilaso",
+      "a": "Sport Boys",
+      "hs": 3,
+      "as": 0,
+      "csvOdds": "1.33/4.75/7",
+      "ssOdds": "1.33/4.75/8.55"
+    },
+    {
+      "d": "2023-08-21",
+      "h": "Sport Boys",
+      "a": "Atlético Grau",
+      "hs": 1,
+      "as": 1,
+      "csvOdds": "2.05/3.1/3.4",
+      "ssOdds": "2.05/3.1/3.1"
+    },
+    {
+      "d": "2023-09-10",
+      "h": "Sport Boys",
+      "a": "Sporting Cristal",
+      "hs": 1,
+      "as": 1,
+      "csvOdds": "4.6/3.8/1.7",
+      "ssOdds": "3.8/4.6/1.7"
+    },
+    {
+      "d": "2023-09-17",
+      "h": "ADT",
+      "a": "Sport Huancayo",
+      "hs": 2,
+      "as": 1,
+      "csvOdds": "2.1/3.4/3.4",
+      "ssOdds": "2.1/3.14/3.43"
+    },
+    {
+      "d": "2023-09-23",
+      "h": "Deportivo Binacional",
+      "a": "Academia Cantolao",
+      "hs": 1,
+      "as": 0,
+      "csvOdds": "1.5/4/5",
+      "ssOdds": "1.5/3.1/5.13"
+    }
+  ],
+  "notFoundList": [
+    "2023-09-03 Deportivo Municipal 0-3 César Vallejo",
+    "2023-09-02 Deportivo Binacional 2-2 Cienciano",
+    "2023-09-01 Melgar 4-0 Alianza Atlético",
+    "2023-09-01 Carlos Manucci 1-2 Academia Cantolao",
+    "2023-09-01 Atlético Grau 4-2 UTC Cajamarca",
+    "2023-10-28 César Vallejo 3-1 Real Garcilaso",
+    "2023-10-23 Academia Cantolao 0-4 Atlético Grau",
+    "2023-10-22 Cienciano 1-0 Sporting Cristal",
+    "2023-10-22 Carlos Manucci 3-2 Deportivo Binacional",
+    "2023-10-22 Sport Huancayo 1-0 Sport Boys",
+    "2023-10-22 Unión Comercio 1-2 Deportivo Garcilaso",
+    "2023-10-21 Real Garcilaso 1-1 Universitario",
+    "2023-10-21 Alianza Lima 0-0 ADT",
+    "2023-10-21 Alianza Atlético 1-2 Deportivo Municipal",
+    "2023-10-20 UTC Cajamarca 1-1 César Vallejo",
+    "2023-11-08 Alianza Lima 0-2 Universitario",
+    "2023-11-04 Universitario 1-1 Alianza Lima",
+    "2023-10-29 ADT 0-0 Carlos Manucci",
+    "2023-10-29 Sporting Cristal 3-0 Alianza Atlético",
+    "2023-10-29 Universitario 2-0 Sport Huancayo",
+    "2023-10-29 Deportivo Binacional 1-2 Melgar",
+    "2023-10-29 Deportivo Garcilaso 0-1 Alianza Lima",
+    "2023-10-29 Atlético Grau 0-1 Unión Comercio",
+    "2023-10-28 Deportivo Municipal 1-2 Academia Cantolao",
+    "2023-10-28 Sport Boys 2-1 Cienciano"
+  ]
+}
