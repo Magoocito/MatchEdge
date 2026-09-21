@@ -15,66 +15,110 @@ public class FootyMetricsDomScraper : IFootyMetricsScraper
 
     private const string ExtractTrendCardsJs = @"
 (() => {
-    const grids = document.querySelectorAll('div[class*=""grid-cols-1""]');
-    let trendGrid = null;
-    for (let g of grids) {
-        if (g.children.length > 0) {
-            const first = g.children[0];
-            if (first && first.innerText && first.innerText.includes('Hit in')) {
-                trendGrid = g;
-                break;
-            }
-        }
-    }
-    if (!trendGrid) return JSON.stringify([]);
+    const trends = [];
+    const bodyText = document.body.innerText || '';
+    const blocks = bodyText.split(/\n(?=[A-Z][^\n]{1,40}\nOpp\. hits)/);
 
-    let trends = [];
-    for (let i = 0; i < trendGrid.children.length; i++) {
-        const c = trendGrid.children[i];
-        const t = c.innerText;
-        if (!t || !t.includes('Hit in')) continue;
+    for (const block of blocks) {
+        const lines = block.split('\n').map(l => l.trim()).filter(l => l);
+        if (lines.length < 5) continue;
 
-        const links = c.querySelectorAll('a[href*=""/teams/""]');
-        let team = '', slug = '';
-        for (let l of links) {
-            const text = l.textContent.trim();
-            if (text) { team = text; slug = l.getAttribute('href') || ''; break; }
+        const teamIdx = lines.findIndex(l => l === 'Opp. hits');
+        if (teamIdx < 0) continue;
+
+        const team = lines[teamIdx - 1] || '';
+        if (!team || team.length > 50) continue;
+
+        const oppHits = (teamIdx + 1 < lines.length) ? lines[teamIdx + 1] : '';
+
+        let h2hHits = '';
+        const h2hIdx = lines.indexOf('H2H');
+        if (h2hIdx > 0 && h2hIdx + 1 < lines.length) {
+            h2hHits = lines[h2hIdx + 1];
         }
 
-        const lines = t.split('\n').map(l => l.trim()).filter(l => l);
-        const hitIdx = lines.indexOf('Hit in');
-        const oppIdx = lines.indexOf('OPP');
-        const avgIdx = lines.indexOf('AVG');
-        const rateIdx = lines.indexOf('RATE');
-
-        let venue = 'both';
-        if (t.includes('Home only')) venue = 'home';
-        else if (t.includes('Away only')) venue = 'away';
-
+        let direction = 'yes';
+        let odds = '';
+        let hitCount = '';
+        let percentage = '';
         let fixture = '';
-        for (let j = 0; j < lines.length; j++) {
-            if (lines[j] === 'vs' && j > 0) {
-                fixture = lines.slice(Math.max(0, j - 1), Math.min(lines.length, j + 3)).join(' ');
-                break;
+        let league = '';
+
+        const hitIdx = lines.indexOf('Hit');
+        const rateIdx = lines.indexOf('Rate');
+
+        if (hitIdx > 0 && hitIdx - 1 >= 0) {
+            hitCount = lines[hitIdx - 1];
+        }
+
+        if (rateIdx > 0 && rateIdx - 1 >= 0) {
+            percentage = lines[rateIdx - 1];
+        }
+
+        const yesIdx = lines.findIndex(l => l === 'Yes' || l === 'No');
+        if (yesIdx > 0) {
+            direction = lines[yesIdx].toLowerCase();
+            for (let j = yesIdx + 1; j < Math.min(yesIdx + 4, lines.length); j++) {
+                const val = parseFloat(lines[j]);
+                if (!isNaN(val) && val > 1 && val < 50) {
+                    odds = lines[j];
+                    break;
+                }
             }
         }
 
-        if (team && hitIdx >= 0 && hitIdx + 1 < lines.length) {
+        const vsIdx = lines.indexOf('vs');
+        if (vsIdx > 0) {
+            const homeCode = lines[vsIdx - 1] || '';
+            const awayCode = lines[vsIdx + 1] || '';
+            fixture = homeCode + ' vs ' + awayCode;
+        }
+
+        const leaguePatterns = [
+            'Serie A', 'Serie B', 'Premier League', 'La Liga', 'Bundesliga',
+            'Ligue 1', 'Eredivisie', 'Primeira Liga', 'Super League',
+            'Major League Soccer', 'Champions League', 'Europa League',
+            'Conference League', 'UEFA Nations League', 'Friendly International',
+            'Liga MX', 'Brasileir', 'Argentina', 'A-League',
+            'J1 League', 'K League', 'Saudi Pro', 'Turkish Super',
+            'Scottish Premiership', 'Championship', 'League One', 'League Two',
+            'MLS', 'USL', 'Indian Super', 'Chinese Super'
+        ];
+        for (const l of leaguePatterns) {
+            if (block.includes(l)) { league = l; break; }
+        }
+
+        const lastIdx = lines.indexOf('Last');
+        let recentForm = [];
+        if (lastIdx > 0) {
+            for (let j = lastIdx + 1; j < lines.length && recentForm.length < 5; j++) {
+                if (/^\d+-\d+$/.test(lines[j])) {
+                    recentForm.push(lines[j]);
+                }
+            }
+        }
+
+        if (team && hitCount && percentage) {
             trends.push({
                 team: team,
-                slug: slug,
-                venue: venue,
-                hitCount: lines[hitIdx + 1] || '',
-                market: lines[hitIdx + 2] || '',
-                odds: lines[hitIdx + 3] || '',
-                desc: (hitIdx + 5 < lines.length) ? lines[hitIdx + 5] : '',
-                opp: (oppIdx > 0) ? lines[oppIdx - 1] : '',
-                avg: (avgIdx > 0) ? lines[avgIdx - 1] : '',
-                rate: (rateIdx > 0) ? lines[rateIdx - 1] : '',
-                fixture: fixture
+                slug: team.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
+                venue: 'both',
+                hitCount: hitCount,
+                market: '',
+                odds: odds,
+                desc: direction === 'yes' ? 'BTTS Yes' : 'BTTS No',
+                opp: oppHits,
+                avg: '',
+                rate: percentage,
+                fixture: fixture,
+                league: league,
+                direction: direction,
+                h2h: h2hHits,
+                recentForm: recentForm.join(',')
             });
         }
     }
+
     return JSON.stringify(trends);
 })()";
 
