@@ -37,13 +37,16 @@ public class FootyMetricsBrowserManager : IAsyncDisposable
             new BrowserTypeLaunchPersistentContextOptions
             {
                 ExecutablePath = _chromePath,
-                Headless = false,
+                Headless = true,
                 SlowMo = 0,
                 ViewportSize = new ViewportSize { Width = 1280, Height = 800 },
                 Args = [
                     "--disable-blink-features=AutomationControlled",
                     "--no-first-run",
-                    "--no-default-browser-check"
+                    "--no-default-browser-check",
+                    "--disable-gpu",
+                    "--disable-dev-shm-usage",
+                    "--no-sandbox"
                 ]
             });
 
