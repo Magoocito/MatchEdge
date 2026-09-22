@@ -25,10 +25,15 @@ public class FootyMetricsBrowserManager : IAsyncDisposable
 
     public async Task StartAsync(CancellationToken ct = default)
     {
+        await StartAsync(headless: true, ct);
+    }
+
+    public async Task StartAsync(bool headless, CancellationToken ct = default)
+    {
         if (_playwright != null)
             return;
 
-        _logger.LogInformation("Starting Playwright for FootyMetrics...");
+        _logger.LogInformation("Starting Playwright for FootyMetrics (Headless={Headless})...", headless);
 
         _playwright = await Playwright.CreateAsync();
 
@@ -37,13 +42,16 @@ public class FootyMetricsBrowserManager : IAsyncDisposable
             new BrowserTypeLaunchPersistentContextOptions
             {
                 ExecutablePath = _chromePath,
-                Headless = false,
+                Headless = headless,
                 SlowMo = 0,
                 ViewportSize = new ViewportSize { Width = 1280, Height = 800 },
                 Args = [
                     "--disable-blink-features=AutomationControlled",
                     "--no-first-run",
-                    "--no-default-browser-check"
+                    "--no-default-browser-check",
+                    "--disable-gpu",
+                    "--disable-dev-shm-usage",
+                    "--no-sandbox"
                 ]
             });
 

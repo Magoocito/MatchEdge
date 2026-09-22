@@ -49,6 +49,197 @@ public class FootyMetricsTestController : ControllerBase
         return Ok(new { status = "Chrome started for FootyMetrics", profile = "persistent-footymetrics" });
     }
 
+    [HttpPost("start-visible")]
+    public async Task<IActionResult> StartBrowserVisible()
+    {
+        await _scraper.StartAsync(headless: false);
+        return Ok(new { status = "Chrome started VISIBLE for FootyMetrics - Login with Google manually", profile = "persistent-footymetrics" });
+    }
+
+    [HttpPost("login")]
+    public async Task<IActionResult> Login([FromBody] LoginRequest request)
+    {
+        var page = _browserManager.GetPage();
+        if (page == null)
+            return BadRequest(new { error = "Browser not started. Call /start first." });
+
+        try
+        {
+            // Navegar a la página de login
+            await page.GotoAsync("https://www.footymetrics.com/login", new Microsoft.Playwright.PageGotoOptions
+            {
+                Timeout = 30000,
+                WaitUntil = Microsoft.Playwright.WaitUntilState.Load
+            });
+
+            await Task.Delay(5000);
+
+            // Aceptar cookies si aparecen
+            try
+            {
+                var acceptBtn = page.Locator("button:has-text('Accept all')");
+                if (await acceptBtn.CountAsync() > 0)
+                {
+                    await acceptBtn.First.ClickAsync();
+                    await Task.Delay(1000);
+                }
+            }
+            catch { }
+
+            // Llenar email - selectores conocidos
+            var emailInput = page.Locator("input[name='email']");
+            if (await emailInput.CountAsync() == 0)
+                emailInput = page.Locator("input[type='email']");
+
+            if (await emailInput.CountAsync() > 0)
+            {
+                await emailInput.First.ClearAsync();
+                await emailInput.First.FillAsync(request.Email);
+            }
+            else
+            {
+                return BadRequest(new { error = "No se encontró campo de email" });
+            }
+
+            await Task.Delay(500);
+
+            // Llenar password - selectores conocidos
+            var passwordInput = page.Locator("input[name='password']");
+            if (await passwordInput.CountAsync() == 0)
+                passwordInput = page.Locator("input[type='password']");
+
+            if (await passwordInput.CountAsync() > 0)
+            {
+                await passwordInput.First.ClearAsync();
+                await passwordInput.First.FillAsync(request.Password);
+            }
+            else
+            {
+                return BadRequest(new { error = "No se encontró campo de password" });
+            }
+
+            await Task.Delay(500);
+
+            // Click en "Sign in" button
+            var signInBtn = page.Locator("button[type='submit']:has-text('Sign in')");
+            if (await signInBtn.CountAsync() > 0)
+            {
+                await signInBtn.First.ClickAsync();
+            }
+            else
+            {
+                // Fallback: buscar cualquier submit button
+                var submitBtn = page.Locator("button[type='submit']");
+                if (await submitBtn.CountAsync() > 0)
+                {
+                    await submitBtn.First.ClickAsync();
+                }
+            }
+
+            // Esperar a que redirija
+            await Task.Delay(10000);
+
+            // Verificar login exitoso
+            var currentUrl = page.Url;
+            var title = await page.TitleAsync();
+            var finalText = await page.EvaluateAsync<string>("() => document.body?.innerText?.substring(0, 500) || ''");
+
+            bool isLoggedIn = !currentUrl.Contains("login") && 
+                            !finalText.ToLower().Contains("sign in") &&
+                            !finalText.ToLower().Contains("log in");
+
+            return Ok(new
+            {
+                success = isLoggedIn,
+                url = currentUrl,
+                title,
+                message = isLoggedIn ? "Login exitoso - Sesión guardada en perfil persistente" : "Login puede haber fallado",
+                contentPreview = finalText
+            });
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new { error = ex.Message });
+        }
+    }
+
+    [HttpGet("login-status")]
+    public async Task<IActionResult> LoginStatus()
+    {
+        var page = _browserManager.GetPage();
+        if (page == null)
+            return BadRequest(new { error = "Browser not started" });
+
+        try
+        {
+            var url = page.Url;
+            var title = await page.TitleAsync();
+            var text = await page.EvaluateAsync<string>("() => document.body?.innerText?.substring(0, 500) || ''");
+
+            bool isLoggedIn = !url.Contains("login") && 
+                            !text.ToLower().Contains("sign in") &&
+                            !text.ToLower().Contains("log in");
+
+            return Ok(new
+            {
+                loggedIn = isLoggedIn,
+                url,
+                title,
+                contentPreview = text
+            });
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new { error = ex.Message });
+        }
+    }
+
+    [HttpPost("eval")]
+    public async Task<IActionResult> EvalJs([FromBody] EvalRequest request)
+    {
+        var page = _browserManager.GetPage();
+        if (page == null)
+            return BadRequest(new { error = "Browser not started" });
+
+        try
+        {
+            var result = await page.EvaluateAsync<string>(request.Script);
+            return Ok(new { result, url = page.Url });
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new { error = ex.Message });
+        }
+    }
+
+    [HttpPost("navigate")]
+    public async Task<IActionResult> Navigate([FromBody] NavigateRequest request)
+    {
+        var page = _browserManager.GetPage();
+        if (page == null)
+            return BadRequest(new { error = "Browser not started" });
+
+        try
+        {
+            await page.GotoAsync(request.Url, new Microsoft.Playwright.PageGotoOptions
+            {
+                Timeout = 30000,
+                WaitUntil = Microsoft.Playwright.WaitUntilState.Load
+            });
+
+            await Task.Delay(5000);
+
+            var title = await page.TitleAsync();
+            var text = await page.EvaluateAsync<string>("() => document.body?.innerText?.substring(0, 500) || ''");
+
+            return Ok(new { url = page.Url, title, contentPreview = text });
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new { error = ex.Message });
+        }
+    }
+
     [HttpGet("status")]
     public IActionResult Status()
     {
@@ -290,6 +481,155 @@ public class FootyMetricsTestController : ControllerBase
                 url = page.Url,
                 title,
                 contentPreview = text
+            });
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new { error = ex.Message });
+        }
+    }
+
+    [HttpGet("page-content-full")]
+    public async Task<IActionResult> GetPageContentFull([FromQuery] string url)
+    {
+        var page = _browserManager.GetPage();
+        if (page == null)
+            return BadRequest(new { error = "Browser not started" });
+
+        try
+        {
+            await page.GotoAsync(url, new Microsoft.Playwright.PageGotoOptions
+            {
+                Timeout = 45000,
+                WaitUntil = Microsoft.Playwright.WaitUntilState.Load
+            });
+
+            await Task.Delay(15000);
+
+            var title = await page.TitleAsync();
+            var text = await page.EvaluateAsync<string>("() => document.body?.innerText || ''");
+
+            return Ok(new
+            {
+                url = page.Url,
+                title,
+                contentPreview = text.Length > 20000 ? text.Substring(0, 20000) : text,
+                contentLength = text.Length
+            });
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new { error = ex.Message });
+        }
+    }
+
+    [HttpGet("fixture-trends-v2")]
+    public async Task<IActionResult> GetFixtureTrendsV2(
+        [FromQuery] string url,
+        [FromQuery] int scrollCount = 3,
+        [FromQuery] int waitSeconds = 20)
+    {
+        var page = _browserManager.GetPage();
+        if (page == null)
+            return BadRequest(new { error = "Browser not started" });
+
+        try
+        {
+            // Navegar directamente al tab de team trends
+            var trendsUrl = url.Contains("?") ? 
+                url.Split('?')[0] + "?tab=team-trends" : 
+                url + "?tab=team-trends";
+
+            await page.GotoAsync(trendsUrl, new Microsoft.Playwright.PageGotoOptions
+            {
+                Timeout = 45000,
+                WaitUntil = Microsoft.Playwright.WaitUntilState.Load
+            });
+
+            // Esperar JS dinámico
+            await Task.Delay(waitSeconds * 1000);
+
+            // Scroll
+            for (int i = 0; i < scrollCount; i++)
+            {
+                await page.EvaluateAsync("window.scrollTo(0, document.body.scrollHeight)");
+                await Task.Delay(2000);
+            }
+
+            await page.EvaluateAsync("window.scrollTo(0, 0)");
+            await Task.Delay(1000);
+
+            // Obtener contenido COMPLETO
+            var title = await page.TitleAsync();
+            var text = await page.EvaluateAsync<string>("() => document.body?.innerText || ''");
+
+            return Ok(new
+            {
+                url = page.Url,
+                title,
+                contentPreview = text.Length > 15000 ? text.Substring(0, 15000) : text,
+                contentLength = text.Length
+            });
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new { error = ex.Message });
+        }
+    }
+
+    [HttpGet("fixture-trends-raw")]
+    public async Task<IActionResult> GetFixtureTrendsRaw(
+        [FromQuery] string url,
+        [FromQuery] int waitSeconds = 20)
+    {
+        var page = _browserManager.GetPage();
+        if (page == null)
+            return BadRequest(new { error = "Browser not started" });
+
+        try
+        {
+            // Navegar directamente al tab de team trends
+            var trendsUrl = url.Contains("?") ? 
+                url.Split('?')[0] + "?tab=team-trends" : 
+                url + "?tab=team-trends";
+
+            await page.GotoAsync(trendsUrl, new Microsoft.Playwright.PageGotoOptions
+            {
+                Timeout = 45000,
+                WaitUntil = Microsoft.Playwright.WaitUntilState.Load
+            });
+
+            await Task.Delay(waitSeconds * 1000);
+
+            // Scroll
+            for (int i = 0; i < 3; i++)
+            {
+                await page.EvaluateAsync("window.scrollTo(0, document.body.scrollHeight)");
+                await Task.Delay(2000);
+            }
+
+            await page.EvaluateAsync("window.scrollTo(0, 0)");
+            await Task.Delay(1000);
+
+            // Obtener contenido COMPLETO
+            var text = await page.EvaluateAsync<string>("() => document.body?.innerText || ''");
+
+            // Obtener HTML de trends
+            var html = await page.EvaluateAsync<string>(@"() => {
+                const trendCards = document.querySelectorAll('[class*=""trend-card""], [class*=""TrendCard""], [class*=""trend-item""]');
+                if (trendCards.length > 0) {
+                    return Array.from(trendCards).map(c => c.innerText).join('\\n---\\n');
+                }
+                return '';
+            }");
+
+            return Ok(new
+            {
+                url = page.Url,
+                textLength = text.Length,
+                htmlLength = html.Length,
+                fullText = text,
+                trendCardsHtml = html
             });
         }
         catch (Exception ex)
@@ -641,6 +981,195 @@ public class FootyMetricsTestController : ControllerBase
 
         return Ok(result);
     }
+
+    [HttpPost("bets/register")]
+    public async Task<IActionResult> RegisterBet([FromBody] RegisterBetRequest request)
+    {
+        using var connection = new Microsoft.Data.Sqlite.SqliteConnection("Data Source=C:\\Services\\MatchEdge\\matchedge.db");
+        await connection.OpenAsync();
+
+        var insertCmd = connection.CreateCommand();
+        insertCmd.CommandText = @"
+            INSERT INTO Bets (BetDate, MatchDate, HomeTeam, AwayTeam, League, Market, Selection, Odds, Stake, PotentialReturn, Status, Notes, Source, ContextJson)
+            VALUES ($betDate, $matchDate, $homeTeam, $awayTeam, $league, $market, $selection, $odds, $stake, $potentialReturn, 'Pending', $notes, $source, $contextJson);
+            SELECT last_insert_rowid();";
+
+        insertCmd.Parameters.AddWithValue("$betDate", DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm"));
+        insertCmd.Parameters.AddWithValue("$matchDate", request.MatchDate);
+        insertCmd.Parameters.AddWithValue("$homeTeam", request.HomeTeam);
+        insertCmd.Parameters.AddWithValue("$awayTeam", request.AwayTeam);
+        insertCmd.Parameters.AddWithValue("$league", request.League ?? "");
+        insertCmd.Parameters.AddWithValue("$market", request.Market);
+        insertCmd.Parameters.AddWithValue("$selection", request.Selection);
+        insertCmd.Parameters.AddWithValue("$odds", request.Odds);
+        insertCmd.Parameters.AddWithValue("$stake", request.Stake);
+        insertCmd.Parameters.AddWithValue("$potentialReturn", request.Stake * request.Odds);
+        insertCmd.Parameters.AddWithValue("$notes", request.Notes ?? "");
+        insertCmd.Parameters.AddWithValue("$source", request.Source ?? "FootyMetrics");
+        insertCmd.Parameters.AddWithValue("$contextJson", request.ContextJson ?? "{}");
+
+        var id = await insertCmd.ExecuteScalarAsync();
+
+        return Ok(new { betId = id, message = "Apuesta registrada" });
+    }
+
+    [HttpPost("bets/evaluate")]
+    public async Task<IActionResult> EvaluateBet([FromBody] EvaluateBetRequest request)
+    {
+        using var connection = new Microsoft.Data.Sqlite.SqliteConnection("Data Source=C:\\Services\\MatchEdge\\matchedge.db");
+        await connection.OpenAsync();
+
+        var updateCmd = connection.CreateCommand();
+        var profit = request.Won ? (request.Odds - 1) * request.Stake : -request.Stake;
+
+        updateCmd.CommandText = @"
+            UPDATE Bets SET 
+                Status = CASE WHEN $won = 1 THEN 'Won' ELSE 'Lost' END,
+                Result = $result,
+                Profit = $profit,
+                EvaluatedAt = datetime('now')
+            WHERE Id = $betId;";
+        updateCmd.Parameters.AddWithValue("$betId", request.BetId);
+        updateCmd.Parameters.AddWithValue("$won", request.Won ? 1 : 0);
+        updateCmd.Parameters.AddWithValue("$result", request.Result ?? "");
+        updateCmd.Parameters.AddWithValue("$profit", profit);
+
+        await updateCmd.ExecuteNonQueryAsync();
+
+        // Update bankroll
+        var updateBankroll = connection.CreateCommand();
+        updateBankroll.CommandText = @"
+            UPDATE BankrollStates SET 
+                CurrentBalance = CurrentBalance + $profit,
+                TotalProfit = TotalProfit + $profit,
+                TotalPicks = TotalPicks + 1,
+                Won = Won + CASE WHEN $won = 1 THEN 1 ELSE 0 END,
+                Lost = Lost + CASE WHEN $won = 0 THEN 1 ELSE 0 END,
+                LastUpdated = datetime('now')
+            WHERE Id = 1;";
+        updateBankroll.Parameters.AddWithValue("$profit", profit);
+        updateBankroll.Parameters.AddWithValue("$won", request.Won ? 1 : 0);
+        await updateBankroll.ExecuteNonQueryAsync();
+
+        return Ok(new { betId = request.BetId, profit, message = request.Won ? "Ganada" : "Perdida" });
+    }
+
+    [HttpGet("bets/today")]
+    public async Task<IActionResult> GetTodayBets()
+    {
+        using var connection = new Microsoft.Data.Sqlite.SqliteConnection("Data Source=C:\\Services\\MatchEdge\\matchedge.db");
+        await connection.OpenAsync();
+
+        var cmd = connection.CreateCommand();
+        cmd.CommandText = "SELECT * FROM Bets WHERE date(BetDate) = date('now') ORDER BY MatchDate";
+        var reader = await cmd.ExecuteReaderAsync();
+
+        var bets = new List<object>();
+        while (await reader.ReadAsync())
+        {
+            bets.Add(new
+            {
+                id = reader.GetInt32(0),
+                betDate = reader.GetString(1),
+                matchDate = reader.GetString(2),
+                homeTeam = reader.GetString(3),
+                awayTeam = reader.GetString(4),
+                league = reader.GetString(5),
+                market = reader.GetString(6),
+                selection = reader.GetString(7),
+                odds = reader.GetDouble(8),
+                stake = reader.GetDouble(9),
+                potentialReturn = reader.GetDouble(10),
+                status = reader.GetString(11),
+                result = reader.IsDBNull(12) ? (string?)null : reader.GetString(12),
+                profit = reader.IsDBNull(13) ? (double?)null : reader.GetDouble(13),
+                notes = reader.IsDBNull(14) ? (string?)null : reader.GetString(14)
+            });
+        }
+
+        return Ok(new { date = DateTime.UtcNow.Date, count = bets.Count, bets });
+    }
+
+    [HttpGet("bets/history")]
+    public async Task<IActionResult> GetBetHistory([FromQuery] int days = 30)
+    {
+        using var connection = new Microsoft.Data.Sqlite.SqliteConnection("Data Source=C:\\Services\\MatchEdge\\matchedge.db");
+        await connection.OpenAsync();
+
+        var cmd = connection.CreateCommand();
+        cmd.CommandText = @"
+            SELECT * FROM Bets 
+            WHERE BetDate >= datetime('now', '-' || $days || ' days')
+            ORDER BY BetDate DESC";
+        cmd.Parameters.AddWithValue("$days", days);
+        var reader = await cmd.ExecuteReaderAsync();
+
+        var bets = new List<object>();
+        while (await reader.ReadAsync())
+        {
+            bets.Add(new
+            {
+                id = reader.GetInt32(0),
+                betDate = reader.GetString(1),
+                matchDate = reader.GetString(2),
+                homeTeam = reader.GetString(3),
+                awayTeam = reader.GetString(4),
+                market = reader.GetString(6),
+                selection = reader.GetString(7),
+                odds = reader.GetDouble(8),
+                stake = reader.GetDouble(9),
+                status = reader.GetString(11),
+                profit = reader.IsDBNull(13) ? (double?)null : reader.GetDouble(13)
+            });
+        }
+
+        var won = bets.Count(b => ((dynamic)b).status == "Won");
+        var lost = bets.Count(b => ((dynamic)b).status == "Lost");
+        var pending = bets.Count(b => ((dynamic)b).status == "Pending");
+        var totalProfit = bets.Where(b => ((dynamic)b).profit != null).Sum(b => (double)((dynamic)b).profit);
+
+        return Ok(new
+        {
+            totalBets = bets.Count,
+            won,
+            lost,
+            pending,
+            winRate = won + lost > 0 ? (double)won / (won + lost) * 100 : 0,
+            totalProfit,
+            bets
+        });
+    }
+
+    [HttpGet("bets/bankroll")]
+    public async Task<IActionResult> GetBankroll()
+    {
+        using var connection = new Microsoft.Data.Sqlite.SqliteConnection("Data Source=C:\\Services\\MatchEdge\\matchedge.db");
+        await connection.OpenAsync();
+
+        var cmd = connection.CreateCommand();
+        cmd.CommandText = "SELECT * FROM BankrollStates WHERE Id = 1";
+        var reader = await cmd.ExecuteReaderAsync();
+
+        if (await reader.ReadAsync())
+        {
+            return Ok(new
+            {
+                initialBankroll = reader.GetDouble(1),
+                currentBalance = reader.GetDouble(2),
+                peakBalance = reader.GetDouble(3),
+                maxDrawdown = reader.GetDouble(4),
+                totalStaked = reader.GetDouble(6),
+                totalProfit = reader.GetDouble(7),
+                totalPicks = reader.GetInt32(8),
+                won = reader.GetInt32(9),
+                lost = reader.GetInt32(10),
+                pending = reader.GetInt32(11),
+                roi = reader.GetDouble(6) > 0 ? reader.GetDouble(7) / reader.GetDouble(6) * 100 : 0
+            });
+        }
+
+        return Ok(new { error = "No bankroll found" });
+    }
 }
 
 public class PickEvaluationRequest
@@ -670,4 +1199,76 @@ public class BankrollResultRequest
     public bool Won { get; set; }
     public double Odds { get; set; }
     public double StakeUnits { get; set; } = 1.0;
+}
+
+public class RegisterBetRequest
+{
+    public string MatchDate { get; set; } = "";
+    public string HomeTeam { get; set; } = "";
+    public string AwayTeam { get; set; } = "";
+    public string? League { get; set; }
+    public string Market { get; set; } = "";
+    public string Selection { get; set; } = "";
+    public double Odds { get; set; }
+    public double Stake { get; set; }
+    public string? Notes { get; set; }
+    public string? Source { get; set; }
+    public string? ContextJson { get; set; }
+}
+
+public class EvaluateBetRequest
+{
+    public int BetId { get; set; }
+    public bool Won { get; set; }
+    public string? Result { get; set; }
+    public double Odds { get; set; }
+    public double Stake { get; set; }
+}
+
+// === MODELOS PARA FIXTURE TRENDS ===
+
+public class FixtureTrendsRequest
+{
+    public string Url { get; set; } = "";
+    public int ScrollCount { get; set; } = 3;
+    public int WaitSeconds { get; set; } = 15;
+}
+
+public class TrendData
+{
+    public string Type { get; set; } = "";
+    public string Team { get; set; } = "";
+    public string HitRate { get; set; } = "";
+    public string Avg { get; set; } = "";
+    public string Odds { get; set; } = "";
+    public string OppHits { get; set; } = "";
+    public string H2H { get; set; } = "";
+    public string Context { get; set; } = "";
+    public string Total { get; set; } = "";
+}
+
+public class FixtureTrendsResponse
+{
+    public string Url { get; set; } = "";
+    public string Title { get; set; } = "";
+    public int TotalTrends { get; set; }
+    public List<TrendData> Trends { get; set; } = new();
+    public string RawContent { get; set; } = "";
+    public int ContentLength { get; set; }
+}
+
+public class LoginRequest
+{
+    public string Email { get; set; } = "";
+    public string Password { get; set; } = "";
+}
+
+public class EvalRequest
+{
+    public string Script { get; set; } = "";
+}
+
+public class NavigateRequest
+{
+    public string Url { get; set; } = "";
 }

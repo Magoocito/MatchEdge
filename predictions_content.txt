@@ -1,0 +1,453 @@
+﻿Skip to main content
+Fixtures
+Today's tips
+NEW
+Predictions
+Trends
+Betting tools
+NEW
+Stats
+Search teams, players, leagues
+Ctrl K
+D
+Home
+Betting tools
+Predictions
+Filters
+Clear
+
+Match status
+
+Upcoming
+Finished
+All
+
+Min. probability
+
+Any
+
+Min. odds
+
+Any
+Bookmakers
+All bookmakers
+5 of 5 books
+
+Leagues
+
+Clear all
+KNVB Beker
+66
+Liga Profesional de Fútbol
+6
+Serie B
+13
+UEFA Women's Champions League
+32
+Today's AI football predictions
+72%
+accuracy
+
+The model's strongest pick in each market for every fixture, across match result, both teams to score and total goals, priced against the best bookmaker odds.
+
+Yesterday
+Today
+Tomorrow
+All
+Match result
+Half-time result
+Double chance
+Both teams to score
+Total goals
+Team goals
+Corners
+
+53 predictions found
+
+By kick off
+By league
+Highest probability
+Lowest probability
+Soonest kick off
+Latest kick off
+Highest odds
+Lowest odds
+Superliga
+Won
+Petrolul 52
+2
+Csikszereda
+0
+Total goals
+Under 4.5 goals
+89%
++3.5%
+Petrolul 52
+Csikszereda
+Stats
+1.17
+Primera Division
+Missed
+Central Español
+1
+Montevideo City Torque
+4
+Away goals
+Away under 2.5 goals
+89%
++5.7%
+Central Español
+Montevideo City Torque
+Stats
+1.20
+Serie B
+Today 19:30
+Cuiabá
+Náutico
+Home goals
+Home under 2.5 goals
+87%
++0.8%
+Cuiabá
+Náutico
+Stats
+1.16
+First Division
+Missed
+HB Køge
+5
+Hobro
+2
+Home goals
+Home under 2.5 goals
+86%
++0.5%
+HB Køge
+Hobro
+Stats
+1.17
+Liga Profesional de Fútbol
+Won
+Barracas Central
+0
+Independiente Rivadavia
+1
+Total goals
+Under 3.5 goals
+86%
+Barracas Central
+Independiente Rivadavia
+Stats
+1.14
+Liga Profesional de Fútbol
+Today 19:15
+Lanús
+Estudiantes
+Total goals
+Under 3.5 goals
+86%
+Lanús
+Estudiantes
+Stats
+1.13
+First Division
+Missed
+HB Køge
+5
+Hobro
+2
+Total goals
+Under 4.5 goals
+84%
+HB Køge
+Hobro
+Stats
+1.13
+Superliga
+Won
+Petrolul 52
+2
+Csikszereda
+0
+Home goals
+Home under 2.5 goals
+84%
++12.6%
+Petrolul 52
+Csikszereda
+Stats
+1.40
+Liga Profesional de Fútbol
+Won
+Barracas Central
+0
+Independiente Rivadavia
+1
+Home goals
+Home under 1.5 goals
+81%
+Barracas Central
+Independiente Rivadavia
+Stats
+1.22
+Liga Profesional de Fútbol
+Today 19:15
+Lanús
+Estudiantes
+Away goals
+Away under 1.5 goals
+81%
+Lanús
+Estudiantes
+Stats
+1.20
+First Division
+Won
+HB Køge
+5
+Hobro
+2
+Corners
+Over 6.5 corners
+80%
+HB Køge
+Hobro
+Stats
+1.22
+Primera Division
+Missed
+Central Español
+1
+Montevideo City Torque
+4
+Total goals
+Under 3.5 goals
+80%
+Central Español
+Montevideo City Torque
+Stats
+1.23
+Primera Division
+Won
+Central Español
+1
+Montevideo City Torque
+4
+Corners
+Over 6.5 corners
+80%
+Central Español
+Montevideo City Torque
+Stats
+1.14
+Superliga
+Won
+Otelul
+2
+Corvinul Hunedoara
+3
+Corners
+Over 6.5 corners
+79%
++2.1%
+Otelul
+Corvinul Hunedoara
+Stats
+1.30
+Serie B
+Today 19:30
+Cuiabá
+Náutico
+Total goals
+Under 3.5 goals
+79%
+Cuiabá
+Náutico
+Stats
+1.20
+Loading more predictions
+Last 10: the pick would have landed / missed
+Won
+Settled pick landed
+Missed
+Settled pick lost
+Betting tools
+
+Player prop research
+
+Player trends
+Premium
+Player props edges
+Premium
+Player props finder
+Freemium
+
+Team research
+
+Team trends
+Premium
+Fixture scout
+Freemium
+Position stats
+NEW
+Duels
+NEW
+Premium
+
+Player vs player
+
+Player matchups (H2H)
+NEW
+Compare players
+NEW
+
+Reference
+
+H2H stats
+NEW
+Referee stats
+NEW
+All betting tools
+About FootyMetrics predictions
+
+A short read on what the FootyMetrics AI predicts, the markets it covers, and how to make sense of the cards above.
+
+What the FootyMetrics AI does
+
+Every fixture we cover is scored by the FootyMetrics AI. The AI looks at recent form for both sides, head to head meetings, confirmed lineups, injuries and per-league context, then produces a probability for each market we cover. The strongest call per fixture is what lands on the card.
+
+Each card carries that probability next to a live bookmaker price. When our number beats the price's implied probability, the gap shows up as a green edge badge. That is where the value sits. More on how the AI works.
+
+Markets we cover
+
+Each market sits on its own page with cards filtered to that selection only. This hub shows the strongest call per fixture across all markets.
+
+Match result (1X2) home, draw or away across the 90 minutes.
+Half-time result who is ahead at the break.
+Double chance 1X, X2 or 12 when a straight call is too risky.
+Both teams to score yes or no on whether both sides find the net.
+Total goals over and under across 1.5, 2.5, 3.5 and 4.5.
+Team goals per-side scoring lines from 0.5 to 2.5.
+Corners total corners from 5.5 to 10.5.
+How to read a prediction card
+
+The top strip carries the league and kick-off time in your local timezone. Below that are the two sides with the home team on the left. The coloured block holds the picked market, the probability bar (green when strong, amber when marginal) and the best current bookmaker price across the books we track.
+
+When the AI scores a price the book has wrong, a green edge badge sits next to the probability. The form stats below the pick are there so you can sanity-check the call rather than take it on trust.
+
+Using the filters
+
+The toolbar above the grid carries the controls you'll touch most: the date strip (today through six days out), a sort dropdown for highest probability, highest edge or earliest kick-off, and quick min-odds chips for tightening the slate to bigger prices.
+
+The Filters drawer covers the rest: a min-odds slider for fine control, a bookmaker multi-select that filters the price strip shown on each card, and switches for hiding international matches and friendlies. Filters write to the URL so you can share a tight view with someone else.
+
+Frequently asked questions
+
+How does the FootyMetrics AI generate predictions?
+
+Every fixture is scored by the FootyMetrics AI across every market we cover. The AI uses recent form for both sides, head to head, confirmed lineups, injuries, player contributions and per-league context. The strongest call per fixture is what surfaces on the card.
+
+How accurate are the predictions?
+
+72.1% of 129,776 backtested predictions landed across the 2024 and 2025 seasons.
+
+What is the edge on a card?
+
+The gap between our probability and the bookmaker's implied probability for the same outcome. A plus six edge means the AI thinks the outcome is six points more likely than the price implies. Negative edges are hidden, so when the book has the price right or better the green badge does not appear.
+
+How often are predictions updated?
+
+Probabilities refresh as new form data and team news arrive and as bookmaker prices move. A first call lands around two weeks before kick-off; the card on match day has had more inputs than the one ten days out.
+
+Do I need an account to see predictions?
+
+You can see the first prediction on every page for free. A premium account unlocks the full slate across every date and market.
+
+How our predictions work
+The data behind the model and how we measure accuracy.
+
+Help FootyMetrics improve
+
+Found a bug, got an idea, or just want to share your thoughts? We read everything.
+
+Report a bug
+Suggest a feature
+Leave a review
+All contact options
+Daily picks on Telegram
+2200+ members
+
+Trend alerts, value bets, and platform updates straight to your phone. Free to join.
+
+Join channel
+
+Opta-level football statistics & betting analytics across 115+ leagues. Every stat follows Opta's event definitions, so a tackle or shot on target means the same here as where your bet settles. Trend detection, player props, value bets, and live fixtures with tactical lineups.
+
+Join Telegram
+Follow
+@FootyMetricsX
+Add as a preferred source
+Email us
+BETTING TOOLS
+Predictions
+Player trends
+Team trends
+Player Props finder
+Props Edges
+Fixture Scout
+Referees
+NEW
+Player matchups (H2H)
+NEW
+H2H stats
+NEW
+PLAYER STATS
+Goals
+Shots on target
+Shots
+Tackles
+Fouls
+Goalkeeper saves
+TEAM STATS
+Goals
+BTTS
+Corners
+Cards
+Shots on target
+First half
+Second half
+RESEARCH & STATS
+Player stats
+Compare players
+Statistics
+Learn
+Stat Definitions
+Odds Converter
+Stats Hub
+Today's tips
+Bookmakers
+TOP LEAGUES
+Premier League
+La Liga
+Bundesliga
+Serie A
+Ligue 1
+Champions League
+All leagues
+FOOTYMETRICS
+Pricing
+Affiliate program
+Blog
+About
+Changelog
+Contact
+Privacy Policy
+Terms of Service
+Affiliate Terms
+Cookie Policy
+Advertising Disclosure
+Cookie settings
+
+FootyMetrics provides data-driven football statistics and probability-based analysis. We do not accept bets or operate as a licensed betting operator. All predictions and projections are statistical estimates; past performance does not guarantee future results. Gambling involves financial risk; never bet more than you can afford to lose. 18+ only.
+
+2026 FootyMetrics
