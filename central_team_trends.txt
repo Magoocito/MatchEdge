@@ -1,0 +1,200 @@
+﻿Skip to main content
+Fixtures
+Today's tips
+NEW
+Predictions
+Trends
+Betting tools
+NEW
+Stats
+Search teams, players, leagues
+Ctrl K
+D
+Home
+Primera Division
+v
+Central Español vs Montevideo City Torque lineups, H2H results & statistics
+Primera Division
+Central Español
+13th
+L
+L
+L
+D
+D
+17:30
+Today
+2
+h
+46
+m
+51
+s
+Montevideo City Torque
+1st
+W
+W
+L
+W
+W
+H. Heras
+5.3
+19.4
+Parque Luis Méndez Piana
+Overview
+Duels
+NEW
+Table
+Player trends
+Team trends
+Markets
+Cards
+1 of 10 markets
+Basic Search
+Sort by
+Highest hit rate
+Highest average
+Highest total
+Highest opponent hit rate
+Highest odds
+Type
+All
+Over
+Under
+Yes
+No
+Most
+Scope
+Both
+Match
+Team
+Min. hit rate
+70%
+Min. opponent hits
+0
+Min. H2H hits
+0
+Min. hits
+4
+Match Context
+Opponent difficulty
+All
+Easier
+Harder
+Odds
+Min. odds
+Any
+1.50
+2.00
+2.50
+Bookmakers
+All bookmakers
+5 of 5 books
+Reset all filters
+All competitions
+Same league only
+Both
+Any venue
+Same venue
+Which matches count towards a trend?
+0 trends found
+
+Showing 0-0 of 0 trends.
+
+No trends found
+
+Try adjusting your filters to see more results
+
+Betting tools
+
+Player prop research
+
+Player trends
+Premium
+Player props edges
+Premium
+Player props finder
+Freemium
+
+Team research
+
+Team trends
+Premium
+Fixture scout
+Freemium
+Position stats
+NEW
+Duels
+NEW
+Premium
+
+Player vs player
+
+Player matchups (H2H)
+NEW
+Compare players
+NEW
+
+Reference
+
+H2H stats
+NEW
+Referee stats
+NEW
+All betting tools
+About the odds we show
+
+Two of the names in our odds columns are platforms rather than bookmakers.
+
+Altenar
+
+Altenar supplies the sportsbook software and the pricing that other betting brands run on. Same idea as Kambi: the operator puts their own name on the front and the odds come from Altenar. Any odds we show from Altenar are the same odds shown at every bookmaker using it.
+
+Kambi
+
+Kambi prices the markets for hundreds of bookmakers worldwide. Any odds we show from Kambi are the same odds shown at every bookmaker running their platform, so check whether yours is one of them.
+
+How to read a team trend card
+
+What the different parts of each card mean.
+
+Match history
+
+Each column in the scrollable bar represents one past match.
+
+3
+Hit
+Green badge. Team met the stat threshold in that match.
+1
+Miss
+Red badge. Threshold wasn't met.
+League
+The competition the match was played in.
+LIV
+Opponent
+Logo and abbreviated name of the team faced.
+A
+LIV
+Home or away
+H or A badge shows match venue.
+12
+- 7
+Most stat, hit
+For dominance trends; top number is the team's value, bottom is the opponent's. Green means the team had more.
+7
+- 12
+Most stat, miss
+Red split badge; the opponent had more of that stat in the match.
+2
+2
+Trend window
+Accent underline = inside the window the hit rate is based on. Faded = older history shown for context only.
+
+Card overview
+
+Labels, badges and context shown outside the match history bar.
+
+Trending up, supports bet
+Stat is rising in recent matches and aligns with the bet direction. Hover the icon on the card for the exact reason.
+Trending up, against bet
+Stat is rising but works a

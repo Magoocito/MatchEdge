@@ -1,0 +1,296 @@
+﻿Skip to main content
+Fixtures
+Today's tips
+NEW
+Predictions
+Trends
+Betting tools
+NEW
+Stats
+Search teams, players, leagues
+Ctrl K
+D
+Home
+Superliga
+v
+Petrolul 52 vs Csikszereda lineups, H2H results & statistics
+Superliga
+Petrolul 52
+4th
+W
+L
+W
+W
+D
+13:00
+Today
+23
+m
+33
+s
+Csikszereda
+16th
+L
+L
+L
+L
+D
+S. Vădana
+4.6
+26.5
+Stadionul Ilie Oană
+Overview
+Duels
+NEW
+Table
+Player trends
+Team trends
+Markets
+Cards
+1 of 10 markets
+Basic Search
+Sort by
+Highest hit rate
+Highest average
+Highest total
+Highest opponent hit rate
+Highest odds
+Type
+All
+Over
+Under
+Yes
+No
+Most
+Scope
+Both
+Match
+Team
+Min. hit rate
+70%
+Min. opponent hits
+0
+Min. H2H hits
+0
+Min. hits
+4
+Match Context
+Opponent difficulty
+All
+Easier
+Harder
+Odds
+Min. odds
+Any
+1.50
+2.00
+2.50
+Bookmakers
+All bookmakers
+5 of 5 books
+Reset all filters
+All competitions
+Same league only
+Both
+Any venue
+Same venue
+Which matches count towards a trend?
+2 trends found
+
+Showing 0-2 of 2 trends.
+
+Petrolul 52
+Opp. hits
+5/9
+H2H
+3/3
+O 3.5
+1.45
+
+Total cards over 3.5
+
+5/6
+Hit
+83%
+Rate
+6.33
+Avg
+Last 9
+Match total
+4
+A
+FSB
+10
+H
+COHU
+4
+A
+UCL
+3
+H
+RAP
+9
+A
+VOL
+6
+H
+OG
+3
+A
+UCR
+11
+A
+ARG
+7
+H
+DIN
+Superliga
+PET
+vs
+CSI
+Today · 13:00
+All
+Home
+Away
+League avg
+4.50
+CSI
+4.80
+Petrolul 52
+Opp. hits
+5/9
+H2H
+3/3
+O 1.5
+1.56
+
+Cards for over 1.5
+
+7/9
+Hit
+78%
+Rate
+3.11
+Avg
+Last 9
+Team total
+1
+A
+FSB
+6
+H
+COHU
+2
+A
+UCL
+0
+H
+RAP
+4
+A
+VOL
+3
+H
+OG
+2
+A
+UCR
+6
+A
+ARG
+4
+H
+DIN
+Superliga
+PET
+vs
+CSI
+Today · 13:00
+All
+Home
+Away
+League avg
+2.00
+CSI
+1.40
+Betting tools
+
+Player prop research
+
+Player trends
+Premium
+Player props edges
+Premium
+Player props finder
+Freemium
+
+Team research
+
+Team trends
+Premium
+Fixture scout
+Freemium
+Position stats
+NEW
+Duels
+NEW
+Premium
+
+Player vs player
+
+Player matchups (H2H)
+NEW
+Compare players
+NEW
+
+Reference
+
+H2H stats
+NEW
+Referee stats
+NEW
+All betting tools
+About the odds we show
+
+Two of the names in our odds columns are platforms rather than bookmakers.
+
+Altenar
+
+Altenar supplies the sportsbook software and the pricing that other betting brands run on. Same idea as Kambi: the operator puts their own name on the front and the odds come from Altenar. Any odds we show from Altenar are the same odds shown at every bookmaker using it.
+
+Kambi
+
+Kambi prices the markets for hundreds of bookmakers worldwide. Any odds we show from Kambi are the same odds shown at every bookmaker running their platform, so check whether yours is one of them.
+
+How to read a team trend card
+
+What the different parts of each card mean.
+
+Match history
+
+Each column in the scrollable bar represents one past match.
+
+3
+Hit
+Green badge. Team met the stat threshold in that match.
+1
+Miss
+Red badge. Threshold wasn't met.
+League
+The competition the match was played in.
+LIV
+Opponent
+Logo and abbreviated name of the team faced.
+A
+LIV
+Home or away
+H or A badge shows match venue.
+12
+- 7
+Most stat, hit
+For dominance trends; top number is the team's value, bottom is the opponent's. Green means the team had more.
+7
+- 12
+Most stat, miss
+Red split badge; the opponent had more of that stat in the match.
+2
