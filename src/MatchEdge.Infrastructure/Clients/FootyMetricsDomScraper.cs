@@ -137,6 +137,11 @@ public class FootyMetricsDomScraper : IFootyMetricsScraper
         await _browserManager.StartAsync(ct);
     }
 
+    public async Task StartAsync(bool headless, CancellationToken ct = default)
+    {
+        await _browserManager.StartAsync(headless, ct);
+    }
+
     public async Task<bool> WaitForReadyAsync(TimeSpan? timeout = null, CancellationToken ct = default)
     {
         return await _browserManager.WaitForReadyAsync(timeout, ct);
