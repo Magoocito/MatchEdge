@@ -51,7 +51,7 @@ public sealed class FmOutcomeResolver : IFmOutcomeResolver
     public const string StatusAmbiguous = "AMBIGUOUS";
 
     private static readonly Regex StatsRow = new(
-        @">(.*?)</span><span class=""text-xs font-medium text-text-secondary"">(.*?)</span><span class=""text-sm font-semibold tabular-nums text-text-primary"">(.*?)</span>",
+        @">([^<>]+)</span><span class=""text-xs font-medium text-text-secondary"">([^<>]+)</span><span class=""text-sm font-semibold tabular-nums text-text-primary"">([^<>]+)</span>",
         RegexOptions.Compiled);
 
     private static readonly Dictionary<string, (string Label, int Side)> TeamStatsMarkets =
@@ -70,6 +70,8 @@ public sealed class FmOutcomeResolver : IFmOutcomeResolver
             ["total_fouls"] = ("Fouls committed", 0),
             ["goalkeeper_saves"] = ("Goalkeeper saves", 0),
             ["total_saves"] = ("Goalkeeper saves", 0),
+            ["home_saves"] = ("Goalkeeper saves", 1),
+            ["away_saves"] = ("Goalkeeper saves", 2),
             ["offsides"] = ("Offsides", 0),
             ["total_offsides"] = ("Offsides", 0)
         };
@@ -252,11 +254,13 @@ public sealed class FmOutcomeResolver : IFmOutcomeResolver
             };
             source = "fixtures-api";
         }
-        else if (s.Market is "tackles")
+        else if (s.Market is "tackles" or "home_cards" or "away_cards" or "total_cards")
         {
+            var reason = s.Market is "tackles"
+                ? "ambiguous stats label (Total tackles vs Tackles won)"
+                : "ambiguous stats label (Yellow cards vs Yellow+Red cards)";
             return new FmOutcomeDraft(
-                s.Id, fixture.Id, null, null, StatusAmbiguous, "none",
-                "ambiguous stats label (Total tackles vs Tackles won)");
+                s.Id, fixture.Id, null, null, StatusAmbiguous, "none", reason);
         }
         else if (s.Market != null &&
                  TeamStatsMarkets.TryGetValue(s.Market, out var mapping))
@@ -325,7 +329,7 @@ public sealed class FmOutcomeResolver : IFmOutcomeResolver
                 if (!doc.RootElement.TryGetProperty("data", out var data) ||
                     data.ValueKind != JsonValueKind.Array)
                     continue;
-                rows = data.EnumerateArray().ToList();
+                rows = data.EnumerateArray().Select(e => e.Clone()).ToList();
             }
             catch (JsonException ex)
             {
@@ -399,54 +403,48 @@ public sealed class FmOutcomeResolver : IFmOutcomeResolver
 
     public static Dictionary<string, (double Home, double Away)> ParseStats(string html)
     {
-        var result = new Dictionary<string, (double Home, double Away)>(
+        // Values are rendered as `39<!-- -->%`; strip the comment artifacts so the
+        // value/label spans can be matched without crossing tags.
+        var clean = html.Replace("<!-- -->", string.Empty);
+        var occurrences = new Dictionary<string, List<(double Home, double Away)>>(
             StringComparer.OrdinalIgnoreCase);
-        var ambiguous = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-        var lastLabel = "";
-        var lastValues = (0.0, 0.0);
 
-        foreach (Match m in StatsRow.Matches(html))
+        foreach (Match m in StatsRow.Matches(clean))
         {
             var v1 = ParseStatValue(m.Groups[1].Value);
-            var label = m.Groups[2].Value;
+            var label = m.Groups[2].Value.Trim();
             var v2 = ParseStatValue(m.Groups[3].Value);
-            if (v1 is null || v2 is null) continue;
-
-            // Server HTML renders the panel twice (desktop + mobile columns);
-            // identical repeats are fine, divergent repeats are ambiguous.
-            if (label == lastLabel &&
-                (Math.Abs(lastValues.Item1 - v1.Value) > 0.001 ||
-                 Math.Abs(lastValues.Item2 - v2.Value) > 0.001))
+            if (v1 is null || v2 is null || label.Length == 0) continue;
+            if (!occurrences.TryGetValue(label, out var list))
             {
-                ambiguous.Add(label);
-                continue;
+                list = new List<(double, double)>();
+                occurrences[label] = list;
             }
-            lastLabel = label;
-            lastValues = (v1.Value, v2.Value);
-
-            if (ambiguous.Contains(label)) continue;
-            if (result.ContainsKey(label))
-            {
-                var existing = result[label];
-                if (Math.Abs(existing.Home - v1.Value) > 0.001 ||
-                    Math.Abs(existing.Away - v2.Value) > 0.001)
-                {
-                    result.Remove(label);
-                    ambiguous.Add(label);
-                }
-                continue;
-            }
-            result[label] = (v1.Value, v2.Value);
+            list.Add((v1.Value, v2.Value));
         }
 
-        foreach (var label in ambiguous)
-            result.Remove(label);
+        // The server HTML renders the panel more than once (desktop + mobile, and
+        // sometimes an empty placeholder). Identical repeats are fine; divergent
+        // repeats resolve to the most frequent pair (deterministic), and a tie
+        // drops the label so the caller reports AMBIGUOUS/UNAVAILABLE instead of guessing.
+        var result = new Dictionary<string, (double Home, double Away)>(
+            StringComparer.OrdinalIgnoreCase);
+        foreach (var (label, list) in occurrences)
+        {
+            var best = list
+                .GroupBy(p => p)
+                .OrderByDescending(g => g.Count())
+                .ThenBy(g => g.Key)
+                .ToList();
+            if (best.Count == 1 || best[0].Count() > best[1].Count())
+                result[label] = best[0].Key;
+        }
         return result;
     }
 
     private static double? ParseStatValue(string raw)
     {
-        var cleaned = raw.Replace("<!-- -->", string.Empty).Trim().TrimEnd('%');
+        var cleaned = raw.Trim().TrimEnd('%');
         return double.TryParse(cleaned, System.Globalization.NumberStyles.Float,
             System.Globalization.CultureInfo.InvariantCulture, out var d) ? d : null;
     }
