@@ -103,21 +103,30 @@ public sealed class FmFixtureSnapshotService : IFmFixtureSnapshotService
 
                 try
                 {
+                    var leakage = fixture.KickoffUtc.HasValue &&
+                                  sourceTs > fixture.KickoffUtc.Value;
                     var snapshotId = await _store.InsertSnapshotAsync(
                         fixture.FixtureId, tab, tabUrl, sourceTs,
                         rawPath ?? string.Empty, sha,
                         kind == FmReadySignalKind.ResponsePattern
                             ? FmTrendsJsonParser.ParserVersion
                             : HtmlParserVersion,
-                        status, ct);
+                        status, leakage, ct);
 
                     if (kind == FmReadySignalKind.ResponsePattern && signalCount > 0)
                     {
                         var drafts = FmTrendsJsonParser.Parse(raw, TabSubjectType(tab));
                         var (venueScope, compScope) = ScopesFromUrl(outcome.ResponseUrl);
-                        await _store.InsertSignalsAsync(
+                        var insertResult = await _store.InsertSignalsAsync(
                             snapshotId, fixture.FixtureId, drafts,
-                            venueScope, compScope, sourceTs, ct);
+                            venueScope, compScope, sourceTs,
+                            ParamsJsonFromUrl(outcome.ResponseUrl), ct);
+                        if (insertResult.Suspect > 0)
+                        {
+                            status = "SUSPECT";
+                            warnings.Add(
+                                $"validation: {insertResult.Suspect} signal(s) SUSPECT for {tab}: {insertResult.FirstMotivo}");
+                        }
                     }                }
                 catch (Exception ex)
                 {
@@ -131,7 +140,18 @@ public sealed class FmFixtureSnapshotService : IFmFixtureSnapshotService
             {
                 _logger.LogWarning("Snapshot tab {Tab} failed for {FixtureId}: {Code} {Msg}",
                     tab, fixture.FixtureId, ex.Code, ex.Message);
-                tabs.Add(new FmTabOutcome(tab, MapCode(ex.Code), 0, null, ex.Message));
+                var mapped = MapCode(ex.Code);
+                if (kind == FmReadySignalKind.ResponsePattern &&
+                    ex.Code is FmNavigationErrorCode.Timeout
+                        or FmNavigationErrorCode.NoData
+                        or FmNavigationErrorCode.PageNotReady &&
+                    await PaywallMarkersAsync())
+                {
+                    mapped = "DEGRADED";
+                    warnings.Add(
+                        $"paywall markers (Upgrade/Sign in) with trends API silent for {tab}: non-premium profile suspected");
+                }
+                tabs.Add(new FmTabOutcome(tab, mapped, 0, null, ex.Message));
             }
         }
 
@@ -189,6 +209,22 @@ public sealed class FmFixtureSnapshotService : IFmFixtureSnapshotService
             "() => document.documentElement.outerHTML") ?? string.Empty;
     }
 
+    private async Task<bool> PaywallMarkersAsync()
+    {
+        try
+        {
+            var page = _browserManager.GetPage();
+            if (page == null) return false;
+            var text = await page.EvaluateAsync<string>(
+                "() => document.body?.innerText || ''") ?? string.Empty;
+            return text.Contains("Upgrade") && text.Contains("Sign in");
+        }
+        catch
+        {
+            return false;
+        }
+    }
+
     private static string TabSubjectType(string tab) =>
         tab == "player-trends" ? "player" : "team";
 
@@ -208,6 +244,30 @@ public sealed class FmFixtureSnapshotService : IFmFixtureSnapshotService
             else if (kv[0] == "league_only") comp = kv[1] == "true" ? "same_league" : "all";
         }
         return (venue, comp);
+    }
+
+    public static string ParamsJsonFromUrl(string? responseUrl)
+    {
+        var location = "all";
+        var leagueOnly = false;
+        if (!string.IsNullOrEmpty(responseUrl))
+        {
+            var queryIndex = responseUrl.IndexOf('?');
+            if (queryIndex >= 0)
+            {
+                foreach (var pair in responseUrl[(queryIndex + 1)..]
+                    .Split('&', StringSplitOptions.RemoveEmptyEntries))
+                {
+                    var kv = pair.Split('=', 2);
+                    if (kv.Length != 2) continue;
+                    if (kv[0] == "location") location = Uri.UnescapeDataString(kv[1]);
+                    else if (kv[0] == "league_only") leagueOnly = kv[1] == "true";
+                }
+            }
+        }
+
+        return System.Text.Json.JsonSerializer.Serialize(
+            new { location, league_only = leagueOnly });
     }
 
     private static string MapCode(FmNavigationErrorCode code) => code switch

@@ -2,6 +2,8 @@ using Microsoft.Data.Sqlite;
 
 namespace MatchEdge.Infrastructure.Services;
 
+public sealed record FmSignalInsertResult(int Inserted, int Suspect, string? FirstMotivo);
+
 public sealed class FmSnapshotStore
 {
     private readonly string _connectionString;
@@ -45,7 +47,8 @@ CREATE TABLE IF NOT EXISTS fm_snapshot (
     raw_path TEXT NOT NULL,
     raw_sha256 TEXT NOT NULL,
     parser_version TEXT NOT NULL,
-    status TEXT NOT NULL
+    status TEXT NOT NULL,
+    leakage_flag INTEGER NOT NULL DEFAULT 0
 );
 CREATE INDEX IF NOT EXISTS ix_fm_snapshot_fixture_tab ON fm_snapshot(fixture_id, tab, id);
 CREATE TABLE IF NOT EXISTS fm_signal (
@@ -66,16 +69,49 @@ CREATE TABLE IF NOT EXISTS fm_signal (
     competition_scope TEXT,
     confidence_score REAL,
     recent_values_json TEXT,
+    params_json TEXT,
+    status TEXT NOT NULL DEFAULT 'OK',
+    motivo TEXT,
     source_timestamp_utc TEXT NOT NULL,
     FOREIGN KEY(snapshot_id) REFERENCES fm_snapshot(id)
 );
 CREATE INDEX IF NOT EXISTS ix_fm_signal_fixture ON fm_signal(fixture_id, snapshot_id);
 CREATE INDEX IF NOT EXISTS ix_fm_signal_subject ON fm_signal(fixture_id, subject_type, subject_name);", ct);
+
+        await EnsureColumnAsync(conn, "fm_snapshot", "leakage_flag", "INTEGER NOT NULL DEFAULT 0", ct);
+        await EnsureColumnAsync(conn, "fm_signal", "params_json", "TEXT", ct);
+        await EnsureColumnAsync(conn, "fm_signal", "status", "TEXT NOT NULL DEFAULT 'OK'", ct);
+        await EnsureColumnAsync(conn, "fm_signal", "motivo", "TEXT", ct);
+    }
+
+    private static async Task EnsureColumnAsync(
+        SqliteConnection conn, string table, string column, string ddl, CancellationToken ct)
+    {
+        var found = false;
+        await using (var readerCmd = conn.CreateCommand())
+        {
+            readerCmd.CommandText = $"PRAGMA table_info({table});";
+            await using var reader = await readerCmd.ExecuteReaderAsync(ct);
+            while (await reader.ReadAsync(ct))
+            {
+                if (string.Equals(reader.GetString(1), column, StringComparison.OrdinalIgnoreCase))
+                {
+                    found = true;
+                    break;
+                }
+            }
+        }
+
+        if (found) return;
+        await using var alter = conn.CreateCommand();
+        alter.CommandText = $"ALTER TABLE {table} ADD COLUMN {column} {ddl}";
+        await alter.ExecuteNonQueryAsync(ct);
     }
 
     public async Task<long> InsertSnapshotAsync(
         string fixtureId, string tab, string url, DateTime sourceTimestampUtc,
         string rawPath, string rawSha256, string parserVersion, string status,
+        bool leakageFlag = false,
         CancellationToken ct = default)
     {
         try { await EnsureOnceAsync(ct); }
@@ -84,8 +120,8 @@ CREATE INDEX IF NOT EXISTS ix_fm_signal_subject ON fm_signal(fixture_id, subject
         await conn.OpenAsync(ct);
         await using var cmd = conn.CreateCommand();
         cmd.CommandText = @"
-INSERT INTO fm_snapshot (fixture_id, tab, url, source_timestamp_utc, raw_path, raw_sha256, parser_version, status)
-VALUES ($fixtureId, $tab, $url, $ts, $rawPath, $sha, $parserVersion, $status);
+INSERT INTO fm_snapshot (fixture_id, tab, url, source_timestamp_utc, raw_path, raw_sha256, parser_version, status, leakage_flag)
+VALUES ($fixtureId, $tab, $url, $ts, $rawPath, $sha, $parserVersion, $status, $leakage);
 SELECT last_insert_rowid();";
         cmd.Parameters.AddWithValue("$fixtureId", fixtureId);
         cmd.Parameters.AddWithValue("$tab", tab);
@@ -95,20 +131,22 @@ SELECT last_insert_rowid();";
         cmd.Parameters.AddWithValue("$sha", rawSha256);
         cmd.Parameters.AddWithValue("$parserVersion", parserVersion);
         cmd.Parameters.AddWithValue("$status", status);
+        cmd.Parameters.AddWithValue("$leakage", leakageFlag ? 1 : 0);
         var id = await cmd.ExecuteScalarAsync(ct);
         return Convert.ToInt64(id);
     }
 
-    public async Task<int> InsertSignalsAsync(
+    public async Task<FmSignalInsertResult> InsertSignalsAsync(
         long snapshotId,
         string fixtureId,
         IReadOnlyList<FmSignalDraft> signals,
         string venueScope,
         string competitionScope,
         DateTime sourceTimestampUtc,
+        string? paramsJson = null,
         CancellationToken ct = default)
     {
-        if (signals.Count == 0) return 0;
+        if (signals.Count == 0) return new FmSignalInsertResult(0, 0, null);
 
         try { await EnsureOnceAsync(ct); }
         catch { ResetEnsureFailure(); throw; }
@@ -116,19 +154,28 @@ SELECT last_insert_rowid();";
         await conn.OpenAsync(ct);
         await using var tx = (SqliteTransaction)await conn.BeginTransactionAsync(ct);
         var inserted = 0;
+        var suspect = 0;
+        string? firstMotivo = null;
         var ts = sourceTimestampUtc.ToString("yyyy-MM-dd HH:mm:ss.fff");
 
         foreach (var s in signals)
         {
+            var (validationStatus, motivo) = FmSignalValidator.Validate(s);
+            if (validationStatus == FmSignalValidator.StatusSuspect)
+            {
+                suspect++;
+                firstMotivo ??= motivo;
+            }
+
             await using var cmd = conn.CreateCommand();
             cmd.Transaction = tx;
             cmd.CommandText = @"
 INSERT INTO fm_signal (snapshot_id, fixture_id, subject_type, subject_name, market, line, direction,
     hits, sample_size, observed_hit_rate, opp_hits, opp_sample_size, venue_scope, competition_scope,
-    confidence_score, recent_values_json, source_timestamp_utc)
+    confidence_score, recent_values_json, params_json, status, motivo, source_timestamp_utc)
 VALUES ($snapshotId, $fixtureId, $subjectType, $subjectName, $market, $line, $direction,
     $hits, $sample, $observed, $oppHits, $oppSample, $venueScope, $competitionScope,
-    $confidence, $recent, $ts);";
+    $confidence, $recent, $params, $validationStatus, $motivo, $ts);";
             cmd.Parameters.AddWithValue("$snapshotId", snapshotId);
             cmd.Parameters.AddWithValue("$fixtureId", fixtureId);
             cmd.Parameters.AddWithValue("$subjectType", s.SubjectType);
@@ -145,12 +192,15 @@ VALUES ($snapshotId, $fixtureId, $subjectType, $subjectName, $market, $line, $di
             cmd.Parameters.AddWithValue("$competitionScope", competitionScope);
             cmd.Parameters.AddWithValue("$confidence", (object?)s.ConfidenceScore ?? DBNull.Value);
             cmd.Parameters.AddWithValue("$recent", (object?)s.RecentValuesJson ?? DBNull.Value);
+            cmd.Parameters.AddWithValue("$params", (object?)paramsJson ?? DBNull.Value);
+            cmd.Parameters.AddWithValue("$validationStatus", validationStatus);
+            cmd.Parameters.AddWithValue("$motivo", (object?)motivo ?? DBNull.Value);
             cmd.Parameters.AddWithValue("$ts", ts);
             inserted += await cmd.ExecuteNonQueryAsync(ct);
         }
 
         await tx.CommitAsync(ct);
-        return inserted;
+        return new FmSignalInsertResult(inserted, suspect, firstMotivo);
     }
 
     public async Task<string?> GetLastSnapshotUrlAsync(string fixtureId, CancellationToken ct = default)

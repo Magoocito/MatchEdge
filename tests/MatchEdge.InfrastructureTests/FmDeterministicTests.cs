@@ -1,4 +1,4 @@
-using MatchEdge.Infrastructure.Clients;
+﻿using MatchEdge.Infrastructure.Clients;
 using MatchEdge.Infrastructure.Services;
 using Xunit;
 
@@ -153,5 +153,159 @@ public class FmDeterministicTests
         var (venue, comp) = FmFixtureSnapshotService.ScopesFromUrl(null);
         Assert.Equal("all", venue);
         Assert.Equal("all", comp);
+    }
+
+    [Fact]
+    public void ParamsJsonFromUrl_DerivesLocationAndLeagueOnly()
+    {
+        var json = FmFixtureSnapshotService.ParamsJsonFromUrl(
+            "https://www.footymetrics.com/api/front/trends/fixtures/1/teams?location=match&league_only=true");
+        Assert.Contains("\"location\":\"match\"", json);
+        Assert.Contains("\"league_only\":true", json);
+        Assert.Contains("\"league_only\":false",
+            FmFixtureSnapshotService.ParamsJsonFromUrl(null));
+    }
+
+    [Fact]
+    public void BestWindow_MatchesVerifiedV3Rule()
+    {
+        double[] awayShots = { 13, 13, 10, 15, 13, 18, 15, 15, 4, 30 };
+        var (hits, window) = FmSignalValidator.BestWindow(awayShots, 12.5, "over", 4);
+        Assert.Equal(7, hits);
+        Assert.Equal(8, window);
+
+        double[] allHit = { 7, 8, 11, 6, 16, 11, 10, 6, 8, 10 };
+        Assert.Equal((10, 10), FmSignalValidator.BestWindow(allHit, 5.5, "over", 4));
+    }
+
+    [Fact]
+    public void Validator_SyntheticNonNumericValue_IsSuspect()
+    {
+        var draft = new FmSignalDraft(
+            "team", "X", "total_goals", 2.5, "over", 3, 4, 0.75, null, null, null,
+            """[{"vt":"abc","t":"2026-01-01T00:00:00.000Z"},{"vt":3},{"vt":3},{"vt":3}]""");
+        var (status, motivo) = FmSignalValidator.Validate(draft);
+        Assert.Equal("SUSPECT", status);
+        Assert.Contains("non-numeric", motivo);
+    }
+
+    [Fact]
+    public void Validator_SyntheticSampleLongerThanHistory_IsSuspect()
+    {
+        var draft = new FmSignalDraft(
+            "team", "X", "total_goals", 2.5, "over", 3, 6, 0.5, null, null, null,
+            """[{"vt":3},{"vt":3},{"vt":3},{"vt":3}]""");
+        var (status, motivo) = FmSignalValidator.Validate(draft);
+        Assert.Equal("SUSPECT", status);
+        Assert.Contains("sample_size 6 > history len 4", motivo);
+    }
+
+    [Fact]
+    public void Validator_SyntheticRecomputedMismatch_IsSuspect()
+    {
+        var draft2 = new FmSignalDraft(
+            "team", "X", "total_goals", 2.5, "over", 3, 10, 0.3, null, null, null,
+            "[" + string.Join(",", Enumerable.Repeat("""{"vt":3}""", 10)) + "]");
+        var (status, motivo) = FmSignalValidator.Validate(draft2);
+        Assert.Equal("SUSPECT", status);
+        Assert.Contains("recomputed 10/10 != bestCount 3/10", motivo);
+    }
+
+    [Fact]
+    public void Validator_SyntheticValidRow_IsOk()
+    {
+        var draft = new FmSignalDraft(
+            "team", "X", "total_goals", 2.5, "over", 10, 10, 1.0, null, null, null,
+            "[" + string.Join(",", Enumerable.Repeat("""{"vt":3}""", 10)) + "]");
+        var (status, motivo) = FmSignalValidator.Validate(draft);
+        Assert.Equal("OK", status);
+        Assert.Null(motivo);
+    }
+
+    [Fact]
+    public async Task Store_Migration_IsIdempotent_AndAddsP2Columns()
+    {
+        var dbPath = Path.Combine(Path.GetTempPath(), $"fmtest_{Guid.NewGuid():N}.db");
+        try
+        {
+            var store = new FmSnapshotStore($"Data Source={dbPath}");
+            await store.EnsureSchemaAsync();
+            await store.EnsureSchemaAsync();
+
+            var columns = new List<string>();
+            await using (var conn = new Microsoft.Data.Sqlite.SqliteConnection($"Data Source={dbPath}"))
+            {
+                await conn.OpenAsync();
+                foreach (var table in new[] { "fm_snapshot", "fm_signal" })
+                {
+                    await using var cmd = conn.CreateCommand();
+                    cmd.CommandText = $"PRAGMA table_info({table});";
+                    await using var reader = await cmd.ExecuteReaderAsync();
+                    while (await reader.ReadAsync())
+                        columns.Add($"{table}.{reader.GetString(1)}");
+                }
+            }
+
+            Assert.Contains("fm_snapshot.leakage_flag", columns);
+            Assert.Contains("fm_signal.params_json", columns);
+            Assert.Contains("fm_signal.status", columns);
+            Assert.Contains("fm_signal.motivo", columns);
+
+            var id = await store.InsertSnapshotAsync(
+                "33441813", "team-trends", "https://x", DateTime.UtcNow,
+                "p", "sha", "fm-json-v1", "OK", leakageFlag: true);
+            Assert.True(id > 0);
+        }
+        finally
+        {
+            Microsoft.Data.Sqlite.SqliteConnection.ClearAllPools();
+            File.Delete(dbPath);
+        }
+    }
+
+    [Fact]
+    public async Task Store_InsertSignals_PersistsParamsStatusAndSuspect()
+    {
+        var dbPath = Path.Combine(Path.GetTempPath(), $"fmtest_{Guid.NewGuid():N}.db");
+        try
+        {
+            var store = new FmSnapshotStore($"Data Source={dbPath}");
+            var okDraft = new FmSignalDraft(
+                "team", "X", "total_goals", 2.5, "over", 10, 10, 1.0, null, null, null,
+                "[" + string.Join(",", Enumerable.Repeat("""{"vt":3}""", 10)) + "]");
+            var badDraft = new FmSignalDraft(
+                "team", "Y", "total_goals", 2.5, "over", 3, 10, 0.3, null, null, null,
+                "[" + string.Join(",", Enumerable.Repeat("""{"vt":3}""", 10)) + "]");
+
+            var snapshotId = await store.InsertSnapshotAsync(
+                "33441813-x", "team-trends", "https://x", DateTime.UtcNow,
+                "p", "sha", "fm-json-v1", "OK");
+            var result = await store.InsertSignalsAsync(
+                snapshotId, "33441813-x", new[] { okDraft, badDraft },
+                "all", "all", DateTime.UtcNow, """{"location":"all","league_only":false}""");
+
+            Assert.Equal(2, result.Inserted);
+            Assert.Equal(1, result.Suspect);
+            Assert.Contains("recomputed", result.FirstMotivo);
+
+            await using var conn = new Microsoft.Data.Sqlite.SqliteConnection($"Data Source={dbPath}");
+            await conn.OpenAsync();
+            await using var cmd = conn.CreateCommand();
+            cmd.CommandText = @"SELECT subject_name, status, motivo, params_json FROM fm_signal ORDER BY id";
+            await using var reader = await cmd.ExecuteReaderAsync();
+            Assert.True(await reader.ReadAsync());
+            Assert.Equal("X", reader.GetString(0));
+            Assert.Equal("OK", reader.GetString(1));
+            Assert.True(reader.IsDBNull(2));
+            Assert.Contains("league_only", reader.GetString(3));
+            Assert.True(await reader.ReadAsync());
+            Assert.Equal("Y", reader.GetString(0));
+            Assert.Equal("SUSPECT", reader.GetString(1));
+        }
+        finally
+        {
+            Microsoft.Data.Sqlite.SqliteConnection.ClearAllPools();
+            File.Delete(dbPath);
+        }
     }
 }

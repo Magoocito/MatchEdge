@@ -116,3 +116,79 @@ login-status existente: loggedIn = !url.Contains("login") && !text.Contains("sig
 ## Conclusión para Fase 1 (criterio del brief)
 
 D3/D4 confirman JSON → la extracción DEBE basarse en JSON (`/api/front/trends/fixtures/<apid>/(players|teams)`), no en innerText. Los snapshots crudos se guardan desde la respuesta JSON (raw_path/sha256). El parser innerText solo queda como fallback con `parser_version` + canario.
+
+---
+
+## Fase P2 — Verificaciones V1–V7
+
+### V1 — Fixtures de T1: tabla y criterio del resolver
+
+**RESPUESTA:** Los 7 fixtures de T1 (33441811–17) son UEFA Nations League, 24/09/2026, kickoff 18:45:00Z, competicion "UEFA Nations League" (stageName League A/B/D). Criterio real del resolver: (1) leagueApid desde /api/front/leagues por match de nombre; (2) filtrado estricto `group.date == fecha pedida`; (3) dedup por fixtureId. El endpoint de liga ya NO agrupa el día 24 (solo 25+); el global sí lo conserva con state/status=FT. T1 devolvió 7 porque Andorra-Malta (16:00Z) ya había terminado a las 17:50. Sin fixtures de otra fecha/competición → sin bug.
+
+**EVIDENCIA** (`tmp/fm/v1_unl_day.json`, `tmp/fm/v1_league_payload.json`, `tmp/fm/v1_fixtures.json`):
+```
+33441811 Portugal-Wales 18:45Z FT League A … 33441817 Liechtenstein-Lithuania 18:45Z FT League D (8 en total, incluye 33441810 Andorra-Malta 16:00Z)
+league endpoint dates: desde 2026-09-25 (sin 09-24) → count=0 para hoy post-FT
+```
+
+### V2 — history[]: orden, longitud y campos
+
+**RESPUESTA:** Orden `t` DESC (más reciente primero); longitud máxima 10 (puede haber menos, ej. 5); elementos NO contienen fixtureId → NO ENCONTRADO. Campos player: `t` fecha UTC, `opp` rival, `l{logo,name}`+`la` (competición+apid), `h` bool (¿el sujeto jugó de local? — Serbia vs México h=false con México de local), `v` valor, `m` minutos jugados, `p` posición, `met` ¿cumple línea?, `vo`/`vs` presentes (semántica NO ENCONTRADO). Campos team: `t`, `opp`, `l` competición, `h`, `va`/`vf` (valor lado local/visitante; vt=va+vf en party=total; vt==vf en party=for), `vt` valor usado, `met`.
+
+**EVIDENCIA** (`tmp/fm/v3_recompute.txt`, snapshots en C:\Services\MatchEdge\tmp\fm\snapshots\33441813\):
+```
+times: 2026-06-05 … 2025-09-06 (desc); maxHistLen=10 en ambas pestañas
+player hist0: {h,l,m:88,p:"LCAM",t,v:2,la:1082,vo,vs,met,opp} — sin fixtureId
+team hist0: {h,l,t,va:6,vf:1,vt:7,met,opp} — va+vf=vt
+```
+
+### V3 — Reconstrucción de 20 señales vs bestCount/bestTotal y UI
+
+**RESPUESTA:** **20/20 coincidencias.** Regla verificada: (a) recomputar con línea y dirección (`v > line` para over) == `count(met=true)` en 20/20 (semántica de línea confirmada); (b) `bestCount/bestTotal` NO es el total de la historia: es la **mejor ventana de los últimos k partidos** (sufijo más reciente, k >= min_matches: teams=4, players=3) maximizando hit-rate, empate → ventana más larga. Coincide con el total completo solo cuando bestTotal==len(history). UI muestra exactamente bestCount/bestTotal.
+
+**EVIDENCIA** (`tmp/fm/v3_rule_check.json`, `tmp/fm/v3_recompute.txt`, `tmp/fm/v3_ui_teamtrends.txt`):
+```
+V3 rule (recent best-window): 20/20
+UI: "Total corners over 5.5 → 10/10 Hit"; "Corners for over 2.5 → 9/10"; "Corners for over 3.5 → 7/8" (== payload)
+contraejemplo bestTotal<len: total_goals L1.5 history=10 best=7/7 (ventana k7)
+```
+
+### V4 — Cobertura: ¿todas las líneas? ¿todos los mercados?
+
+**RESPUESTA:** No solo la mejor ni todas: el payload trae **varias líneas por sujeto+mercado** (Grecia total_corners x3: 5.5/6.5/7.5; Serbia x2) pero es el conjunto de candidatas precalculadas de FM, no todas las líneas posibles (todas → NO ENCONTRADO). Mercados: solo los del catálogo trends (param `markets=1..10` teams), observados 9 teams / 8 players → solo mercados 'trend'.
+
+**EVIDENCIA** (`tmp/fm/v3_recompute.txt`, `tmp/fm/d5_team_intercept.json`):
+```
+total_corners: lines=5.5/6.5/7.5 subjects=5 (duplicados sujeto+mercado con líneas distintas)
+markets param: 1,2,3,4,5,6,7,8,9,10&bookmakers=1,2,3,4,5
+```
+
+### V5 — location=all vs match y league_only on/off (1 fixture)
+
+**RESPUESTA:** `location=all` (default) count=15; `location=match` count=0 (sin filas → comparación de history NO ENCONTRADO para venue); `league_only=true` count=19 vs false=15. En las 7 filas comunes (base vs league_only) history[] CAMBIA (n=10 → n=6, best* recalculado): league_only filtra la historia. Splits locales sin más navegaciones: liga sí (elementos `l`/`la`), venue sí (campo `h`, evidencia Serbia-México h=false). 
+
+**EVIDENCIA** (`tmp/fm/v5_variants.json`, `tmp/fm/v5_compare.json`):
+```
+base15 / locMatch0 / leagueOnly19 / locMatchLeague0
+commonRows=7 historyDiffs=7 bestDiffs=7: Serbia|total_goals|1.5 base 7/7 n=10 vs league 5/6 n=6
+```
+
+### V6 — Sesión no premium (perfil Chrome temporal vacío)
+
+**RESPUESTA:** Sin redirect a /login; la página del fixture carga (title correcto, resultado "1 - 2 FULL TIME") pero con marcadores "Upgrade | Sign in" y la llamada trends NO llega en 15s (NO_RESPONSE_15S): FM retiene trends a no-premium. Detectable → status='DEGRADED' añadido al snapshot cuando falla la ready-signal y hay marcadores de paywall.
+
+**EVIDENCIA** (`tmp/fm/nonpremium/20260924212808227.json`):
+```
+finalUrl=…/33441813-…?tab=team-trends redirectedToLogin=False apiState=NO_RESPONSE_15S
+body: "… Upgrade Sign in Home UEFA Nations League … Serbia vs Greece … 1 - 2 FULL TIME Greece"
+```
+
+### V7 — Listado global de fixtures por fecha
+
+**RESPUESTA:** SÍ existe: `GET /api/front/fixtures?date=YYYY-MM-DD` devuelve TODAS las ligas con fixtures de ese día (sin elegir liga): grupos {id,apid,name,slug,country,…,fixtures[]} con Home/Away poblados y `state`/`status` (5/"FT" = finalizado, 1/"NS" = no empezado). Enumerar ligas del día = nombres de los grupos. 0 navegaciones (fetch puro).
+
+**EVIDENCIA** (`tmp/fm/v7_global_fixtures.json`, `tmp/fm/v1_unl_day.json`):
+```
+200: 4 ligas el 24/09: UEFA Nations League(8, sample state=5 status=FT), Friendly(8? n=6), AFCON Q(8), Botola Pro(1, NS)
+groupKeys: id,apid,name,logo,slug,country,flag,…,fixtures
+```
