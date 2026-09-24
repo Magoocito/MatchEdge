@@ -71,6 +71,8 @@ public interface IFmFixtureResolver
         CancellationToken ct = default);
 
     Task<FmFixtureRef> DescribeAsync(string url, CancellationToken ct = default);
+
+    Task<string> FetchTextAsync(string pathAndQuery, CancellationToken ct, bool rsc = false);
 }
 
 public interface IFmFixtureSnapshotService

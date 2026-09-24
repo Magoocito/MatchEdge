@@ -112,8 +112,11 @@ builder.Services.AddSingleton<FmNavigator>();
 builder.Services.AddSingleton<FmFixtureCatalog>();
 builder.Services.AddSingleton(_ => new FmSnapshotStore(
     "Data Source=C:\\Services\\MatchEdge\\matchedge.db"));
+builder.Services.AddSingleton(_ => new FmOutcomeStore(
+    "Data Source=C:\\Services\\MatchEdge\\matchedge.db"));
 builder.Services.AddScoped<IFmFixtureResolver, FmFixtureResolver>();
 builder.Services.AddScoped<IFmFixtureSnapshotService, FmFixtureSnapshotService>();
+builder.Services.AddScoped<IFmOutcomeResolver, FmOutcomeResolver>();
 builder.Services.AddScoped<ITrendPersistenceService, TrendPersistenceService>();
 builder.Services.AddScoped<ITrendBacktestingService, TrendBacktestingService>();
 builder.Services.AddScoped<IBankrollManager, BankrollManager>();

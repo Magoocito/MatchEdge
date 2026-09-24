@@ -228,7 +228,7 @@ public sealed class FmFixtureResolver : IFmFixtureResolver
             away.Success ? away.Groups[1].Value : null);
     }
 
-    private async Task<string> FetchTextAsync(string pathAndQuery, CancellationToken ct, bool rsc = false)
+    public async Task<string> FetchTextAsync(string pathAndQuery, CancellationToken ct, bool rsc = false)
     {
         // Uses the browser-context APIRequestContext instead of page.evaluate(fetch):
         // the request layer keeps cookies but survives navigations of the shared page

@@ -4,6 +4,14 @@ namespace MatchEdge.Infrastructure.Services;
 
 public sealed record FmSignalInsertResult(int Inserted, int Suspect, string? FirstMotivo);
 
+public sealed record FmSignalRow(
+    long Id,
+    string SubjectType,
+    string SubjectName,
+    string? Market,
+    double? Line,
+    string? Direction);
+
 public sealed class FmSnapshotStore
 {
     private readonly string _connectionString;
@@ -201,6 +209,40 @@ VALUES ($snapshotId, $fixtureId, $subjectType, $subjectName, $market, $line, $di
 
         await tx.CommitAsync(ct);
         return new FmSignalInsertResult(inserted, suspect, firstMotivo);
+    }
+
+    public async Task<IReadOnlyList<FmSignalRow>> GetLatestSignalsAsync(
+        string fixtureId, CancellationToken ct = default)
+    {
+        try { await EnsureOnceAsync(ct); }
+        catch { ResetEnsureFailure(); throw; }
+        await using var conn = Open();
+        await conn.OpenAsync(ct);
+        await using var cmd = conn.CreateCommand();
+        cmd.CommandText = @"
+SELECT s.id, s.subject_type, s.subject_name, s.market, s.line, s.direction
+FROM fm_signal s
+JOIN (
+    SELECT tab, MAX(id) AS mid FROM fm_snapshot
+    WHERE fixture_id = $fixtureId AND status IN ('OK', 'SUSPECT')
+    GROUP BY tab
+) l ON s.snapshot_id = l.mid
+WHERE s.fixture_id = $fixtureId
+ORDER BY s.id;";
+        cmd.Parameters.AddWithValue("$fixtureId", fixtureId);
+        var rows = new List<FmSignalRow>();
+        await using var reader = await cmd.ExecuteReaderAsync(ct);
+        while (await reader.ReadAsync(ct))
+        {
+            rows.Add(new FmSignalRow(
+                reader.GetInt64(0),
+                reader.GetString(1),
+                reader.GetString(2),
+                reader.IsDBNull(3) ? null : reader.GetString(3),
+                reader.IsDBNull(4) ? null : reader.GetDouble(4),
+                reader.IsDBNull(5) ? null : reader.GetString(5)));
+        }
+        return rows;
     }
 
     public async Task<string?> GetLastSnapshotUrlAsync(string fixtureId, CancellationToken ct = default)

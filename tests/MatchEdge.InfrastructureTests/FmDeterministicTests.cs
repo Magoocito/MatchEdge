@@ -308,4 +308,57 @@ public class FmDeterministicTests
             File.Delete(dbPath);
         }
     }
+
+    [Fact]
+    public void OutcomeParser_StatsRows_OrientHomeAndAway()
+    {
+        var html =
+            ">39<!-- -->%</span><span class=\"text-xs font-medium text-text-secondary\">Ball possession</span><span class=\"text-sm font-semibold tabular-nums text-text-primary\">61<!-- -->%</span>" +
+            ">9</span><span class=\"text-xs font-medium text-text-secondary\">Total shots</span><span class=\"text-sm font-semibold tabular-nums text-text-primary\">26</span>" +
+            ">2</span><span class=\"text-xs font-medium text-text-secondary\">Corners</span><span class=\"text-sm font-semibold tabular-nums text-text-primary\">6</span>";
+
+        var stats = FmOutcomeResolver.ParseStats(html);
+        Assert.Equal((9, 26), stats["Total shots"]);
+        Assert.Equal((2, 6), stats["Corners"]);
+        Assert.Equal((39, 61), stats["Ball possession"]);
+    }
+
+    [Fact]
+    public void OutcomeParser_DuplicatePanels_IdenticalKept_DivergentDropped()
+    {
+        var row = ">2</span><span class=\"text-xs font-medium text-text-secondary\">Corners</span>" +
+                  "<span class=\"text-sm font-semibold tabular-nums text-text-primary\">6</span>";
+        var divergent = ">2</span><span class=\"text-xs font-medium text-text-secondary\">Corners</span>" +
+                        "<span class=\"text-sm font-semibold tabular-nums text-text-primary\">9</span>";
+
+        var same = FmOutcomeResolver.ParseStats(row + row);
+        Assert.Equal((2, 6), same["Corners"]);
+
+        var conflict = FmOutcomeResolver.ParseStats(row + divergent);
+        Assert.False(conflict.ContainsKey("Corners"), "divergent duplicate must be dropped as ambiguous");
+    }
+
+    [Fact]
+    public async Task OutcomeStore_Insert_IsIdempotentPerSignal()
+    {
+        var dbPath = Path.Combine(Path.GetTempPath(), $"fmtest_{Guid.NewGuid():N}.db");
+        try
+        {
+            var store = new FmOutcomeStore($"Data Source={dbPath}");
+            var draft = new FmOutcomeDraft(42, "33441813-x", 8, 1, "RESOLVED", "stats-panel", null);
+            Assert.Equal(1, await store.InsertIgnoreAsync(new[] { draft }, DateTime.UtcNow));
+            Assert.Equal(0, await store.InsertIgnoreAsync(new[] { draft }, DateTime.UtcNow));
+
+            var byFixture = await store.GetByFixtureAsync("33441813-x");
+            Assert.Single(byFixture);
+            Assert.Equal(8, byFixture[42].ActualValue);
+            Assert.Equal(1, byFixture[42].Hit);
+            Assert.Equal("RESOLVED", byFixture[42].Status);
+        }
+        finally
+        {
+            Microsoft.Data.Sqlite.SqliteConnection.ClearAllPools();
+            File.Delete(dbPath);
+        }
+    }
 }

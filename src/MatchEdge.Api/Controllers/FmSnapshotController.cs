@@ -14,6 +14,7 @@ public class FmSnapshotController : ControllerBase
 
     private readonly IFmFixtureResolver _resolver;
     private readonly IFmFixtureSnapshotService _snapshots;
+    private readonly IFmOutcomeResolver _outcomes;
     private readonly FmFixtureCatalog _catalog;
     private readonly FmSnapshotStore _store;
     private readonly FmNavigator _navigator;
@@ -22,6 +23,7 @@ public class FmSnapshotController : ControllerBase
     public FmSnapshotController(
         IFmFixtureResolver resolver,
         IFmFixtureSnapshotService snapshots,
+        IFmOutcomeResolver outcomes,
         FmFixtureCatalog catalog,
         FmSnapshotStore store,
         FmNavigator navigator,
@@ -29,10 +31,51 @@ public class FmSnapshotController : ControllerBase
     {
         _resolver = resolver;
         _snapshots = snapshots;
+        _outcomes = outcomes;
         _catalog = catalog;
         _store = store;
         _navigator = navigator;
         _logger = logger;
+    }
+
+    [HttpPost("outcomes/resolve")]
+    public async Task<IActionResult> ResolveOutcomes(
+        [FromBody] FmResolveRequest? request, CancellationToken ct)
+    {
+        request ??= new FmResolveRequest(null, null);
+        try
+        {
+            var report = await _outcomes.ResolveAsync(request, ct);
+            return Ok(new
+            {
+                date = report.Date,
+                finishedFixtures = report.FinishedFixtures,
+                navigationsUsed = report.NavigationsUsed,
+                budget = report.Budget,
+                newlyResolved = report.Fixtures.Sum(f => f.Resolved),
+                alreadyResolved = report.Fixtures.Sum(f => f.AlreadyResolved),
+                fixtures = report.Fixtures.Select(f => new
+                {
+                    f.FixtureId,
+                    f.Home,
+                    f.Away,
+                    f.KickoffUtc,
+                    f.Signals,
+                    f.Resolved,
+                    f.AlreadyResolved,
+                    lines = f.Lines
+                }),
+                warnings = report.Warnings
+            });
+        }
+        catch (FmResolverException ex)
+        {
+            return BadRequest(new { error = ex.Message });
+        }
+        catch (FmNavigationException ex)
+        {
+            return MapNavigationError(ex);
+        }
     }
 
     [HttpPost("fixtures")]
