@@ -1,4 +1,4 @@
-using MatchEdge.Application.Clients;
+﻿using MatchEdge.Application.Clients;
 using MatchEdge.Application.Configuration;
 using MatchEdge.Application.Services;
 using MatchEdge.Application.UseCases.Backtesting;
@@ -33,7 +33,8 @@ public class BacktestingServiceTests
         var sut = new BacktestingService(
             fakeSeasonService, fakeEnumerator, fakeContextStats,
             fakeHistoricalStats, fakeProbEngine, new CalibrationCurveCalculator(),
-            new FakeHistoricalOddsServiceForBacktest(), new FakeMatchMappingProviderForBacktest());
+            new FakeHistoricalOddsServiceForBacktest(), new FakeMatchMappingProviderForBacktest(),
+            new FakeTeamMappingProviderForBacktest());
 
         await sut.RunAsync(
             TournamentId,
@@ -61,7 +62,8 @@ public class BacktestingServiceTests
         var sut = new BacktestingService(
             fakeSeasonService, fakeEnumerator, fakeContextStats,
             fakeHistoricalStats, fakeProbEngine, new CalibrationCurveCalculator(),
-            new FakeHistoricalOddsServiceForBacktest(), new FakeMatchMappingProviderForBacktest());
+            new FakeHistoricalOddsServiceForBacktest(), new FakeMatchMappingProviderForBacktest(),
+            new FakeTeamMappingProviderForBacktest());
 
         var customGamma = 2.5;
         await sut.RunAsync(
@@ -88,7 +90,8 @@ public class BacktestingServiceTests
         var sut = new BacktestingService(
             fakeSeasonService, fakeEnumerator, fakeContextStats,
             fakeHistoricalStats, fakeProbEngine, new CalibrationCurveCalculator(),
-            new FakeHistoricalOddsServiceForBacktest(), new FakeMatchMappingProviderForBacktest());
+            new FakeHistoricalOddsServiceForBacktest(), new FakeMatchMappingProviderForBacktest(),
+            new FakeTeamMappingProviderForBacktest());
 
         var (summary, details) = await sut.RunAsync(
             TournamentId,
@@ -128,7 +131,8 @@ public class BacktestingServiceTests
         var sut = new BacktestingService(
             fakeSeasonService, fakeEnumerator, fakeContextStats,
             fakeHistoricalStats, fakeProbEngine, new CalibrationCurveCalculator(),
-            new FakeHistoricalOddsServiceForBacktest(), new FakeMatchMappingProviderForBacktest());
+            new FakeHistoricalOddsServiceForBacktest(), new FakeMatchMappingProviderForBacktest(),
+            new FakeTeamMappingProviderForBacktest());
 
         var (summary, details) = await sut.RunAsync(
             TournamentId,
@@ -160,7 +164,8 @@ public class BacktestingServiceTests
         var sut = new BacktestingService(
             fakeSeasonService, fakeEnumerator, fakeContextStats,
             fakeHistoricalStats, fakeProbEngine, new CalibrationCurveCalculator(),
-            new FakeHistoricalOddsServiceForBacktest(), new FakeMatchMappingProviderForBacktest());
+            new FakeHistoricalOddsServiceForBacktest(), new FakeMatchMappingProviderForBacktest(),
+            new FakeTeamMappingProviderForBacktest());
 
         var (summary, details) = await sut.RunAsync(
             TournamentId,
@@ -187,7 +192,8 @@ public class BacktestingServiceTests
         var sut = new BacktestingService(
             fakeSeasonService, fakeEnumerator, fakeContextStats,
             fakeHistoricalStats, fakeProbEngine, new CalibrationCurveCalculator(),
-            new FakeHistoricalOddsServiceForBacktest(), new FakeMatchMappingProviderForBacktest());
+            new FakeHistoricalOddsServiceForBacktest(), new FakeMatchMappingProviderForBacktest(),
+            new FakeTeamMappingProviderForBacktest());
 
         // Only include matches between 2025-01-01 and 2025-12-31
         var (summary, details) = await sut.RunAsync(
@@ -216,7 +222,8 @@ public class BacktestingServiceTests
         var sut = new BacktestingService(
             fakeSeasonService, fakeEnumerator, fakeContextStats,
             fakeHistoricalStats, fakeProbEngine, new CalibrationCurveCalculator(),
-            new FakeHistoricalOddsServiceForBacktest(), new FakeMatchMappingProviderForBacktest());
+            new FakeHistoricalOddsServiceForBacktest(), new FakeMatchMappingProviderForBacktest(),
+            new FakeTeamMappingProviderForBacktest());
 
         var progressReports = new List<BacktestProgress>();
         var progress = new SynchronousProgress<BacktestProgress>(p => progressReports.Add(p));
@@ -251,7 +258,8 @@ public class BacktestingServiceTests
         var sut = new BacktestingService(
             fakeSeasonService, fakeEnumerator, fakeContextStats,
             fakeHistoricalStats, fakeProbEngine, new CalibrationCurveCalculator(),
-            new FakeHistoricalOddsServiceForBacktest(), new FakeMatchMappingProviderForBacktest());
+            new FakeHistoricalOddsServiceForBacktest(), new FakeMatchMappingProviderForBacktest(),
+            new FakeTeamMappingProviderForBacktest());
 
         var (summary, details) = await sut.RunAsync(
             TournamentId,
@@ -444,3 +452,8 @@ internal class FakeMatchMappingProviderForBacktest : IMatchMappingProvider
 }
 
 #endregion
+
+internal class FakeTeamMappingProviderForBacktest : ITeamMappingProvider
+{
+    public IReadOnlyList<TeamMapping> GetAllTeamMappings() => Array.Empty<TeamMapping>();
+}
