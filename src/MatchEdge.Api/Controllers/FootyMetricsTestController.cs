@@ -50,6 +50,9 @@ public class FootyMetricsTestController : ControllerBase
     private IActionResult EvalForbidden() =>
         NotFound(new { error = "/eval is restricted to Development environment." });
 
+    private IActionResult DevOnlyForbidden(string endpoint) =>
+        NotFound(new { error = $"/{endpoint} is restricted to Development environment." });
+
     [HttpPost("start")]
     public async Task<IActionResult> StartBrowser()
     {
@@ -224,6 +227,7 @@ public class FootyMetricsTestController : ControllerBase
     [HttpPost("navigate")]
     public async Task<IActionResult> Navigate([FromBody] NavigateRequest request)
     {
+        if (!_env.IsDevelopment()) return DevOnlyForbidden("navigate");
         var page = _browserManager.GetPage();
         if (page == null)
             return BadRequest(new { error = "Browser not started" });
@@ -654,6 +658,7 @@ public class FootyMetricsTestController : ControllerBase
         [FromQuery] string url,
         [FromQuery] int waitSeconds = 15)
     {
+        if (!_env.IsDevelopment()) return DevOnlyForbidden("intercept");
         var page = _browserManager.GetPage();
         if (page == null)
             return BadRequest(new { error = "Browser not started" });
