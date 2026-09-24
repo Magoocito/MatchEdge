@@ -245,20 +245,37 @@ public sealed class FmFixtureResolver : IFmFixtureResolver
 
         var absoluteUrl = new Uri(new Uri(BaseUrl), pathAndQuery).ToString();
 
-        IAPIResponse response;
-        try
+        IAPIResponse? response = null;
+        Exception? lastError = null;
+        for (var attempt = 1; attempt <= 3; attempt++)
         {
-            response = await context.APIRequest.GetAsync(absoluteUrl, new APIRequestContextOptions
+            try
             {
-                Headers = headers,
-                Timeout = 20000
-            });
+                response = await context.APIRequest.GetAsync(absoluteUrl, new APIRequestContextOptions
+                {
+                    Headers = headers,
+                    Timeout = 20000
+                });
+                lastError = null;
+                break;
+            }
+            catch (PlaywrightException ex)
+            {
+                lastError = ex;
+                _logger.LogWarning(
+                    "Fetch attempt {Attempt}/3 failed for {Url}: {Msg}",
+                    attempt, pathAndQuery, ex.Message);
+                if (attempt < 3)
+                    await Task.Delay(
+                        TimeSpan.FromMilliseconds(attempt * 1500 + Random.Shared.Next(0, 1000)),
+                        ct);
+            }
         }
-        catch (PlaywrightException ex)
-        {
+
+        if (response == null)
             throw new FmNavigationException(
-                FmNavigationErrorCode.NoData, $"Request failed for {pathAndQuery}.", ex);
-        }
+                FmNavigationErrorCode.NoData,
+                $"Request failed for {pathAndQuery}: {lastError?.Message}", lastError);
 
         if (!response.Ok)
         {
