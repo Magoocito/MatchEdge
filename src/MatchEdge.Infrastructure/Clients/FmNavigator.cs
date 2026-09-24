@@ -15,10 +15,11 @@ public sealed class FmNavigator : IAsyncDisposable
 
     private readonly FootyMetricsBrowserManager _browserManager;
     private readonly Microsoft.Extensions.Logging.ILogger<FmNavigator> _logger;
-    private readonly SemaphoreSlim _gate = new(1, 1);
     private readonly Random _rng = new();
     private int _navigationsSinceReset;
     private DateTime _lastNavUtc = DateTime.MinValue;
+
+    private SemaphoreSlim _gate => _browserManager.NavigationGate;
 
     public int NavigationsSinceReset => Volatile.Read(ref _navigationsSinceReset);
 
@@ -227,7 +228,6 @@ public sealed class FmNavigator : IAsyncDisposable
 
     public async ValueTask DisposeAsync()
     {
-        _gate.Dispose();
         await Task.CompletedTask;
     }
 }

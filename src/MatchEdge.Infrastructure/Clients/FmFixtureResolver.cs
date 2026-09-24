@@ -17,6 +17,8 @@ public sealed class FmFixtureResolver : IFmFixtureResolver
     private static readonly Regex FixtureIdFromPath = new(
         @"/fixtures/(\d+)-", RegexOptions.Compiled);
 
+    private const string BaseUrl = "https://www.footymetrics.com";
+
     private readonly FootyMetricsBrowserManager _browserManager;
     private readonly FmNavigator _navigator;
     private readonly ILogger<FmFixtureResolver> _logger;
@@ -228,31 +230,53 @@ public sealed class FmFixtureResolver : IFmFixtureResolver
 
     private async Task<string> FetchTextAsync(string pathAndQuery, CancellationToken ct, bool rsc = false)
     {
-        var page = _browserManager.GetPage()
+        // Uses the browser-context APIRequestContext instead of page.evaluate(fetch):
+        // the request layer keeps cookies but survives navigations of the shared page
+        // (background pipeline can navigate at any time).
+        var context = _browserManager.GetContext()
             ?? throw new FmNavigationException(
                 FmNavigationErrorCode.BrowserNotReady, "Browser not started.");
 
-        var script = rsc
-            ? "async (p) => { const r = await fetch(p, { headers: { 'RSC': '1' } }); if (!r.ok) throw new Error('HTTP ' + r.status); return await r.text(); }"
-            : "async (p) => { const r = await fetch(p); if (!r.ok) throw new Error('HTTP ' + r.status); return await r.text(); }";
+        var headers = new Dictionary<string, string>
+        {
+            ["accept"] = rsc ? "text/x-component, */*" : "application/json, text/plain, */*"
+        };
+        if (rsc) headers["RSC"] = "1";
 
+        var absoluteUrl = new Uri(new Uri(BaseUrl), pathAndQuery).ToString();
+
+        IAPIResponse response;
         try
         {
-            return await page.EvaluateAsync<string>(script, pathAndQuery)
-                   ?? throw new FmNavigationException(
-                       FmNavigationErrorCode.NoData, $"Empty response from {pathAndQuery}");
+            response = await context.APIRequest.GetAsync(absoluteUrl, new APIRequestContextOptions
+            {
+                Headers = headers,
+                Timeout = 20000
+            });
         }
-        catch (PlaywrightException ex) when (
-            ex.Message.Contains("HTTP 404", StringComparison.OrdinalIgnoreCase))
-        {
-            throw new FmFixtureNotFoundException($"Resource not found: {pathAndQuery}");
-        }
-        catch (PlaywrightException ex) when (
-            ex.Message.Contains("HTTP 4", StringComparison.OrdinalIgnoreCase))
+        catch (PlaywrightException ex)
         {
             throw new FmNavigationException(
-                FmNavigationErrorCode.SessionExpired,
-                $"Fetch failed ({ex.Message}) for {pathAndQuery}. Possible expired session.", ex);
+                FmNavigationErrorCode.NoData, $"Request failed for {pathAndQuery}.", ex);
         }
+
+        if (!response.Ok)
+        {
+            var status = response.Status;
+            if (status == 404)
+                throw new FmFixtureNotFoundException($"Resource not found: {pathAndQuery}");
+            if (status is 401 or 403 or 407 or 451)
+                throw new FmNavigationException(
+                    FmNavigationErrorCode.SessionExpired,
+                    $"HTTP {status} for {pathAndQuery}. Possible expired session.");
+            throw new FmNavigationException(
+                FmNavigationErrorCode.NoData, $"HTTP {status} for {pathAndQuery}.");
+        }
+
+        var text = await response.TextAsync();
+        if (string.IsNullOrEmpty(text))
+            throw new FmNavigationException(
+                FmNavigationErrorCode.NoData, $"Empty response from {pathAndQuery}");
+        return text;
     }
 }
