@@ -18,6 +18,7 @@ public class FootyMetricsTestController : ControllerBase
     private readonly ITrendBacktestingService _backtesting;
     private readonly IBankrollManager _bankroll;
     private readonly IOrchestratorService _orchestrator;
+    private readonly IWebHostEnvironment _env;
     private readonly ILogger<FootyMetricsTestController> _logger;
 
     public FootyMetricsTestController(
@@ -29,6 +30,7 @@ public class FootyMetricsTestController : ControllerBase
         ITrendBacktestingService backtesting,
         IBankrollManager bankroll,
         IOrchestratorService orchestrator,
+        IWebHostEnvironment env,
         ILogger<FootyMetricsTestController> logger)
     {
         _browserManager = browserManager;
@@ -39,8 +41,14 @@ public class FootyMetricsTestController : ControllerBase
         _backtesting = backtesting;
         _bankroll = bankroll;
         _orchestrator = orchestrator;
+        _env = env;
         _logger = logger;
     }
+
+    private bool EvalAllowed => _env.IsDevelopment();
+
+    private IActionResult EvalForbidden() =>
+        NotFound(new { error = "/eval is restricted to Development environment." });
 
     [HttpPost("start")]
     public async Task<IActionResult> StartBrowser()
@@ -197,6 +205,7 @@ public class FootyMetricsTestController : ControllerBase
     [HttpPost("eval")]
     public async Task<IActionResult> EvalJs([FromBody] EvalRequest request)
     {
+        if (!EvalAllowed) return EvalForbidden();
         var page = _browserManager.GetPage();
         if (page == null)
             return BadRequest(new { error = "Browser not started" });
@@ -430,6 +439,7 @@ public class FootyMetricsTestController : ControllerBase
     [HttpGet("eval")]
     public async Task<IActionResult> EvalJs([FromQuery] string? url, [FromQuery] string js)
     {
+        if (!EvalAllowed) return EvalForbidden();
         var page = _browserManager.GetPage();
         if (page == null)
             return BadRequest(new { error = "Browser not started" });
@@ -523,6 +533,7 @@ public class FootyMetricsTestController : ControllerBase
         }
     }
 
+    [Obsolete("Fragile innerText/scroll parser. Use POST /api/fm/snapshot (JSON-based) instead.")]
     [HttpGet("fixture-trends-v2")]
     public async Task<IActionResult> GetFixtureTrendsV2(
         [FromQuery] string url,
