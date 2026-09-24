@@ -36,9 +36,22 @@ public sealed class FmNavigator : IAsyncDisposable
         Interlocked.Exchange(ref _navigationsSinceReset, 0);
     }
 
+    public Task<FmNavOutcome> GoToAsync(
+        string url,
+        FmReadySignal readySignal,
+        TimeSpan? timeout = null,
+        CancellationToken ct = default)
+        => GoToAsync(url, readySignal, null, timeout, ct);
+
+    /// <param name="captureWhileLocked">
+    /// Optional capture executed while the navigation gate is still held (e.g. reading
+    /// page HTML). Prevents the background pipeline from navigating between Goto and
+    /// capture. Playwright errors here are mapped to PageNotReady so the retry loop applies.
+    /// </param>
     public async Task<FmNavOutcome> GoToAsync(
         string url,
         FmReadySignal readySignal,
+        Func<FmNavOutcome, CancellationToken, Task<FmNavOutcome>>? captureWhileLocked,
         TimeSpan? timeout = null,
         CancellationToken ct = default)
     {
@@ -75,6 +88,19 @@ public sealed class FmNavigator : IAsyncDisposable
                 {
                     var outcome = await AttemptAsync(page, url, readySignal, effectiveTimeout, ct);
                     _lastNavUtc = DateTime.UtcNow;
+                    if (captureWhileLocked != null)
+                    {
+                        try
+                        {
+                            outcome = await captureWhileLocked(outcome, ct);
+                        }
+                        catch (PlaywrightException ex)
+                        {
+                            throw new FmNavigationException(
+                                FmNavigationErrorCode.PageNotReady,
+                                $"Post-navigation capture failed for {url}.", ex);
+                        }
+                    }
                     return outcome;
                 }
                 catch (FmNavigationException ex) when (

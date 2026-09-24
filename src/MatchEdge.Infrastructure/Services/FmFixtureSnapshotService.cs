@@ -55,9 +55,16 @@ public sealed class FmFixtureSnapshotService : IFmFixtureSnapshotService
 
             try
             {
+                Func<FmNavOutcome, CancellationToken, Task<FmNavOutcome>>? capture =
+                    kind == FmReadySignalKind.DomSelector
+                        ? async (o, _) => new FmNavOutcome(
+                            o.Url, await PageHtmlAsync(), o.ResponseUrl)
+                        : null;
+
                 var outcome = await _navigator.GoToAsync(
                     tabUrl,
                     new FmReadySignal(kind, readyPattern),
+                    capture,
                     NavTimeout,
                     ct);
 
@@ -67,7 +74,7 @@ public sealed class FmFixtureSnapshotService : IFmFixtureSnapshotService
 
                 if (kind == FmReadySignalKind.DomSelector)
                 {
-                    raw = await PageHtmlAsync();
+                    raw = outcome.ResponseBody ?? string.Empty;
                     status = raw.Length >= 1000 ? "OK" : "NO_DATA";
                 }
                 else
