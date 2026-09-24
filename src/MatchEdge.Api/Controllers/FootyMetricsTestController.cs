@@ -253,6 +253,151 @@ public class FootyMetricsTestController : ControllerBase
         }
     }
 
+    /// <summary>V6: opens one fixture tab with a fresh EMPTY Chrome profile (no login).</summary>
+    [HttpGet("probe-nonpremium")]
+    public async Task<IActionResult> ProbeNonPremium([FromQuery] string slug)
+    {
+        if (!_env.IsDevelopment()) return DevOnlyForbidden("probe-nonpremium");
+        if (string.IsNullOrWhiteSpace(slug))
+            return BadRequest(new { error = "slug is required (fixture slug like '33441813-...')." });
+
+        var profileDir = Path.Combine(
+            AppContext.BaseDirectory, "chrome-profile-fm-nonpremium-" + Guid.NewGuid().ToString("N")[..8]);
+        Microsoft.Playwright.IPlaywright? playwright = null;
+        Microsoft.Playwright.IBrowserContext? ctx = null;
+        try
+        {
+            playwright = await Microsoft.Playwright.Playwright.CreateAsync();
+            ctx = await playwright.Chromium.LaunchPersistentContextAsync(
+                profileDir,
+                new Microsoft.Playwright.BrowserTypeLaunchPersistentContextOptions
+                {
+                    ExecutablePath = @"C:\Program Files\Google\Chrome\Application\chrome.exe",
+                    Headless = true,
+                    ViewportSize = new Microsoft.Playwright.ViewportSize { Width = 1280, Height = 800 },
+                    Args = [
+                        "--disable-blink-features=AutomationControlled",
+                        "--no-first-run",
+                        "--no-default-browser-check",
+                        "--disable-gpu",
+                        "--disable-dev-shm-usage",
+                        "--no-sandbox"
+                    ]
+                });
+
+            var page = ctx.Pages.Count > 0 ? ctx.Pages[0] : await ctx.NewPageAsync();
+
+            var apiTcs = new TaskCompletionSource<(int Status, string Url, string Body)>(
+                TaskCreationOptions.RunContinuationsAsynchronously);
+            var apiRx = new System.Text.RegularExpressions.Regex(
+                @"/api/front/trends/fixtures/\d+/(players|teams)");
+            EventHandler<Microsoft.Playwright.IResponse> handler = async (_, resp) =>
+            {
+                if (!apiRx.IsMatch(resp.Url)) return;
+                string body = "";
+                try { body = await resp.TextAsync(); } catch { }
+                apiTcs.TrySetResult((resp.Status, resp.Url, body));
+            };
+            page.Response += handler;
+
+            var url = $"https://www.footymetrics.com/fixtures/{slug}?tab=team-trends";
+            string finalUrl;
+            try
+            {
+                await page.GotoAsync(url, new Microsoft.Playwright.PageGotoOptions
+                {
+                    Timeout = 45000,
+                    WaitUntil = Microsoft.Playwright.WaitUntilState.DOMContentLoaded
+                });
+            }
+            finally
+            {
+                page.Response -= handler;
+            }
+
+            (int Status, string Url, string Body) api;
+            string apiState;
+            try
+            {
+                api = await apiTcs.Task.WaitAsync(TimeSpan.FromSeconds(15));
+                apiState = "RESPONDED";
+            }
+            catch (TimeoutException)
+            {
+                api = (0, "", "");
+                apiState = "NO_RESPONSE_15S";
+            }
+
+            finalUrl = page.Url;
+            var title = await page.TitleAsync();
+            var text = await page.EvaluateAsync<string>(
+                "() => document.body?.innerText?.substring(0, 400) || ''") ?? "";
+
+            int? dataCount = null;
+            int? totalCount = null;
+            if (api.Body.Length > 0)
+            {
+                try
+                {
+                    using var doc = System.Text.Json.JsonDocument.Parse(api.Body);
+                    if (doc.RootElement.TryGetProperty("data", out var data) &&
+                        data.ValueKind == System.Text.Json.JsonValueKind.Array)
+                        dataCount = data.GetArrayLength();
+                    if (doc.RootElement.TryGetProperty("pagination", out var pg) &&
+                        pg.TryGetProperty("count", out var c))
+                        totalCount = c.GetInt32();
+                }
+                catch { /* non-json body */ }
+            }
+
+            var evidence = new
+            {
+                slug,
+                finalUrl,
+                redirectedToLogin = finalUrl.Contains("/login"),
+                apiState,
+                apiStatus = api.Status,
+                apiUrl = api.Url,
+                dataCount,
+                totalCount,
+                title,
+                bodyPreview = text.Replace("\n", " ").Substring(0, Math.Min(300, text.Length)),
+                capturedAtUtc = DateTime.UtcNow
+            };
+
+            var dir = Path.Combine(AppContext.BaseDirectory, "tmp", "fm", "nonpremium");
+            Directory.CreateDirectory(dir);
+            var rawPath = Path.Combine(dir, $"{DateTime.UtcNow:yyyyMMddHHmmssfff}.json");
+            await System.IO.File.WriteAllTextAsync(
+                rawPath,
+                System.Text.Json.JsonSerializer.Serialize(evidence, new System.Text.Json.JsonSerializerOptions { WriteIndented = true }));
+
+            return Ok(new { evidence, rawPath });
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new { error = ex.Message });
+        }
+        finally
+        {
+            if (ctx != null)
+            {
+                try { await ctx.CloseAsync(); } catch { }
+                try { await ctx.DisposeAsync(); } catch { }
+            }
+            playwright?.Dispose();
+            try
+            {
+                for (var i = 0; i < 5 && Directory.Exists(profileDir); i++)
+                {
+                    try { Directory.Delete(profileDir, true); break; }
+                    catch { await Task.Delay(500); }
+                }
+            }
+            catch { /* leftover temp profile is harmless */ }
+        }
+    }
+
     [HttpGet("status")]
     public IActionResult Status()
     {
