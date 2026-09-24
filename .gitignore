@@ -79,3 +79,8 @@ Desktop.ini
 .env
 .env.*
 !.env.example
+
+## MatchEdge FM agent artifacts
+chrome-profile-footymetrics/
+tmp/fm/
+chrome-profile/
