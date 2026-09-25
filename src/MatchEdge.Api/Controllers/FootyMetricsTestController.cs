@@ -18,6 +18,7 @@ public class FootyMetricsTestController : ControllerBase
     private readonly ITrendBacktestingService _backtesting;
     private readonly IBankrollManager _bankroll;
     private readonly IOrchestratorService _orchestrator;
+    private readonly IWebHostEnvironment _env;
     private readonly ILogger<FootyMetricsTestController> _logger;
 
     public FootyMetricsTestController(
@@ -29,6 +30,7 @@ public class FootyMetricsTestController : ControllerBase
         ITrendBacktestingService backtesting,
         IBankrollManager bankroll,
         IOrchestratorService orchestrator,
+        IWebHostEnvironment env,
         ILogger<FootyMetricsTestController> logger)
     {
         _browserManager = browserManager;
@@ -39,8 +41,17 @@ public class FootyMetricsTestController : ControllerBase
         _backtesting = backtesting;
         _bankroll = bankroll;
         _orchestrator = orchestrator;
+        _env = env;
         _logger = logger;
     }
+
+    private bool EvalAllowed => _env.IsDevelopment();
+
+    private IActionResult EvalForbidden() =>
+        NotFound(new { error = "/eval is restricted to Development environment." });
+
+    private IActionResult DevOnlyForbidden(string endpoint) =>
+        NotFound(new { error = $"/{endpoint} is restricted to Development environment." });
 
     [HttpPost("start")]
     public async Task<IActionResult> StartBrowser()
@@ -197,6 +208,7 @@ public class FootyMetricsTestController : ControllerBase
     [HttpPost("eval")]
     public async Task<IActionResult> EvalJs([FromBody] EvalRequest request)
     {
+        if (!EvalAllowed) return EvalForbidden();
         var page = _browserManager.GetPage();
         if (page == null)
             return BadRequest(new { error = "Browser not started" });
@@ -215,6 +227,7 @@ public class FootyMetricsTestController : ControllerBase
     [HttpPost("navigate")]
     public async Task<IActionResult> Navigate([FromBody] NavigateRequest request)
     {
+        if (!_env.IsDevelopment()) return DevOnlyForbidden("navigate");
         var page = _browserManager.GetPage();
         if (page == null)
             return BadRequest(new { error = "Browser not started" });
@@ -237,6 +250,151 @@ public class FootyMetricsTestController : ControllerBase
         catch (Exception ex)
         {
             return BadRequest(new { error = ex.Message });
+        }
+    }
+
+    /// <summary>V6: opens one fixture tab with a fresh EMPTY Chrome profile (no login).</summary>
+    [HttpGet("probe-nonpremium")]
+    public async Task<IActionResult> ProbeNonPremium([FromQuery] string slug)
+    {
+        if (!_env.IsDevelopment()) return DevOnlyForbidden("probe-nonpremium");
+        if (string.IsNullOrWhiteSpace(slug))
+            return BadRequest(new { error = "slug is required (fixture slug like '33441813-...')." });
+
+        var profileDir = Path.Combine(
+            AppContext.BaseDirectory, "chrome-profile-fm-nonpremium-" + Guid.NewGuid().ToString("N")[..8]);
+        Microsoft.Playwright.IPlaywright? playwright = null;
+        Microsoft.Playwright.IBrowserContext? ctx = null;
+        try
+        {
+            playwright = await Microsoft.Playwright.Playwright.CreateAsync();
+            ctx = await playwright.Chromium.LaunchPersistentContextAsync(
+                profileDir,
+                new Microsoft.Playwright.BrowserTypeLaunchPersistentContextOptions
+                {
+                    ExecutablePath = @"C:\Program Files\Google\Chrome\Application\chrome.exe",
+                    Headless = true,
+                    ViewportSize = new Microsoft.Playwright.ViewportSize { Width = 1280, Height = 800 },
+                    Args = [
+                        "--disable-blink-features=AutomationControlled",
+                        "--no-first-run",
+                        "--no-default-browser-check",
+                        "--disable-gpu",
+                        "--disable-dev-shm-usage",
+                        "--no-sandbox"
+                    ]
+                });
+
+            var page = ctx.Pages.Count > 0 ? ctx.Pages[0] : await ctx.NewPageAsync();
+
+            var apiTcs = new TaskCompletionSource<(int Status, string Url, string Body)>(
+                TaskCreationOptions.RunContinuationsAsynchronously);
+            var apiRx = new System.Text.RegularExpressions.Regex(
+                @"/api/front/trends/fixtures/\d+/(players|teams)");
+            EventHandler<Microsoft.Playwright.IResponse> handler = async (_, resp) =>
+            {
+                if (!apiRx.IsMatch(resp.Url)) return;
+                string body = "";
+                try { body = await resp.TextAsync(); } catch { }
+                apiTcs.TrySetResult((resp.Status, resp.Url, body));
+            };
+            page.Response += handler;
+
+            var url = $"https://www.footymetrics.com/fixtures/{slug}?tab=team-trends";
+            string finalUrl;
+            try
+            {
+                await page.GotoAsync(url, new Microsoft.Playwright.PageGotoOptions
+                {
+                    Timeout = 45000,
+                    WaitUntil = Microsoft.Playwright.WaitUntilState.DOMContentLoaded
+                });
+            }
+            finally
+            {
+                page.Response -= handler;
+            }
+
+            (int Status, string Url, string Body) api;
+            string apiState;
+            try
+            {
+                api = await apiTcs.Task.WaitAsync(TimeSpan.FromSeconds(15));
+                apiState = "RESPONDED";
+            }
+            catch (TimeoutException)
+            {
+                api = (0, "", "");
+                apiState = "NO_RESPONSE_15S";
+            }
+
+            finalUrl = page.Url;
+            var title = await page.TitleAsync();
+            var text = await page.EvaluateAsync<string>(
+                "() => document.body?.innerText?.substring(0, 400) || ''") ?? "";
+
+            int? dataCount = null;
+            int? totalCount = null;
+            if (api.Body.Length > 0)
+            {
+                try
+                {
+                    using var doc = System.Text.Json.JsonDocument.Parse(api.Body);
+                    if (doc.RootElement.TryGetProperty("data", out var data) &&
+                        data.ValueKind == System.Text.Json.JsonValueKind.Array)
+                        dataCount = data.GetArrayLength();
+                    if (doc.RootElement.TryGetProperty("pagination", out var pg) &&
+                        pg.TryGetProperty("count", out var c))
+                        totalCount = c.GetInt32();
+                }
+                catch { /* non-json body */ }
+            }
+
+            var evidence = new
+            {
+                slug,
+                finalUrl,
+                redirectedToLogin = finalUrl.Contains("/login"),
+                apiState,
+                apiStatus = api.Status,
+                apiUrl = api.Url,
+                dataCount,
+                totalCount,
+                title,
+                bodyPreview = text.Replace("\n", " ").Substring(0, Math.Min(300, text.Length)),
+                capturedAtUtc = DateTime.UtcNow
+            };
+
+            var dir = Path.Combine(AppContext.BaseDirectory, "tmp", "fm", "nonpremium");
+            Directory.CreateDirectory(dir);
+            var rawPath = Path.Combine(dir, $"{DateTime.UtcNow:yyyyMMddHHmmssfff}.json");
+            await System.IO.File.WriteAllTextAsync(
+                rawPath,
+                System.Text.Json.JsonSerializer.Serialize(evidence, new System.Text.Json.JsonSerializerOptions { WriteIndented = true }));
+
+            return Ok(new { evidence, rawPath });
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new { error = ex.Message });
+        }
+        finally
+        {
+            if (ctx != null)
+            {
+                try { await ctx.CloseAsync(); } catch { }
+                try { await ctx.DisposeAsync(); } catch { }
+            }
+            playwright?.Dispose();
+            try
+            {
+                for (var i = 0; i < 5 && Directory.Exists(profileDir); i++)
+                {
+                    try { Directory.Delete(profileDir, true); break; }
+                    catch { await Task.Delay(500); }
+                }
+            }
+            catch { /* leftover temp profile is harmless */ }
         }
     }
 
@@ -430,6 +588,7 @@ public class FootyMetricsTestController : ControllerBase
     [HttpGet("eval")]
     public async Task<IActionResult> EvalJs([FromQuery] string? url, [FromQuery] string js)
     {
+        if (!EvalAllowed) return EvalForbidden();
         var page = _browserManager.GetPage();
         if (page == null)
             return BadRequest(new { error = "Browser not started" });
@@ -523,6 +682,7 @@ public class FootyMetricsTestController : ControllerBase
         }
     }
 
+    [Obsolete("Fragile innerText/scroll parser. Use POST /api/fm/snapshot (JSON-based) instead.")]
     [HttpGet("fixture-trends-v2")]
     public async Task<IActionResult> GetFixtureTrendsV2(
         [FromQuery] string url,
@@ -643,6 +803,7 @@ public class FootyMetricsTestController : ControllerBase
         [FromQuery] string url,
         [FromQuery] int waitSeconds = 15)
     {
+        if (!_env.IsDevelopment()) return DevOnlyForbidden("intercept");
         var page = _browserManager.GetPage();
         if (page == null)
             return BadRequest(new { error = "Browser not started" });

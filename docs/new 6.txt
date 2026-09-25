@@ -1,0 +1,71 @@
+# FM_AGENT_BRIEF — Navegación determinista + snapshots de FootyMetrics
+
+## 0. ROL Y ALCANCE
+Eres el ingeniero de MatchEdge. Alcance ÚNICO: FootyMetrics (FM) como fuente de datos.
+Fuera de alcance (no tocar, no investigar): Betano, cuotas de casas de apuestas, picks, staking/Kelly, Liga 1, cualquier otra fuente.
+Si algo no está documentado o no lo puedes comprobar con evidencia, escribe exactamente: NO ENCONTRADO.
+Nunca inventes URLs, selectores, endpoints ni campos.
+
+## 1. REGLAS DE OPERACIÓN (obligatorias)
+1. Trabaja en una rama nueva desde main: feature/fm-deterministic-navigation. Commits pequeños. No reescribas código ajeno a esta tarea.
+2. TOKENS:
+   - Lee solo los archivos listados en §2. No recorras el repo.
+   - Nunca imprimas HTML/innerText completo en la conversación. Guárdalo en tmp/fm/ e inspecciónalo con grep/head (máx. 40 líneas por vista).
+   - Build y tests en modo silencioso (dotnet build -v q); muestra solo errores.
+   - Un test a la vez. No repitas comandos que ya pasaron.
+3. NO me pidas URLs. Si no puedes resolver un partido, es un bug de esta tarea: diagnostica con evidencia y arréglalo. Solo pregunta si estás BLOQUEADO (sesión FM caducada, o contradicción entre este brief y el código).
+4. Sesión: si /login-status indica sesión inválida, DETENTE y avísame. El login es manual vía /start-visible. No automatices el login de Google.
+5. Cortesía con el sitio: una navegación a la vez, espera aleatoria de 2–4 s entre navegaciones, máx. 40 navegaciones por corrida, sin paralelismo.
+6. Fases con puerta: ejecuta SOLO Fase 0 y Fase 1. Al terminar, reporta y PARA. No empieces nada más sin mi OK.
+
+## 2. ESTADO CONOCIDO (hechos; no los re-investigues salvo que fallen)
+- Archivos: FootyMetricsTestController.cs, FootyMetricsBrowserManager.cs, FootyMetricsDomScraper.cs.
+- API local: http://localhost:5272/api/FootyMetricsTest/ (endpoints: /navigate, /eval, /login-status, /start-visible, /page-content-full).
+- Playwright con perfil persistente chrome-profile-footymetrics; FM Premium ya logueado.
+- Los clicks en pestañas de la SPA NO funcionan. Solo funcionan parámetros de URL.
+- Patrón: https://www.footymetrics.com/fixtures/<id>-<slug>?tab=player-trends | ?tab=team-trends. Overview = URL base sin ?tab.
+- Parser actual: split por 'Opp. hits' sobre innerText (frágil).
+- Fixtures de prueba (UEFA Nations League, 24/09/2026): 33441813 Serbia–Grecia, 33441811 Portugal–Gales.
+- DB: C:\Services\MatchEdge\matchedge.db (SQLite).
+
+## 3. FASE 0 — DESCUBRIMIENTO
+Abre como máximo 3 fixtures. Escribe todo en docs/fm-discovery.md. Cada punto: RESPUESTA + EVIDENCIA (URL/selector/extracto ≤10 líneas) o NO ENCONTRADO.
+- D1. ¿Qué pantalla/URL de FM lista fixtures por liga y fecha? ¿Qué parámetros usa? ¿Los enlaces son <a href> con /fixtures/<id>-<slug>?
+- D2. ¿El <slug> es necesario, o /fixtures/<id> funciona/redirige?
+- D3. Escucha las respuestas de red durante la carga: ¿los datos llegan por JSON (XHR/fetch/GraphQL) o incrustados (p. ej. __NEXT_DATA__)? Lista endpoints con método y CLAVES del payload (no valores).
+- D4. ¿Existen valores partido a partido (los N partidos y su valor) por cada trend? ¿Dónde?
+- D5. ¿Qué parámetros de URL controlan venue (Any/Home/Away/Same Venue), ventana (5/10/15) y same league? Prueba solo con parámetros, sin clicks.
+- D6. ¿Cuál es la señal fiable de "página lista" por pestaña (selector o respuesta de red)?
+- D7. ¿Cómo se ve una página con sesión caída/no premium y una sin datos?
+Criterio: si D3 o D4 muestran JSON con datos, la extracción DEBE basarse en JSON, no en innerText.
+
+## 4. FASE 1 — IMPLEMENTACIÓN
+Reutiliza BrowserManager; no lo reescribas.
+1. FmNavigator: GoToAsync(url, readySignal, timeout=20s). Serializa con SemaphoreSlim(1). Máx. 2 reintentos con espera creciente. Errores tipados: SessionExpired, PageNotReady, NoData, Timeout. Nunca devuelve datos parciales sin flag.
+2. FmFixtureResolver: (league?, date) → [{fixtureId, url, home, away, kickoffUtc, competition}] según D1. Sin URLs manuales. Deduplicar por fixtureId. Si league no coincide, error claro (no adivinar).
+3. FmFixtureSnapshotService: por fixtureId arma las 3 URLs (Overview, player-trends, team-trends) y guarda un RawSnapshot por pestaña.
+4. SQLite (migración idempotente):
+   - fm_snapshot(id, fixture_id, tab, url, source_timestamp_utc, raw_path, raw_sha256, parser_version, status)
+   - fm_signal(id, snapshot_id, fixture_id, subject_type[team|player], subject_name, market, line, direction, hits, sample_size, observed_hit_rate, opp_hits, opp_sample_size, venue_scope, competition_scope, confidence_score, recent_values_json, source_timestamp_utc)
+   Reglas: guardar Hits y SampleSize. observed_hit_rate es solo derivado y NUNCA se llama ni se trata como probabilidad. Campos no disponibles = NULL (no rellenar). Conservar venue_scope y competition_scope.
+5. Endpoints nuevos con respuestas COMPACTAS (nunca volcado completo; lo crudo va a disco y se devuelve la ruta):
+   - POST /fixtures {league?, date} → [{fixtureId, home, away, kickoffUtc, competition}]
+   - POST /snapshot {fixtureId | url} → {fixtureId, tabs:[{tab, status, signals}], rawPaths, warnings}
+   - POST /run {league?, date, topN?} → resolver + snapshots; devuelve solo conteos y rutas.
+6. Parser: JSON si D3/D4 lo permiten; si no, innerText con parser_version y canario: si el nº de señales por mercado se desvía >30% de la última corrida válida, status='SUSPECT' (no descartar).
+7. Marca [Obsolete] /fixture-trends-v2 si sigue roto. No borres otros endpoints.
+8. /eval no se usa en el nuevo flujo; restríngelo a entorno Development.
+
+## 5. PRUEBAS DE ACEPTACIÓN (reporta solo PASS/FAIL + 1 línea)
+- T1. /fixtures {league:"UEFA Nations League", date:"2026-09-24"} devuelve los 4 fixtures conocidos sin intervención mía.
+- T2. /snapshot para 33441813 y 33441811: 3 pestañas c/u con status OK y signals>0 en team y player.
+- T3. Repetir T2 es idempotente (nuevo source_timestamp, sin filas rotas).
+- T4. Sesión caída simulada: SessionExpired en <5 s, sin reintentos infinitos.
+- T5. Fixture inexistente: error claro NotFound/NoData.
+- T6. Ninguna corrida excede 40 navegaciones ni navega en paralelo.
+
+## 6. REPORTE FINAL (máx. 25 líneas)
+1) D1–D7 en una línea c/u con ruta a la evidencia. 2) Archivos creados/modificados. 3) T1–T6 PASS/FAIL. 4) Riesgos/pendientes (máx. 5). 5) Propuesta de Fase 2 en 5 líneas. Luego PARA.
+
+## 7. PROHIBIDO
+Calcular probabilidades, scoring, picks, EV o staking. Inferir permisos de scraping. Automatizar OAuth de Google. Subir al repo datos crudos, el perfil Chrome o credenciales: verifica que .gitignore cubra chrome-profile-footymetrics/, tmp/fm/ y *.db.

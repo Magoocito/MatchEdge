@@ -1,0 +1,16 @@
+# Reporte P3 — MatchEdge/FootyMetrics (branch feature/fm-deterministic-navigation, 15 commits)
+- A1: UNAVAILABLE reintentable (upsert solo pisa status UNAVAILABLE; RESOLVED/NOT_PLAYED/AMBIGUOUS siguen finales/idempotentes) — commit 76da86c.
+- A2: columna unavailable_reason (NO_HISTORY_ELEMENT/NO_DATE_MATCH/OTHER) + matching history a kickoff±1 día; cobertura 108/108 = 100%.
+- A3: re-resolve 2026-09-24 ejecutado (23 fixtures, 0 navs); delta reportado en tmp/fm/p3_reresolve_delta.json.
+- A4: source_conflict (bool) implementado: 4 filas marcadas en 33441811 (home_saves=0 + away_goals=0 ≠ away_sot=1); documentado, no corregido ni excluido.
+- A5: PASS — Production: /navigate y /intercept → 404 "restricted to Development"; Pipeline:LegacyWorker:Enabled=true es el default de despliegue (toggle dev = env vars ASPNETCORE_ENVIRONMENT=Development + Pipeline__LegacyWorker__Enabled=false, solo sesión).
+- A6: docs/STATE.md escrito (26 líneas: endpoints, esquema con columnas nuevas, decisiones, pendientes).
+- B1: FmWindowCalculator — ventanas fijas 5/10/all desde history[] crudo ignorando bestCount/bestTotal (equipo: vt/vf; jugador: v); history máx. real = 10; n<mín (team 4 / player 3) → INSUFFICIENT_SAMPLE.
+- B2: solo hits, n, observed_rate, media, mediana, min, max (descriptivos; nunca probabilidad).
+- B3: FmConfluenceBuilder — grupos mercado+línea con piezas separadas team_attack/opponent/player (sin score único); overlap_flag si >50% de fechas compartidas o misma fila origen.
+- B4: contexto venue/competition_scope/leakage_flag/source_conflict sin navegación nueva (venue="all": snapshots no traen location, params_json NULL).
+- B5: GET /api/fm/fixtures/{id}/confluence — HTTP 200 en 33441811 (17 grupos, 4 conflicts) y 33441813 (14 grupos), 0 navs.
+- Delta UNAVAILABLE: 108 → 108 (0 → RESOLVED); desglose restante: NO_DATE_MATCH=108, NO_HISTORY_ELEMENT=0, OTHER=0 (lag de ingesta FM del mismo día).
+- Aceptación: C1 PASS (reason 100%), C2 PASS (4 filas marcadas 33441811), C3 PASS (404/404 Production), C4 PASS (10/10 ventanas = recuento manual, mismatches=0, tmp/fm/p3_c4_windows_check.txt), C5 PASS (Portugal home_saves ↔ D. Costa goalkeeper_saves ratio=1.0, tmp/fm/p3_c5_overlap.txt), C6 PASS (2 fixtures sin navegar).
+- Riesgos: (1) 108 outcomes player dependen de ingesta FM posterior; (2) venue siempre "all" (params_json NULL en snapshots); (3) source_conflict puede marcar falsos positivos si FM corrige datos; (4) worker legacy reactivado en Production puede competir por navegación (ventana 10-22 UTC); (5) ventanas on-demand no persistidas.
+- ¿confirmas que la fuente de cuotas será manual (no FM) antes de construir el reporte final con comparación de mercado?

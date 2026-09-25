@@ -1,0 +1,38 @@
+# STATE — MatchEdge / FootyMetrics (al cierre de P6)
+Rama `feature/fm-deterministic-navigation` (commits locales, sin push). Briefs: `docs/new 6.txt` (P1), P2 inline, `docs/FM_AGENT_BRIEF_P3.md`, `docs/FM_AGENT_BRIEF_P4.md`, `docs/FM_AGENT_BRIEF_P5.md` (P5), P6 inline (G/H). Reportes: `docs/REPORT_P3.md`, `docs/REPORT_P4.md`, `docs/REPORT_P5.md`. Handoff P2: `docs/HANDOFF_REVIEW.md`. Guía manual: `docs/FM_MANUAL_NAVIGATION.md`.
+
+## Qué existe (endpoints)
+- `POST /api/fm/fixtures|snapshot|run` — catálogo/snapshots. Snapshot = dual scope por fixture: 3 navs (overview + player/team trends, `location=all`) + fetch API directo 0 navs para `<tab>+loc=match`. `/run` topN = Max/3 = 13/run.
+- `POST /api/fm/outcomes/resolve {date?, fixtureIds?}` — 0 navs, idempotente; UNAVAILABLE reintentable.
+- `GET /api/fm/fixtures/{id}/confluence` — solo lectura, 0 navs (P3).
+- `GET /api/fm/fixtures/{id}/odds` — P5 A5: devuelve `bookmakerName` resuelto vía `fm_bookmakers`.
+- `POST /api/fm/fixtures/{id}/manual-odds {bookmaker,market,line,odds_value}` — C4 P4 (source=manual).
+- **P6 G2** `POST /api/fm/teams/{teamApid}/collect {locations?=["home","away"], period?=15, stat?="corners"}` — `FmTeamController`: `teams/table` vía `FetchJsonAsync` con el navigation gate (0 navegaciones, nunca solapa una nav), parsea, upsertea y guarda raw en `C:\Services\MatchEdge\tmp\fm\teams\<apId>\`. Pausa 2-4s entre localizaciones.
+- **P6 G3** `GET /api/fm/teams/{teamApid}/matches?location=home|away&period=15&includePlayers=false` — solo lectura, sin navegador, 0 navs.
+- Dev-only (Production 404): `/api/FootyMetricsTest/*` (`/navigate`, `/intercept`, `/eval`, `/fetch/raw`, `/start`, `/login-status`).
+- Bugfix P5: `FmSnapshotStore.GetLastSnapshotUrlAsync` filtraba la última url (era la ruta API `+loc=match`) → ahora solo acepta `https://www.footymetrics.com/fixtures/%`; test `GetLastSnapshotUrl_SkipsLocMatchApiPath`.
+
+## Esquema (SQLite matchedge.db en C:\Services\MatchEdge)
+- `fm_signal(..., params_json, venue_role)` — `venue_role` = home|away|unknown (P5 B2): 366 señales en los 7 fixtures (147 home / 219 away / 0 unknown); capturas legadas quedan NULL.
+- **P6 G1** `fm_team_matches(team_apid, fixture_id, fixture_apid, ts_utc, location, opponent_apid, opponent, league_apid, league, hgoals, agoals, team_stats_json, opponent_strength_json, period, stat, source, source_timestamp_utc)` — índice único `(team_apid, location, period, stat, fixture_id)`. `location` se deriva de `hid/aid` (nunca del parámetro pedido). **540 filas / 18 equipos (270 home + 270 away)**: 14 selecciones de los fixtures 33441811-17 + 4 clubes de H1.
+- **P6 G1** `fm_player_matches(team_apid, player_apid, player_name, fixture_id, fixture_apid, ts_utc, location, perspective('team'), stats_json, period, stat, source, source_timestamp_utc)` — índice único `(team_apid, player_apid, fixture_id, location, period, stat, source, perspective)`. **12.192 filas / 1.082 jugadores** (fuente `pivotData` de `teams/table`; `position-stats` queda como fuente opcional futura, pendiente de cubrir todas las posiciones).
+- `fm_outcome` — 70 RESOLVED, 108 NO_HISTORY_ELEMENT, 1 AMBIGUOUS (P4).
+- `fm_bookmakers` — sembrada con el diccionario del bundle (1 Bet365, 2 Kambi, 3 Paddy Power, 4 Ladbrokes, 5 Altenar); `fm_market_odds` 100% con `bookmaker_name`.
+
+## Decisiones clave
+- **P5 A: mapeo bk id→nombre ENCONTRADO** en el bundle Next.js `/_next/static/chunks/3ji7afwyc_r93.js`, NO en ningún payload API. Evidencia: `tmp/fm/p5_a2_bk_name_search.json`, `tmp/fm/p5_a3_bk_mapping_nav.json`.
+- **Venue estructural (fixture actual)** resuelto en P4 → `fm_signal.venue_role`, verificado 7/7 fixtures (`tmp/fm/p5_b3_verification_all7.json`).
+- **Venue histórico (split home/away de `history[]`) CONFIRMADO (P5 C2) y ahora POBLADO (P6 G)** — fuente: `history[].h` cruzado con `teams/table fixtures[].hid/aid`. G4 Portugal+Gales: **20/20 agree, 0 discrepancias** (`tmp/fm/p6_g4_crosscheck.json`, idéntico a la referencia P5 `p5_c2_history_h_crosscheck*.json`). El split server-side `location=match` sigue vacío (`data:[]`).
+- **P6 H: validación extendida a 4 clubes de 2 ligas domésticas** (League Two/England apid 14 + La Liga 2/Spain apid 567): Exeter City, Bristol Rovers, Granada, FC Andorra — **30/30 history[] coincide, 0 discrepancias, 0 missing** (`tmp/fm/p6_h2_crosscheck.json`). Join por fecha (el nombre del rival no sirve de clave: trends usa nombre largo "Rotherham United", teams/table corto "Rotherham"; 9 variantes + mojibake UTF-8 solo en el archivo capturado, ver H3 de `docs/REPORT_P5.md`).
+- **`team_stats_json` guarda las stats DEL EQUIPO** (`teamStats[fixture][teamApid]`); el payload trae ambos lados (`teamApid` y `opponentApid`) — error detectado en el primer parser y corregido (test `TeamTableParser_HomePayload_DerivesLocationAndJoinsStats` fija goals=1, corners=10 de Portugal en 33441811).
+- **`opponentStrength` vacío (`{}`) para el fixture más reciente** (33441811, jugado hace1 día); con datos para los anteriores. No bloquea: se persiste tal cual.
+- **`fixtures/league?id=` solo devuelve ventana corta** (para1538: 7 días futuros) y `[]` para ligas domésticas; `fixtures?date=` solo responde hoy/ayer (+1). Vía usada en H: `fixtures?date=<ayer+1>` → lista de ligas con `apid` y `hasTrends` → trends del fixture (0 navs).
+- **Navegación P6: 0 navegaciones** (todo `fetch/raw` + `POST /collect`). P5: 4 navs + ~12 fetches + 12 navs de reprocesado. Regla vigente: 1 a la vez, pausa 2-4s, nunca paralelo.
+
+## Pendientes reales
+- **PARA antes de Parte E** (brief P5/P6): E (reporte de confluencia con contexto+venue+odds) se diseña después de revisar este estado.
+- `POST /api/fm/collect` (§5 P2) sin implementar; `tab=trends` del team page y H2H del dropdown Period sin mapear.
+- `fm_player_matches` solo con perspectiva `team`; falta poblar desde `position-stats` (perspectiva rival, requiere `positions=` explícitas).
+- Re-resolve de los 108 NO_HISTORY_ELEMENT cuando FM ingiera history del 2026-09-24.
+- Tests: `FmDeterministicTests` **46/46 PASS** (5 nuevos en P6: parser con payloads reales + upsert idempotente + lectura con jugadores). `MatchEdge.UnitTests` 149/149 PASS. `DateTeamMatchingIntegrationTests` 6 FAIL **preexistentes** (requieren `src/MatchEdge.Api/matchedge.db` poblado por DataImporter; sin relación con FM).
+- Riesgo vigente: canary SUSPECT (market-mix drift vs baseline P2) en algunos team/player tabs; fixture 33441811 source_conflict=4.

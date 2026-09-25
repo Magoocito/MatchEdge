@@ -161,6 +161,7 @@ public class FootyMetricsDomScraper : IFootyMetricsScraper
         var url = $"{_options.BaseUrl.TrimEnd('/')}/fixtures/{fixtureSlug}?tab=team-trends";
         _logger.LogInformation("Scraping fixture trends: {Url}", url);
 
+        await _browserManager.NavigationGate.WaitAsync(ct);
         try
         {
             await page.GotoAsync(url, new PageGotoOptions
@@ -185,6 +186,10 @@ public class FootyMetricsDomScraper : IFootyMetricsScraper
             _logger.LogError(ex, "Failed to scrape fixture trends for {Slug}", fixtureSlug);
             return [];
         }
+        finally
+        {
+            _browserManager.NavigationGate.Release();
+        }
     }
 
     public async Task<List<FootyMetricsScrapedTrend>> ScrapeMarketTrendsAsync(
@@ -201,53 +206,61 @@ public class FootyMetricsDomScraper : IFootyMetricsScraper
 
         var allTrends = new List<FootyMetricsScrapedTrend>();
 
-        for (int pageNum = 1; pageNum <= maxPages; ct.ThrowIfCancellationRequested())
+        await _browserManager.NavigationGate.WaitAsync(ct);
+        try
         {
-            var url = $"{_options.BaseUrl.TrimEnd('/')}/trends/{market}";
-            if (pageNum > 1)
-                url += $"?page={pageNum}";
-
-            _logger.LogInformation("Scraping {Market} trends page {Page}", market, pageNum);
-
-            try
+            for (int pageNum = 1; pageNum <= maxPages; ct.ThrowIfCancellationRequested())
             {
-                await page.GotoAsync(url, new PageGotoOptions
-                {
-                    Timeout = 45000,
-                    WaitUntil = WaitUntilState.DOMContentLoaded
-                });
+                var url = $"{_options.BaseUrl.TrimEnd('/')}/trends/{market}";
+                if (pageNum > 1)
+                    url += $"?page={pageNum}";
 
-                await page.WaitForTimeoutAsync(5000);
+                _logger.LogInformation("Scraping {Market} trends page {Page}", market, pageNum);
 
-                var trendsJson = await page.EvaluateAsync<string>(ExtractTrendCardsJs);
-                if (string.IsNullOrEmpty(trendsJson))
+                try
                 {
-                    _logger.LogInformation("No more trends found at page {Page}", pageNum);
+                    await page.GotoAsync(url, new PageGotoOptions
+                    {
+                        Timeout = 45000,
+                        WaitUntil = WaitUntilState.DOMContentLoaded
+                    });
+
+                    await page.WaitForTimeoutAsync(5000);
+
+                    var trendsJson = await page.EvaluateAsync<string>(ExtractTrendCardsJs);
+                    if (string.IsNullOrEmpty(trendsJson))
+                    {
+                        _logger.LogInformation("No more trends found at page {Page}", pageNum);
+                        break;
+                    }
+
+                    var trends = ParseTrends(trendsJson, null);
+                    if (trends.Count == 0)
+                        break;
+
+                    allTrends.AddRange(trends);
+
+                    var hasNextPage = await page.EvaluateAsync<bool>(@"
+                        (() => {
+                            const next = document.querySelector('[aria-label=""Next""]') ||
+                                         document.querySelector('a[class*=""next""]');
+                            return next !== null && !next.disabled;
+                        })()
+                    ");
+
+                    if (!hasNextPage)
+                        break;
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Failed to scrape {Market} trends page {Page}", market, pageNum);
                     break;
                 }
-
-                var trends = ParseTrends(trendsJson, null);
-                if (trends.Count == 0)
-                    break;
-
-                allTrends.AddRange(trends);
-
-                var hasNextPage = await page.EvaluateAsync<bool>(@"
-                    (() => {
-                        const next = document.querySelector('[aria-label=""Next""]') ||
-                                     document.querySelector('a[class*=""next""]');
-                        return next !== null && !next.disabled;
-                    })()
-                ");
-
-                if (!hasNextPage)
-                    break;
             }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Failed to scrape {Market} trends page {Page}", market, pageNum);
-                break;
-            }
+        }
+        finally
+        {
+            _browserManager.NavigationGate.Release();
         }
 
         return allTrends;

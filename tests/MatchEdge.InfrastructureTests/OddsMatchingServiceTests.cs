@@ -101,7 +101,7 @@ public class OddsMatchingServiceTests
         var service = new OddsMatchingService(context);
 
         service.SaveTeamMapping("FootyStats", 100, "Alianza Lima", 5001, "Alianza Lima");
-        var mappings = service.GetAllTeamMappings();
+        var mappings = service.GetAllTeamMappingsRaw();
         service.DeleteTeamMapping(mappings[0].Id);
 
         Assert.Empty(service.GetAllTeamMappings());

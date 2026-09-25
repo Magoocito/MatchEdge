@@ -16,6 +16,14 @@ public class FootyMetricsBrowserManager : IAsyncDisposable
 
     public bool IsReady => _page != null && _page.Url.Contains("footymetrics.com") && !_page.Url.Contains("challenge");
 
+    /// <summary>
+    /// Serializes every navigation on the shared page (FmNavigator, legacy scraper,
+    /// resolver). Hold for the whole navigate+wait+evaluate cycle.
+    /// </summary>
+    public SemaphoreSlim NavigationGate { get; } = new(1, 1);
+
+    public IBrowserContext? GetContext() => _context;
+
     public FootyMetricsBrowserManager(ILogger<FootyMetricsBrowserManager> logger)
     {
         _logger = logger;
@@ -109,6 +117,7 @@ public class FootyMetricsBrowserManager : IAsyncDisposable
         _playwright = null;
         _page = null;
         _ready = false;
+        NavigationGate.Dispose();
         _logger.LogInformation("FootyMetrics browser closed.");
     }
 }

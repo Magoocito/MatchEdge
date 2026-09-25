@@ -1,4 +1,5 @@
 using MatchEdge.Application.Services;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -8,6 +9,7 @@ namespace MatchEdge.Infrastructure.Services;
 public class PipelineWorker : BackgroundService
 {
     private readonly IServiceProvider _serviceProvider;
+    private readonly IConfiguration _configuration;
     private readonly ILogger<PipelineWorker> _logger;
 
     private static readonly TimeSpan PipelineInterval = TimeSpan.FromHours(1);
@@ -16,14 +18,26 @@ public class PipelineWorker : BackgroundService
 
     public PipelineWorker(
         IServiceProvider serviceProvider,
+        IConfiguration configuration,
         ILogger<PipelineWorker> logger)
     {
         _serviceProvider = serviceProvider;
+        _configuration = configuration;
         _logger = logger;
     }
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
+        var enabled = !string.Equals(
+            _configuration["Pipeline:LegacyWorker:Enabled"],
+            "false", StringComparison.OrdinalIgnoreCase);
+        if (!enabled)
+        {
+            _logger.LogInformation(
+                "PipelineWorker disabled via Pipeline:LegacyWorker:Enabled=false.");
+            return;
+        }
+
         _logger.LogInformation(
             "PipelineWorker started. Interval: {Interval}, " +
             "Window: {Start}:00 - {End}:00 UTC",
