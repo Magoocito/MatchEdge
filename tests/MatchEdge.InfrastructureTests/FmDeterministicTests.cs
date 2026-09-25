@@ -346,8 +346,8 @@ public class FmDeterministicTests
         {
             var store = new FmOutcomeStore($"Data Source={dbPath}");
             var draft = new FmOutcomeDraft(42, "33441813-x", 8, 1, "RESOLVED", "stats-panel", null);
-            Assert.Equal(1, await store.InsertIgnoreAsync(new[] { draft }, DateTime.UtcNow));
-            Assert.Equal(0, await store.InsertIgnoreAsync(new[] { draft }, DateTime.UtcNow));
+            Assert.Equal(1, await store.WriteAsync(new[] { draft }, DateTime.UtcNow));
+            Assert.Equal(0, await store.WriteAsync(new[] { draft }, DateTime.UtcNow));
 
             var byFixture = await store.GetByFixtureAsync("33441813-x");
             Assert.Single(byFixture);
@@ -360,5 +360,97 @@ public class FmDeterministicTests
             Microsoft.Data.Sqlite.SqliteConnection.ClearAllPools();
             File.Delete(dbPath);
         }
+    }
+
+    [Fact]
+    public async Task OutcomeStore_UnavailableIsRetryable_FinalStatusIsNot()
+    {
+        var dbPath = Path.Combine(Path.GetTempPath(), $"fmtest_{Guid.NewGuid():N}.db");
+        try
+        {
+            var store = new FmOutcomeStore($"Data Source={dbPath}");
+            var unavailable = new FmOutcomeDraft(
+                7, "fx-a", null, null, "UNAVAILABLE", "none", "lag", "NO_DATE_MATCH");
+            Assert.Equal(1, await store.WriteAsync(new[] { unavailable }, DateTime.UtcNow));
+
+            var resolved = new FmOutcomeDraft(7, "fx-a", 3, 1, "RESOLVED", "history", null);
+            Assert.Equal(1, await store.WriteAsync(new[] { resolved }, DateTime.UtcNow));
+            var after = await store.GetByFixtureAsync("fx-a");
+            Assert.Equal("RESOLVED", after[7].Status);
+            Assert.Equal(3, after[7].ActualValue);
+            Assert.Null(after[7].UnavailableReason);
+
+            var retried = new FmOutcomeDraft(
+                7, "fx-a", null, null, "UNAVAILABLE", "none", "x", "OTHER");
+            Assert.Equal(0, await store.WriteAsync(new[] { retried }, DateTime.UtcNow));
+            after = await store.GetByFixtureAsync("fx-a");
+            Assert.Equal("RESOLVED", after[7].Status);
+        }
+        finally
+        {
+            Microsoft.Data.Sqlite.SqliteConnection.ClearAllPools();
+            File.Delete(dbPath);
+        }
+    }
+
+    [Fact]
+    public void SourceConflict_SavesGoalsSotContradiction_IsDetected()
+    {
+        var signals = new List<FmSignalRow>
+        {
+            new(1, "team", "Portugal", "home_saves", 1.5, "over"),
+            new(2, "team", "Wales", "away_goals", 0.5, "over"),
+            new(3, "team", "Wales", "away_shots_on_target", 1.5, "over"),
+            new(4, "team", "Wales", "total_shots", 8.5, "over"),
+        };
+        var drafts = new List<FmOutcomeDraft>
+        {
+            new(1, "fx-p", 0, 0, "RESOLVED", "stats-panel", null),
+            new(2, "fx-p", 0, 0, "RESOLVED", "fixtures-api", null),
+            new(3, "fx-p", 1, 0, "RESOLVED", "stats-panel", null),
+        };
+
+        var conflicts = FmOutcomeResolver.DetectSourceConflicts(
+            signals, drafts, new Dictionary<long, FmOutcomeRecord>());
+
+        Assert.Contains("home_saves", conflicts);
+        Assert.Contains("away_goals", conflicts);
+        Assert.Contains("away_shots_on_target", conflicts);
+        Assert.DoesNotContain("total_shots", conflicts);
+    }
+
+    [Fact]
+    public void SourceConflict_Consistent_NoConflict_SotAboveShots_Detected()
+    {
+        var consistent = new List<FmSignalRow>
+        {
+            new(1, "team", "Norway", "home_saves", 1.5, "over"),
+            new(2, "team", "Denmark", "away_goals", 1.5, "over"),
+            new(3, "team", "Denmark", "away_shots_on_target", 6.5, "over"),
+        };
+        var drafts = new List<FmOutcomeDraft>
+        {
+            new(1, "fx-n", 5, 1, "RESOLVED", "stats-panel", null),
+            new(2, "fx-n", 2, 1, "RESOLVED", "fixtures-api", null),
+            new(3, "fx-n", 7, 1, "RESOLVED", "stats-panel", null),
+        };
+        var conflicts = FmOutcomeResolver.DetectSourceConflicts(
+            consistent, drafts, new Dictionary<long, FmOutcomeRecord>());
+        Assert.Empty(conflicts);
+
+        var sotAboveShots = new List<FmSignalRow>
+        {
+            new(10, "team", "X", "total_shots_on_target", 6.5, "over"),
+            new(11, "team", "X", "total_shots", 22.5, "over"),
+        };
+        var bad = new List<FmOutcomeDraft>
+        {
+            new(10, "fx-x", 14, 1, "RESOLVED", "stats-panel", null),
+            new(11, "fx-x", 10, 0, "RESOLVED", "stats-panel", null),
+        };
+        var conflicts2 = FmOutcomeResolver.DetectSourceConflicts(
+            sotAboveShots, bad, new Dictionary<long, FmOutcomeRecord>());
+        Assert.Contains("total_shots_on_target", conflicts2);
+        Assert.Contains("total_shots", conflicts2);
     }
 }

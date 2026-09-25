@@ -9,7 +9,8 @@ public sealed record FmOutcomeDraft(
     int? Hit,
     string Status,
     string Source,
-    string? Motivo);
+    string? Motivo,
+    string? UnavailableReason = null);
 
 public sealed record FmOutcomeRecord(
     long SignalId,
@@ -17,7 +18,9 @@ public sealed record FmOutcomeRecord(
     int? Hit,
     string Status,
     string Source,
-    string? Motivo);
+    string? Motivo,
+    string? UnavailableReason,
+    bool SourceConflict);
 
 public sealed class FmOutcomeStore
 {
@@ -44,8 +47,9 @@ public sealed class FmOutcomeStore
     {
         await using var conn = Open();
         await conn.OpenAsync(ct);
-        await using var cmd = conn.CreateCommand();
-        cmd.CommandText = @"
+        await using (var cmd = conn.CreateCommand())
+        {
+            cmd.CommandText = @"
 CREATE TABLE IF NOT EXISTS fm_outcome (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     signal_id INTEGER NOT NULL UNIQUE,
@@ -55,10 +59,40 @@ CREATE TABLE IF NOT EXISTS fm_outcome (
     hit INTEGER,
     status TEXT NOT NULL,
     source TEXT NOT NULL,
-    motivo TEXT
+    motivo TEXT,
+    unavailable_reason TEXT,
+    source_conflict INTEGER NOT NULL DEFAULT 0
 );
 CREATE INDEX IF NOT EXISTS ix_fm_outcome_fixture ON fm_outcome(fixture_id);";
-        await cmd.ExecuteNonQueryAsync(ct);
+            await cmd.ExecuteNonQueryAsync(ct);
+        }
+
+        await EnsureColumnAsync(conn, "fm_outcome", "unavailable_reason", "TEXT", ct);
+        await EnsureColumnAsync(conn, "fm_outcome", "source_conflict", "INTEGER NOT NULL DEFAULT 0", ct);
+    }
+
+    private static async Task EnsureColumnAsync(
+        SqliteConnection conn, string table, string column, string ddl, CancellationToken ct)
+    {
+        var found = false;
+        await using (var readerCmd = conn.CreateCommand())
+        {
+            readerCmd.CommandText = $"PRAGMA table_info({table});";
+            await using var reader = await readerCmd.ExecuteReaderAsync(ct);
+            while (await reader.ReadAsync(ct))
+            {
+                if (string.Equals(reader.GetString(1), column, StringComparison.OrdinalIgnoreCase))
+                {
+                    found = true;
+                    break;
+                }
+            }
+        }
+
+        if (found) return;
+        await using var alter = conn.CreateCommand();
+        alter.CommandText = $"ALTER TABLE {table} ADD COLUMN {column} {ddl}";
+        await alter.ExecuteNonQueryAsync(ct);
     }
 
     public async Task<Dictionary<long, FmOutcomeRecord>> GetByFixtureAsync(
@@ -70,7 +104,7 @@ CREATE INDEX IF NOT EXISTS ix_fm_outcome_fixture ON fm_outcome(fixture_id);";
         await conn.OpenAsync(ct);
         await using var cmd = conn.CreateCommand();
         cmd.CommandText = @"
-SELECT signal_id, actual_value, hit, status, source, motivo
+SELECT signal_id, actual_value, hit, status, source, motivo, unavailable_reason, source_conflict
 FROM fm_outcome WHERE fixture_id = $fixtureId;";
         cmd.Parameters.AddWithValue("$fixtureId", fixtureId);
         var result = new Dictionary<long, FmOutcomeRecord>();
@@ -84,12 +118,14 @@ FROM fm_outcome WHERE fixture_id = $fixtureId;";
                 reader.IsDBNull(2) ? null : reader.GetInt32(2),
                 reader.GetString(3),
                 reader.GetString(4),
-                reader.IsDBNull(5) ? null : reader.GetString(5));
+                reader.IsDBNull(5) ? null : reader.GetString(5),
+                reader.IsDBNull(6) ? null : reader.GetString(6),
+                !reader.IsDBNull(7) && reader.GetInt32(7) != 0);
         }
         return result;
     }
 
-    public async Task<int> InsertIgnoreAsync(
+    public async Task<int> WriteAsync(
         IReadOnlyList<FmOutcomeDraft> drafts, DateTime resolvedAtUtc, CancellationToken ct = default)
     {
         if (drafts.Count == 0) return 0;
@@ -98,16 +134,29 @@ FROM fm_outcome WHERE fixture_id = $fixtureId;";
         await using var conn = Open();
         await conn.OpenAsync(ct);
         await using var tx = (SqliteTransaction)await conn.BeginTransactionAsync(ct);
-        var inserted = 0;
+        var written = 0;
         var ts = resolvedAtUtc.ToString("yyyy-MM-dd HH:mm:ss.fff");
 
         foreach (var d in drafts)
         {
             await using var cmd = conn.CreateCommand();
             cmd.Transaction = tx;
+            // A1: UNAVAILABLE rows are retryable (upsert over them); final statuses
+            // (RESOLVED/NOT_PLAYED/AMBIGUOUS) keep INSERT OR IGNORE semantics.
             cmd.CommandText = @"
-INSERT OR IGNORE INTO fm_outcome (signal_id, fixture_id, resolved_at_utc, actual_value, hit, status, source, motivo)
-VALUES ($signalId, $fixtureId, $ts, $actual, $hit, $status, $source, $motivo);";
+INSERT INTO fm_outcome (signal_id, fixture_id, resolved_at_utc, actual_value, hit, status, source, motivo,
+    unavailable_reason, source_conflict)
+VALUES ($signalId, $fixtureId, $ts, $actual, $hit, $status, $source, $motivo, $reason, 0)
+ON CONFLICT(signal_id) DO UPDATE SET
+    resolved_at_utc = excluded.resolved_at_utc,
+    actual_value = excluded.actual_value,
+    hit = excluded.hit,
+    status = excluded.status,
+    source = excluded.source,
+    motivo = excluded.motivo,
+    unavailable_reason = excluded.unavailable_reason,
+    source_conflict = excluded.source_conflict
+WHERE fm_outcome.status = 'UNAVAILABLE';";
             cmd.Parameters.AddWithValue("$signalId", d.SignalId);
             cmd.Parameters.AddWithValue("$fixtureId", d.FixtureId);
             cmd.Parameters.AddWithValue("$ts", ts);
@@ -116,11 +165,26 @@ VALUES ($signalId, $fixtureId, $ts, $actual, $hit, $status, $source, $motivo);";
             cmd.Parameters.AddWithValue("$status", d.Status);
             cmd.Parameters.AddWithValue("$source", d.Source);
             cmd.Parameters.AddWithValue("$motivo", (object?)d.Motivo ?? DBNull.Value);
-            inserted += await cmd.ExecuteNonQueryAsync(ct);
+            cmd.Parameters.AddWithValue("$reason", (object?)d.UnavailableReason ?? DBNull.Value);
+            written += await cmd.ExecuteNonQueryAsync(ct);
         }
 
         await tx.CommitAsync(ct);
-        return inserted;
+        return written;
+    }
+
+    public async Task<int> MarkSourceConflictsAsync(
+        IReadOnlyCollection<long> signalIds, CancellationToken ct = default)
+    {
+        if (signalIds.Count == 0) return 0;
+        try { await EnsureOnceAsync(ct); }
+        catch { lock (_ensureLock) { _ensureTask = null; } throw; }
+        await using var conn = Open();
+        await conn.OpenAsync(ct);
+        await using var cmd = conn.CreateCommand();
+        var ids = string.Join(",", signalIds.Select(id => id.ToString()));
+        cmd.CommandText = $"UPDATE fm_outcome SET source_conflict = 1 WHERE signal_id IN ({ids});";
+        return await cmd.ExecuteNonQueryAsync(ct);
     }
 
     private SqliteConnection Open() => new(_connectionString);

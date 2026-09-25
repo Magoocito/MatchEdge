@@ -18,7 +18,9 @@ public sealed record FmOutcomeLine(
     double? ActualValue,
     int? Hit,
     string Source,
-    string? Motivo);
+    string? Motivo,
+    string? UnavailableReason = null,
+    bool SourceConflict = false);
 
 public sealed record FmFixtureOutcomeReport(
     string FixtureId,
@@ -49,6 +51,10 @@ public sealed class FmOutcomeResolver : IFmOutcomeResolver
     public const string StatusNotPlayed = "NOT_PLAYED";
     public const string StatusUnavailable = "UNAVAILABLE";
     public const string StatusAmbiguous = "AMBIGUOUS";
+
+    public const string ReasonNoHistoryElement = "NO_HISTORY_ELEMENT";
+    public const string ReasonNoDateMatch = "NO_DATE_MATCH";
+    public const string ReasonOther = "OTHER";
 
     private static readonly Regex StatsRow = new(
         @">([^<>]+)</span><span class=""text-xs font-medium text-text-secondary"">([^<>]+)</span><span class=""text-sm font-semibold tabular-nums text-text-primary"">([^<>]+)</span>",
@@ -162,15 +168,15 @@ public sealed class FmOutcomeResolver : IFmOutcomeResolver
         }
 
         // D0 order 1: history[] of a later snapshot (fixture already ingested by FM).
-        var historyHits = await TryHistoryAsync(fixture, signals, warnings, ct);
+        var (historyHits, historyReasons) = await TryHistoryAsync(fixture, signals, warnings, ct);
+
+        bool NeedsAttempt(FmSignalRow s) =>
+            !historyHits.ContainsKey(s.Id) &&
+            (!existing.TryGetValue(s.Id, out var prior) || prior.Status == StatusUnavailable);
 
         // D0 order 2: overview stats panel (server-rendered HTML) for leftovers.
         Dictionary<string, (double Home, double Away)>? stats = null;
-        var needsStats = signals.Any(s =>
-            s.SubjectType == "team" &&
-            !historyHits.ContainsKey(s.Id) &&
-            !existing.ContainsKey(s.Id));
-        if (needsStats)
+        if (signals.Any(s => s.SubjectType == "team" && NeedsAttempt(s)))
         {
             var html = await FetchUnderGateAsync($"/fixtures/{fixture.Slug}", ct);
             stats = ParseStats(html);
@@ -180,13 +186,15 @@ public sealed class FmOutcomeResolver : IFmOutcomeResolver
         var already = 0;
         foreach (var s in signals)
         {
-            if (existing.TryGetValue(s.Id, out var prior))
+            // A1: only final statuses are idempotent; UNAVAILABLE is retried every run.
+            if (existing.TryGetValue(s.Id, out var prior) && prior.Status != StatusUnavailable)
             {
                 already++;
                 lines.Add(new FmOutcomeLine(
                     s.Id, s.SubjectType, s.SubjectName, s.Market, s.Line,
                     prior.Status, prior.ActualValue, prior.Hit, prior.Source,
-                    prior.Motivo ?? "already resolved (idempotent skip)"));
+                    prior.Motivo ?? "already resolved (idempotent skip)",
+                    prior.UnavailableReason, prior.SourceConflict));
                 continue;
             }
 
@@ -197,36 +205,144 @@ public sealed class FmOutcomeResolver : IFmOutcomeResolver
             }
             else
             {
-                draft = ComputeOutcome(fixture, s, stats, warnings);
+                historyReasons.TryGetValue(s.Id, out var historyReason);
+                draft = ComputeOutcome(fixture, s, stats, historyReason, warnings);
             }
 
             drafts.Add(draft);
             lines.Add(new FmOutcomeLine(
                 draft.SignalId, s.SubjectType, s.SubjectName, s.Market, s.Line,
-                draft.Status, draft.ActualValue, draft.Hit, draft.Source, draft.Motivo));
+                draft.Status, draft.ActualValue, draft.Hit, draft.Source, draft.Motivo,
+                draft.UnavailableReason, false));
             if (draft.Status == StatusResolved) resolved++;
         }
 
-        var inserted = await _outcomes.InsertIgnoreAsync(drafts, resolvedAt, ct);
-        if (inserted != drafts.Count)
-            warnings.Add($"{fixture.Id}: {drafts.Count - inserted} outcome(s) already existed (race); kept originals.");
+        var written = await _outcomes.WriteAsync(drafts, resolvedAt, ct);
+        if (written != drafts.Count)
+            warnings.Add($"{fixture.Id}: {drafts.Count - written} outcome(s) kept final status (not overwritten).");
+
+        // A4: cross-field consistency of FM-derived RESOLVED values (document, never fix).
+        var conflictMarkets = DetectSourceConflicts(signals, drafts, existing);
+        if (conflictMarkets.Count > 0)
+        {
+            var resolvedIds = new HashSet<long>(
+                drafts.Where(d => d.Status == StatusResolved).Select(d => d.SignalId));
+            foreach (var (id, rec) in existing)
+                if (rec.Status == StatusResolved) resolvedIds.Add(id);
+            var conflictIds = signals
+                .Where(s => s.Market != null && conflictMarkets.Contains(s.Market) &&
+                            resolvedIds.Contains(s.Id))
+                .Select(s => s.Id)
+                .ToList();
+            var marked = await _outcomes.MarkSourceConflictsAsync(conflictIds, ct);
+            warnings.Add(
+                $"{fixture.Id}: source_conflict [{string.Join(", ", conflictMarkets.OrderBy(m => m))}] " +
+                $"marked on {marked} outcome(s).");
+            for (var i = 0; i < lines.Count; i++)
+                if (conflictIds.Contains(lines[i].SignalId))
+                    lines[i] = lines[i] with { SourceConflict = true };
+        }
 
         return new FmFixtureOutcomeReport(
             fixture.Id, fixture.Home, fixture.Away, fixture.Timestamp ?? "",
             signals.Count, resolved, already, lines);
     }
 
+    public static HashSet<string> DetectSourceConflicts(
+        IReadOnlyList<FmSignalRow> signals,
+        IReadOnlyList<FmOutcomeDraft> drafts,
+        IReadOnlyDictionary<long, FmOutcomeRecord> existing)
+    {
+        var marketById = signals.Where(s => s.Market != null)
+            .ToDictionary(s => s.Id, s => s.Market!);
+        var values = new Dictionary<string, double>(StringComparer.OrdinalIgnoreCase);
+        void Take(long id, double? actual, string status)
+        {
+            if (status != StatusResolved || actual is null) return;
+            if (marketById.TryGetValue(id, out var m)) values[m] = actual.Value;
+        }
+        foreach (var d in drafts) Take(d.SignalId, d.ActualValue, d.Status);
+        foreach (var (id, rec) in existing) Take(id, rec.ActualValue, rec.Status);
+
+        var conflicts = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        bool Has(string m) => values.ContainsKey(m);
+        double Get(string m) => values[m];
+
+        // Brief example: home GK saves 0 while the rival scored.
+        if (Has("home_saves") && Get("home_saves") == 0 &&
+            Has("away_goals") && Get("away_goals") > 0)
+        {
+            conflicts.Add("home_saves");
+            conflicts.Add("away_goals");
+        }
+        if (Has("away_saves") && Get("away_saves") == 0 &&
+            Has("home_goals") && Get("home_goals") > 0)
+        {
+            conflicts.Add("away_saves");
+            conflicts.Add("home_goals");
+        }
+
+        // Identity: opponent_saves + opponent_goals == side_shots_on_target.
+        if (Has("home_saves") && Has("away_goals") && Has("away_shots_on_target") &&
+            Math.Abs(Get("home_saves") + Get("away_goals") - Get("away_shots_on_target")) > 0.001)
+        {
+            conflicts.Add("home_saves");
+            conflicts.Add("away_goals");
+            conflicts.Add("away_shots_on_target");
+        }
+        if (Has("away_saves") && Has("home_goals") && Has("home_shots_on_target") &&
+            Math.Abs(Get("away_saves") + Get("home_goals") - Get("home_shots_on_target")) > 0.001)
+        {
+            conflicts.Add("away_saves");
+            conflicts.Add("home_goals");
+            conflicts.Add("home_shots_on_target");
+        }
+
+        // Shots on target cannot exceed shots (total and per side).
+        if (Has("total_shots_on_target") && Has("total_shots") &&
+            Get("total_shots_on_target") > Get("total_shots"))
+        {
+            conflicts.Add("total_shots_on_target");
+            conflicts.Add("total_shots");
+        }
+        if (Has("home_shots_on_target") && Has("home_shots") &&
+            Get("home_shots_on_target") > Get("home_shots"))
+        {
+            conflicts.Add("home_shots_on_target");
+            conflicts.Add("home_shots");
+        }
+        if (Has("away_shots_on_target") && Has("away_shots") &&
+            Get("away_shots_on_target") > Get("away_shots"))
+        {
+            conflicts.Add("away_shots_on_target");
+            conflicts.Add("away_shots");
+        }
+
+        return conflicts;
+    }
+
     private static FmOutcomeDraft ComputeOutcome(
         GlobalFixture fixture, FmSignalRow s,
         Dictionary<string, (double Home, double Away)>? stats,
+        string? historyReason,
         List<string> warnings)
     {
         if (s.SubjectType == "player")
         {
+            var reason = string.IsNullOrEmpty(historyReason) ? ReasonOther : historyReason;
+            var detail = reason switch
+            {
+                ReasonNoDateMatch =>
+                    "history[] has no element within kickoff±1 day (FM ingestion lag); " +
+                    "stats panel is team-level.",
+                ReasonNoHistoryElement =>
+                    "signal has no history[] elements to match against; stats panel is team-level.",
+                _ =>
+                    "D0 order 1 unresolved (fetch/parse/opponent mismatch); " +
+                    "stats panel is team-level."
+            };
             return new FmOutcomeDraft(
-                s.Id, fixture.Id, null, null, StatusUnavailable, "none",
-                "D0 order 1: fixture not in player history yet (FM ingestion lag); " +
-                "stats panel is team-level. Player actual pending next history refresh.");
+                s.Id, fixture.Id, null, null, StatusUnavailable, "none", detail, reason);
         }
 
         if (s.Line is null || s.Direction is null)
@@ -269,13 +385,14 @@ public sealed class FmOutcomeResolver : IFmOutcomeResolver
             {
                 return new FmOutcomeDraft(
                     s.Id, fixture.Id, null, null, StatusUnavailable, "none",
-                    "overview stats panel unavailable (fetch failed or no team signals)");
+                    "overview stats panel unavailable (fetch failed or no team signals)",
+                    ReasonOther);
             }
             if (!stats.TryGetValue(mapping.Label, out var pair))
             {
                 return new FmOutcomeDraft(
                     s.Id, fixture.Id, null, null, StatusUnavailable, "none",
-                    $"label '{mapping.Label}' not present in stats panel");
+                    $"label '{mapping.Label}' not present in stats panel", ReasonOther);
             }
             actual = mapping.Side switch { 1 => pair.Home, 2 => pair.Away, _ => pair.Home + pair.Away };
             source = "stats-panel";
@@ -284,7 +401,7 @@ public sealed class FmOutcomeResolver : IFmOutcomeResolver
         {
             return new FmOutcomeDraft(
                 s.Id, fixture.Id, null, null, StatusUnavailable, "none",
-                $"market '{s.Market}' not mapped to stats panel");
+                $"market '{s.Market}' not mapped to stats panel", ReasonOther);
         }
 
         var under = string.Equals(s.Direction, "under", StringComparison.OrdinalIgnoreCase);
@@ -295,14 +412,21 @@ public sealed class FmOutcomeResolver : IFmOutcomeResolver
             s.Id, fixture.Id, actual, hit ? 1 : 0, StatusResolved, source, null);
     }
 
-    private async Task<Dictionary<long, FmOutcomeDraft>> TryHistoryAsync(
+    private async Task<(
+        Dictionary<long, FmOutcomeDraft> Drafts,
+        Dictionary<long, string> Reasons)> TryHistoryAsync(
         GlobalFixture fixture, IReadOnlyList<FmSignalRow> signals,
         List<string> warnings, CancellationToken ct)
     {
-        var result = new Dictionary<long, FmOutcomeDraft>();
-        if (fixture.Apid is null || fixture.Timestamp is null || fixture.Timestamp.Length < 10)
-            return result;
-        var kickDate = fixture.Timestamp[..10];
+        var drafts = new Dictionary<long, FmOutcomeDraft>();
+        var reasons = new Dictionary<long, string>();
+
+        if (fixture.Apid is null || fixture.Timestamp is null || fixture.Timestamp.Length < 10 ||
+            !DateOnly.TryParse(fixture.Timestamp[..10], out var kickoff))
+        {
+            foreach (var s in signals) reasons[s.Id] = ReasonOther;
+            return (drafts, reasons);
+        }
 
         foreach (var subjectType in signals.Select(s => s.SubjectType).Distinct())
         {
@@ -319,6 +443,7 @@ public sealed class FmOutcomeResolver : IFmOutcomeResolver
             catch (Exception ex)
             {
                 warnings.Add($"{fixture.Id}: D0 order 1 ({subjectType}) fetch failed: {ex.Message}");
+                foreach (var s in subset) reasons[s.Id] = ReasonOther;
                 continue;
             }
 
@@ -328,29 +453,47 @@ public sealed class FmOutcomeResolver : IFmOutcomeResolver
                 using var doc = JsonDocument.Parse(json);
                 if (!doc.RootElement.TryGetProperty("data", out var data) ||
                     data.ValueKind != JsonValueKind.Array)
+                {
+                    foreach (var s in subset) reasons[s.Id] = ReasonOther;
                     continue;
+                }
                 rows = data.EnumerateArray().Select(e => e.Clone()).ToList();
             }
             catch (JsonException ex)
             {
                 warnings.Add($"{fixture.Id}: D0 order 1 ({subjectType}) unparseable: {ex.Message}");
+                foreach (var s in subset) reasons[s.Id] = ReasonOther;
                 continue;
             }
 
             foreach (var s in subset)
             {
-                if (result.ContainsKey(s.Id)) continue;
+                if (drafts.ContainsKey(s.Id)) continue;
                 var row = rows.FirstOrDefault(r =>
                     string.Equals(GetString(r, "market") ?? GetString(r, "key"), s.Market,
                         StringComparison.OrdinalIgnoreCase));
-                if (row.ValueKind != JsonValueKind.Object) continue;
+                if (row.ValueKind != JsonValueKind.Object)
+                {
+                    reasons[s.Id] = ReasonOther;
+                    continue;
+                }
                 if (!row.TryGetProperty("history", out var hist) ||
-                    hist.ValueKind != JsonValueKind.Array) continue;
+                    hist.ValueKind != JsonValueKind.Array || hist.GetArrayLength() == 0)
+                {
+                    reasons[s.Id] = ReasonNoHistoryElement;
+                    continue;
+                }
 
+                var inWindow = false;
+                FmOutcomeDraft? matched = null;
                 foreach (var el in hist.EnumerateArray())
                 {
                     var t = GetString(el, "t");
-                    if (t == null || !t.StartsWith(kickDate, StringComparison.Ordinal)) continue;
+                    if (t == null || t.Length < 10 || !DateOnly.TryParse(t[..10], out var elDate))
+                        continue;
+                    if (Math.Abs(elDate.DayNumber - kickoff.DayNumber) > 1) continue;
+                    inWindow = true;
+
                     var opp = el.TryGetProperty("opp", out var oppEl) && oppEl.ValueKind == JsonValueKind.Object
                         ? GetString(oppEl, "name") : null;
                     if (opp != fixture.Home && opp != fixture.Away) continue;
@@ -360,27 +503,34 @@ public sealed class FmOutcomeResolver : IFmOutcomeResolver
                         var minutes = GetInt(el, "m");
                         if (minutes is 0)
                         {
-                            result[s.Id] = new FmOutcomeDraft(
+                            matched = new FmOutcomeDraft(
                                 s.Id, fixture.Id, 0, null, StatusNotPlayed, "history",
                                 "player did not play (minutes=0 in history element)");
                         }
                         else
                         {
                             var value = GetDouble(el, "v");
-                            result[s.Id] = HitFromValue(fixture.Id, s, value, "history");
+                            matched = HitFromValue(fixture.Id, s, value, "history");
                         }
                     }
                     else
                     {
                         var value = GetDouble(el, "vt");
-                        result[s.Id] = HitFromValue(fixture.Id, s, value, "history");
+                        matched = HitFromValue(fixture.Id, s, value, "history");
                     }
                     break;
                 }
+
+                if (matched != null)
+                    drafts[s.Id] = matched;
+                else if (!inWindow)
+                    reasons[s.Id] = ReasonNoDateMatch;
+                else
+                    reasons[s.Id] = ReasonOther;
             }
         }
 
-        return result;
+        return (drafts, reasons);
     }
 
     private static FmOutcomeDraft HitFromValue(
