@@ -700,6 +700,37 @@ ORDER BY s.id;";
         return rows;
     }
 
+    // P7 T3: identity of EVERY fm_signal copy of a fixture (all snapshots).
+    // fm_outcome keeps the signal id from resolution time, while the report
+    // reads the latest copy per snapshot, so outcomes must be re-keyed by
+    // (subject_type, subject_name, market, line) instead of by raw id.
+    public async Task<Dictionary<long, (string SubjectType, string SubjectName, string? Market, double? Line)>>
+        GetSignalIdentitiesAsync(string fixtureId, CancellationToken ct = default)
+    {
+        try { await EnsureOnceAsync(ct); }
+        catch { ResetEnsureFailure(); throw; }
+        await using var conn = Open();
+        await conn.OpenAsync(ct);
+        await using var cmd = conn.CreateCommand();
+        cmd.CommandText = @"
+SELECT id, subject_type, subject_name, market, line
+FROM fm_signal WHERE fixture_id = $fixtureId;";
+        cmd.Parameters.AddWithValue("$fixtureId", fixtureId);
+        var result = new Dictionary<long, (string, string, string?, double?)>();
+        await using (var reader = await cmd.ExecuteReaderAsync(ct))
+        {
+            while (await reader.ReadAsync(ct))
+            {
+                result[reader.GetInt64(0)] = (
+                    reader.GetString(1),
+                    reader.GetString(2),
+                    reader.IsDBNull(3) ? null : reader.GetString(3),
+                    reader.IsDBNull(4) ? null : reader.GetDouble(4));
+            }
+        }
+        return result;
+    }
+
     public async Task<bool> HasLeakageAsync(string fixtureId, CancellationToken ct = default)
     {
         try { await EnsureOnceAsync(ct); }

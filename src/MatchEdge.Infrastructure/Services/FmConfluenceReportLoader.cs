@@ -14,6 +14,7 @@ public static class FmConfluenceReportLoader
         if (signals.Count == 0) return null;
 
         var outcomes = await outcomeStore.GetByFixtureAsync(fixtureId, ct);
+        outcomes = await RekeyOutcomesAsync(store, fixtureId, signals, outcomes);
         var fixtureRows = await store.GetTeamMatchesByFixtureAsync(fixtureId, ct);
         var odds = await store.GetOddsDetailAsync(fixtureId, ct);
         var leakage = await store.HasLeakageAsync(fixtureId, ct);
@@ -28,5 +29,38 @@ public static class FmConfluenceReportLoader
 
         return new FmReportInput(
             signals, outcomes, fixtureRows, teamRows, playerRows, odds, leakage);
+    }
+
+    // P7-T3 bugfix: fm_signal stores one copy per snapshot (ids drift with every
+    // capture) while fm_outcome keeps the signal id from resolution time, so a
+    // join by raw id silently dropped source_conflict/motivo from data_quality.
+    // Outcomes are re-keyed onto the latest signal copy with the same identity
+    // (subject_type, subject_name, market, line) - no data is invented.
+    private static async Task<Dictionary<long, FmOutcomeRecord>> RekeyOutcomesAsync(
+        FmSnapshotStore store,
+        string fixtureId,
+        IReadOnlyList<FmSignalDetailRow> signals,
+        Dictionary<long, FmOutcomeRecord> outcomes,
+        CancellationToken ct = default)
+    {
+        if (outcomes.Count == 0) return outcomes;
+
+        var latestIds = new HashSet<long>(signals.Select(s => s.Id));
+        if (outcomes.Keys.All(latestIds.Contains)) return outcomes;
+
+        var reportIdByIdentity = signals
+            .GroupBy(s => (s.SubjectType, s.SubjectName, s.Market, s.Line))
+            .ToDictionary(g => g.Key, g => g.Min(s => s.Id));
+        var identities = await store.GetSignalIdentitiesAsync(fixtureId, ct);
+
+        var rekeyed = new Dictionary<long, FmOutcomeRecord>(outcomes);
+        foreach (var (signalId, record) in outcomes)
+        {
+            if (latestIds.Contains(signalId)) continue;
+            if (!identities.TryGetValue(signalId, out var identity)) continue;
+            if (!reportIdByIdentity.TryGetValue(identity, out var target)) continue;
+            if (!rekeyed.ContainsKey(target)) rekeyed[target] = record;
+        }
+        return rekeyed;
     }
 }

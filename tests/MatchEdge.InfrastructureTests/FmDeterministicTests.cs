@@ -1429,4 +1429,56 @@ VALUES ('33441811', '4', NULL, 'total_corners', 1.9, 'over', 'fm', '2026-09-25 0
             File.Delete(dbPath);
         }
     }
+
+    // P7-T3 bug found in validation: fm_outcome keeps the signal id of an older
+    // snapshot while the report reads the newest copy (ids drift per capture),
+    // so source_conflict/motivo were silently dropped. The loader now re-keys
+    // outcomes by (subject_type, subject_name, market, line).
+    [Fact]
+    public async Task Report_DataQuality_JoinsOutcomeFromOlderSnapshot()
+    {
+        var dbPath = Path.Combine(Path.GetTempPath(), $"fmtest_{Guid.NewGuid():N}.db");
+        try
+        {
+            var store = new FmSnapshotStore($"Data Source={dbPath}");
+            var outcomes = new FmOutcomeStore($"Data Source={dbPath}");
+
+            var draft = new List<FmSignalDraft>
+            {
+                new("team", "Portugal", "home_saves", 1.5, "over", 10, 10, 1.0,
+                    null, null, null, History(10, 5, 10))
+            };
+            foreach (var _ in new[] { 1, 2 })
+            {
+                var snap = await store.InsertSnapshotAsync(
+                    ReportFixtureId, "team-trends", "https://www.footymetrics.com/fixtures/1-x",
+                    DateTime.UtcNow, "p", "s", "fm-json-v1", "OK");
+                await store.InsertSignalsAsync(
+                    snap, ReportFixtureId, draft, "all", "all", DateTime.UtcNow,
+                    """{"location":"all"}""");
+            }
+
+            var ids = (await store.GetSignalIdentitiesAsync(ReportFixtureId)).Keys
+                .OrderBy(i => i).ToList();
+            Assert.Equal(2, ids.Count);
+            var olderId = ids[0];
+            var latestId = ids[1];
+
+            await outcomes.WriteAsync(new[]
+            {
+                new FmOutcomeDraft(olderId, ReportFixtureId, 5.0, 1, "RESOLVED", "test", null)
+            }, DateTime.UtcNow);
+            await outcomes.MarkSourceConflictsAsync(new[] { olderId });
+
+            var report = await BuildReportAsync(store, outcomes);
+            var entry = Assert.Single(report.Markets, m => m.Market == "home_saves");
+            Assert.True(entry.DataQuality.SourceConflict,
+                "outcome written against the older snapshot id must still be visible");
+        }
+        finally
+        {
+            Microsoft.Data.Sqlite.SqliteConnection.ClearAllPools();
+            File.Delete(dbPath);
+        }
+    }
 }
