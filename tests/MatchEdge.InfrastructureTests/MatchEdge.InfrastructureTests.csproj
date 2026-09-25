@@ -23,4 +23,8 @@
     <ProjectReference Include="..\..\src\MatchEdge.Infrastructure\MatchEdge.Infrastructure.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="Fixtures\*.json" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
 </Project>

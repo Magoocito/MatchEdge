@@ -766,4 +766,340 @@ public class FmDeterministicTests
             File.Delete(dbPath);
         }
     }
+
+    [Fact]
+    public void Parse_VenueRole_DerivedFromRowTeamAndFixture()
+    {
+        const string json = """
+        {
+          "data": [
+            { "shortName": "C. Ronaldo", "market": "shots", "line": "1.5",
+              "Team": { "name": "Portugal" },
+              "Fixture": { "Home": { "name": "Portugal" }, "Away": { "name": "Wales" } } },
+            { "shortName": "G. Bale", "market": "shots", "line": "1.5",
+              "Team": { "name": "Wales" },
+              "Fixture": { "Home": { "name": "Portugal" }, "Away": { "name": "Wales" } } },
+            { "shortName": "No Team", "market": "shots", "line": "1.5" }
+          ]
+        }
+        """;
+
+        var rows = FmTrendsJsonParser.Parse(json, "player");
+
+        Assert.Equal("home", rows.Single(r => r.SubjectName == "C. Ronaldo").VenueRole);
+        Assert.Equal("away", rows.Single(r => r.SubjectName == "G. Bale").VenueRole);
+        Assert.Equal("unknown", rows.Single(r => r.SubjectName == "No Team").VenueRole);
+        Assert.Null(rows.Single(r => r.SubjectName == "No Team").FixtureHome);
+        Assert.Equal("Portugal", rows.Single(r => r.SubjectName == "C. Ronaldo").FixtureHome);
+        Assert.Equal("Wales", rows.Single(r => r.SubjectName == "C. Ronaldo").FixtureAway);
+        Assert.Equal("Portugal", rows.Single(r => r.SubjectName == "C. Ronaldo").TeamName);
+    }
+
+    [Fact]
+    public void Parse_VenueRole_TeamRow_AwaySide()
+    {
+        const string json = """
+        {
+          "data": [
+            { "name": "Wales", "market": "total_corners", "line": "9.5",
+              "Team": { "name": "Wales" },
+              "Fixture": { "Home": { "name": "Portugal" }, "Away": { "name": "Wales" } } }
+          ]
+        }
+        """;
+
+        var row = Assert.Single(FmTrendsJsonParser.Parse(json, "team"));
+        Assert.Equal("away", row.VenueRole);
+    }
+
+    [Fact]
+    public async Task Store_BookmakersSeed_OddsNameAutoFill_AndBackfill()
+    {
+        var dbPath = Path.Combine(Path.GetTempPath(), $"fmtest_{Guid.NewGuid():N}.db");
+        try
+        {
+            var store = new FmSnapshotStore($"Data Source={dbPath}");
+            await store.EnsureSchemaAsync();
+
+            using (var conn = new Microsoft.Data.Sqlite.SqliteConnection($"Data Source={dbPath}"))
+            {
+                await conn.OpenAsync();
+                await using (var cmd = conn.CreateCommand())
+                {
+                    cmd.CommandText = "SELECT COUNT(*) FROM fm_bookmakers";
+                    Assert.Equal(5L, Convert.ToInt64(await cmd.ExecuteScalarAsync()));
+                }
+                // legacy row (captured before the mapping existed)
+                await using (var cmd = conn.CreateCommand())
+                {
+                    cmd.CommandText = @"
+INSERT INTO fm_market_odds (fixture_id, bookmaker, bookmaker_name, market, odds_value, side, source, source_timestamp_utc, snapshot_id)
+VALUES ('33441811', '4', NULL, 'total_corners', 1.9, 'over', 'fm', '2026-09-25 00:00:00', NULL);";
+                    await cmd.ExecuteNonQueryAsync();
+                }
+            }
+
+            // re-running schema backfills the legacy NULL name
+            await store.EnsureSchemaAsync();
+
+            var snap = await store.InsertSnapshotAsync(
+                "33441811", "team-trends", "http://x", DateTime.UtcNow, "p", "s", "v", "OK");
+            await store.InsertOddsAsync("33441811", new List<FmOddsDraft>
+            {
+                new("team", "Wales", "total_corners", 9.5, "3", 1.85, "over")
+            }, snap, DateTime.UtcNow);
+
+            var rows = await store.GetOddsAsync("33441811");
+            Assert.Equal(2, rows.Count);
+            Assert.Equal("Ladbrokes", rows.Single(r => r.Id > 0 && r.Bookmaker == "4").BookmakerName);
+            Assert.Equal("Paddy Power", rows.Single(r => r.Bookmaker == "3").BookmakerName);
+        }
+        finally
+        {
+            Microsoft.Data.Sqlite.SqliteConnection.ClearAllPools();
+            File.Delete(dbPath);
+        }
+    }
+
+    [Fact]
+    public async Task GetLastSnapshotUrl_SkipsLocMatchApiPath()
+    {
+        var dbPath = Path.Combine(Path.GetTempPath(), $"fmtest_{Guid.NewGuid():N}.db");
+        try
+        {
+            var store = new FmSnapshotStore($"Data Source={dbPath}");
+            await store.InsertSnapshotAsync(
+                "33441814", "team-trends",
+                "https://www.footymetrics.com/fixtures/33441814-uefa-nations-league-netherlands-germany?tab=team-trends",
+                DateTime.UtcNow, "p", "s", "v", "OK");
+            await store.InsertSnapshotAsync(
+                "33441814", "team-trends+loc=match",
+                "/api/front/trends/fixtures/19676695/teams?league_only=false&location=match",
+                DateTime.UtcNow, "p", "s", "v", "EMPTY");
+
+            var url = await store.GetLastSnapshotUrlAsync("33441814");
+
+            Assert.StartsWith("https://www.footymetrics.com/fixtures/33441814", url);
+            Assert.DoesNotContain("/api/front/", url);
+        }
+        finally
+        {
+            Microsoft.Data.Sqlite.SqliteConnection.ClearAllPools();
+            File.Delete(dbPath);
+        }
+    }
+
+    private static string FixturePath(string name) =>
+        Path.Combine(AppContext.BaseDirectory, "Fixtures", name);
+
+    [Fact]
+    public void TeamTableParser_HomePayload_DerivesLocationAndJoinsStats()
+    {
+        var json = File.ReadAllText(FixturePath("table_home.json"));
+
+        var parsed = FmTeamTableParser.Parse(json, 18701, "home", 15, "corners");
+
+        Assert.Equal(4, parsed.TeamMatches.Count);
+        Assert.All(parsed.TeamMatches, m =>
+        {
+            Assert.Equal("home", m.Location);
+            Assert.Equal(18701, m.TeamApid);
+            Assert.NotEqual(18701, m.OpponentApid);
+            Assert.False(string.IsNullOrEmpty(m.TeamStatsJson));
+            Assert.False(string.IsNullOrEmpty(m.OpponentStrengthJson));
+            Assert.False(string.IsNullOrEmpty(m.League));
+            Assert.Equal(15, m.Period);
+            Assert.Equal("corners", m.Stat);
+        });
+
+        var first = parsed.TeamMatches.Single(m => m.FixtureId == "33441811");
+        Assert.Equal(19676692, first.FixtureApid);
+        Assert.Equal("Wales", first.Opponent);
+        Assert.Equal(18721, first.OpponentApid);
+        Assert.Equal(1, first.HGoals);
+        Assert.Equal(0, first.AGoals);
+        JsonDocument.Parse(first.OpponentStrengthJson!);
+        using (var stats = JsonDocument.Parse(first.TeamStatsJson!))
+        {
+            // team_stats_json must hold the SUBJECT team's own numbers
+            // (Portugal 1-0 Wales, 10 corners), not the opponent's.
+            Assert.Equal(1, stats.RootElement.GetProperty("goals").GetInt32());
+            Assert.Equal(10, stats.RootElement.GetProperty("corners").GetInt32());
+        }
+        Assert.Contains("goals",
+            parsed.TeamMatches.First(m => !string.IsNullOrEmpty(m.OpponentStrengthJson) &&
+                                          m.OpponentStrengthJson != "{}").OpponentStrengthJson!);
+        Assert.Equal("UEFA Nations League", first.League);
+        Assert.True(first.TsUtc == new DateTime(2026, 9, 24, 18, 45, 0, DateTimeKind.Utc));
+
+        Assert.All(parsed.Warnings, w => Assert.DoesNotContain("differs from requested", w));
+        Assert.True(parsed.PlayerMatches.Count > 0);
+        var ronaldo = parsed.PlayerMatches.Single(p =>
+            p.PlayerApid == 580 && p.FixtureId == "33441811");
+        Assert.Equal("C. Ronaldo", ronaldo.PlayerName);
+        Assert.Equal("home", ronaldo.Location);
+        Assert.Equal("team", ronaldo.Perspective);
+        Assert.Contains("\"goals\"", ronaldo.StatsJson!);
+
+        var fixtureIds = parsed.TeamMatches.Select(m => m.FixtureId).ToHashSet(StringComparer.Ordinal);
+        Assert.All(parsed.PlayerMatches, p => Assert.Contains(p.FixtureId, fixtureIds));
+        Assert.All(parsed.PlayerMatches, p => Assert.Equal("home", p.Location));
+        Assert.Equal(0, parsed.PlayerMatches.Count(p => p.PlayerName is null));
+    }
+
+    [Fact]
+    public void TeamTableParser_AwayPayload_UsesAidSideAndOpponentIsHome()
+    {
+        var json = File.ReadAllText(FixturePath("table_away.json"));
+
+        var parsed = FmTeamTableParser.Parse(json, 18701, "away", 15, "corners");
+
+        Assert.Equal(4, parsed.TeamMatches.Count);
+        Assert.All(parsed.TeamMatches, m =>
+        {
+            Assert.Equal("away", m.Location);
+            Assert.NotEqual(18701, m.OpponentApid);
+            Assert.False(string.IsNullOrEmpty(m.TeamStatsJson));
+        });
+        Assert.All(parsed.Warnings, w => Assert.DoesNotContain("differs from requested", w));
+        Assert.All(parsed.PlayerMatches, p => Assert.Equal("away", p.Location));
+    }
+
+    [Fact]
+    public void TeamTableParser_LocationComesFromIds_NotFromRequestedParam()
+    {
+        const string json = """
+        {
+          "fixtures": [
+            { "id": "9001", "apid": 770001, "timestamp": "2026-01-05T15:00:00.000Z",
+              "lid": 10, "hid": 42, "aid": 77, "hgoals": 2, "agoals": 1,
+              "opponent": { "apid": 77, "name": "Alpha" } }
+          ],
+          "leagues": { "10": { "name": "Test League" } },
+          "teamStats": { "770001": { "77": { "corners": 5 } } },
+          "opponentStrength": { "770001": { "goals": { "v": "1.00" } } },
+          "pivotData": { "555": { "770001": { "goals": 1, "mins": 90 } } },
+          "players": [ { "apid": 555, "shortName": "J. Test" } ]
+        }
+        """;
+
+        var parsed = FmTeamTableParser.Parse(json, 42, "away", 15, "corners");
+
+        var match = Assert.Single(parsed.TeamMatches);
+        Assert.Equal("home", match.Location);
+        Assert.Equal(77, match.OpponentApid);
+        Assert.Equal("Alpha", match.Opponent);
+        Assert.Equal(10, match.LeagueApid);
+        Assert.Equal("Test League", match.League);
+        Assert.Contains("differs from requested",
+            parsed.Warnings.Single(w => w.Contains("differs from requested")));
+
+        var player = Assert.Single(parsed.PlayerMatches);
+        Assert.Equal("J. Test", player.PlayerName);
+        Assert.Equal("home", player.Location);
+        Assert.Equal("9001", player.FixtureId);
+        Assert.True(player.TsUtc == new DateTime(2026, 1, 5, 15, 0, 0, DateTimeKind.Utc));
+    }
+
+    [Fact]
+    public async Task Store_UpsertTeamMatches_IsIdempotent_AndReadsBackWithPlayers()
+    {
+        var dbPath = Path.Combine(Path.GetTempPath(), $"fmtest_{Guid.NewGuid():N}.db");
+        try
+        {
+            var store = new FmSnapshotStore($"Data Source={dbPath}");
+            await store.EnsureSchemaAsync();
+            var parsed = FmTeamTableParser.Parse(
+                File.ReadAllText(FixturePath("table_home.json")), 18701, "home", 15, "corners");
+
+            var first = await store.UpsertTeamMatchesAsync(
+                18701, "home", 15, "corners",
+                parsed.TeamMatches, parsed.PlayerMatches,
+                "teams/table?location=home&period=15&stat=corners", DateTime.UtcNow);
+            Assert.Equal(parsed.TeamMatches.Count, first.Written);
+            Assert.Equal(parsed.TeamMatches.Count, first.Inserted);
+            Assert.Equal(0, first.Updated);
+            Assert.Equal(parsed.PlayerMatches.Count, first.PlayerWritten);
+
+            var second = await store.UpsertTeamMatchesAsync(
+                18701, "home", 15, "corners",
+                parsed.TeamMatches, parsed.PlayerMatches,
+                "teams/table?location=home&period=15&stat=corners", DateTime.UtcNow);
+            Assert.Equal(parsed.TeamMatches.Count, second.Written);
+            Assert.Equal(0, second.Inserted);
+            Assert.Equal(parsed.TeamMatches.Count, second.Updated);
+
+            var home = await store.GetTeamMatchesAsync(18701, "home", 15, includePlayers: true);
+            Assert.Equal(4, home.Count);
+            Assert.All(home, m =>
+            {
+                Assert.Equal("home", m.Location);
+                Assert.All(m.Players, p => Assert.Equal(m.FixtureId, p.FixtureId));
+                Assert.NotEmpty(m.Players);
+            });
+
+            var ronaldo = home.SelectMany(m => m.Players)
+                .Where(p => p.PlayerApid == 580)
+                .ToList();
+            Assert.NotEmpty(ronaldo);
+            Assert.All(ronaldo, p =>
+            {
+                Assert.Equal("C. Ronaldo", p.PlayerName);
+                Assert.Equal("home", p.Location);
+                Assert.NotNull(p.StatsJson);
+                JsonDocument.Parse(p.StatsJson!);
+            });
+
+            Assert.Empty(await store.GetTeamMatchesAsync(18701, "away", null, false));
+            Assert.Equal(4, (await store.GetTeamMatchesAsync(18701, null, null, false)).Count);
+
+            await using (var conn = new Microsoft.Data.Sqlite.SqliteConnection($"Data Source={dbPath}"))
+            {
+                await conn.OpenAsync();
+                await using var cmd = conn.CreateCommand();
+                cmd.CommandText =
+                    "SELECT (SELECT COUNT(*) FROM fm_team_matches), (SELECT COUNT(DISTINCT fixture_id) FROM fm_team_matches), (SELECT COUNT(*) FROM fm_player_matches);";
+                await using var reader = await cmd.ExecuteReaderAsync();
+                Assert.True(await reader.ReadAsync());
+                Assert.Equal(4, reader.GetInt32(0));
+                Assert.Equal(4, reader.GetInt32(1));
+                Assert.Equal(parsed.PlayerMatches.Count, reader.GetInt32(2));
+            }
+        }
+        finally
+        {
+            Microsoft.Data.Sqlite.SqliteConnection.ClearAllPools();
+            File.Delete(dbPath);
+        }
+    }
+
+    [Fact]
+    public async Task Store_GetPlayerMatches_FiltersByFixtureSet()
+    {
+        var dbPath = Path.Combine(Path.GetTempPath(), $"fmtest_{Guid.NewGuid():N}.db");
+        try
+        {
+            var store = new FmSnapshotStore($"Data Source={dbPath}");
+            var parsed = FmTeamTableParser.Parse(
+                File.ReadAllText(FixturePath("table_away.json")), 18701, "away", 15, "corners");
+            await store.UpsertTeamMatchesAsync(
+                18701, "away", 15, "corners",
+                parsed.TeamMatches, parsed.PlayerMatches, "teams/table", DateTime.UtcNow);
+
+            var all = await store.GetPlayerMatchesAsync(18701, "away", 15, null);
+            Assert.Equal(parsed.PlayerMatches.Count, all.Count);
+
+            var oneFixture = parsed.PlayerMatches.First().FixtureId;
+            var filtered = await store.GetPlayerMatchesAsync(
+                18701, "away", 15, new[] { oneFixture });
+            Assert.All(filtered, p => Assert.Equal(oneFixture, p.FixtureId));
+            Assert.NotEmpty(filtered);
+            Assert.True(filtered.Count < all.Count);
+        }
+        finally
+        {
+            Microsoft.Data.Sqlite.SqliteConnection.ClearAllPools();
+            File.Delete(dbPath);
+        }
+    }
 }

@@ -78,6 +78,32 @@ public class FmSnapshotController : ControllerBase
         return Ok(report);
     }
 
+    // P5 A5: odds reader with bookmaker name resolved via fm_bookmakers.
+    [HttpGet("fixtures/{fixtureId}/odds")]
+    public async Task<IActionResult> GetFixtureOdds(string fixtureId, CancellationToken ct)
+    {
+        var rows = await _store.GetOddsAsync(fixtureId, ct);
+        if (rows.Count == 0)
+            return NotFound(new { error = $"fixture {fixtureId} has no odds rows." });
+
+        return Ok(new
+        {
+            fixtureId,
+            count = rows.Count,
+            odds = rows.Select(r => new
+            {
+                id = r.Id,
+                bookmaker = r.Bookmaker,
+                bookmakerName = r.BookmakerName,
+                market = r.Market,
+                line = r.Line,
+                oddsValue = r.OddsValue,
+                side = r.Side,
+                source = r.Source
+            })
+        });
+    }
+
     [HttpPost("fixtures/{fixtureId}/manual-odds")]
     public async Task<IActionResult> ManualOdds(
         string fixtureId, [FromBody] FmManualOddsRequest request, CancellationToken ct)

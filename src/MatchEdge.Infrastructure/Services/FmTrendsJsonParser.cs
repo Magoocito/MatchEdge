@@ -15,7 +15,11 @@ public sealed record FmSignalDraft(
     double? OppHits,
     int? OppSampleSize,
     double? ConfidenceScore,
-    string? RecentValuesJson);
+    string? RecentValuesJson,
+    string? TeamName = null,
+    string? FixtureHome = null,
+    string? FixtureAway = null,
+    string? VenueRole = null);
 
 public sealed record FmOddsDraft(
     string SubjectType,
@@ -60,6 +64,16 @@ public static class FmTrendsJsonParser
                 hist.ValueKind == JsonValueKind.Array)
                 recent = hist.GetRawText();
 
+            // P5 B: structural venue of THIS fixture from the row itself
+            // (player rows: Team.name + Fixture.Home/Away; team rows: same).
+            var teamName = GetNestedString(item, "Team", "name");
+            var fixtureHome = GetNestedString(item, "Fixture", "Home", "name");
+            var fixtureAway = GetNestedString(item, "Fixture", "Away", "name");
+            var venueRole = string.IsNullOrEmpty(teamName) ? "unknown"
+                : teamName == fixtureHome ? "home"
+                : teamName == fixtureAway ? "away"
+                : "unknown";
+
             result.Add(new FmSignalDraft(
                 SubjectType: subjectType,
                 SubjectName: name!,
@@ -72,7 +86,11 @@ public static class FmTrendsJsonParser
                 OppHits: oppHits,
                 OppSampleSize: oppSample,
                 ConfidenceScore: GetDouble(item, "score"),
-                RecentValuesJson: recent));
+                RecentValuesJson: recent,
+                TeamName: teamName,
+                FixtureHome: fixtureHome,
+                FixtureAway: fixtureAway,
+                VenueRole: venueRole));
         }
 
         return result;
@@ -135,6 +153,19 @@ public static class FmTrendsJsonParser
         el.TryGetProperty(prop, out var v) && v.ValueKind == JsonValueKind.String
             ? v.GetString()
             : null;
+
+    private static string? GetNestedString(JsonElement el, params string[] path)
+    {
+        var current = el;
+        foreach (var prop in path)
+        {
+            if (current.ValueKind != JsonValueKind.Object ||
+                !current.TryGetProperty(prop, out var next))
+                return null;
+            current = next;
+        }
+        return current.ValueKind == JsonValueKind.String ? current.GetString() : null;
+    }
 
     private static int? GetInt(JsonElement el, string prop)
     {
