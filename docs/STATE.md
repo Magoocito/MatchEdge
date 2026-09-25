@@ -1,5 +1,5 @@
-# STATE — MatchEdge / FootyMetrics (al cierre de P6)
-Rama `feature/fm-deterministic-navigation` (commits locales, sin push). Briefs: `docs/new 6.txt` (P1), P2 inline, `docs/FM_AGENT_BRIEF_P3.md`, `docs/FM_AGENT_BRIEF_P4.md`, `docs/FM_AGENT_BRIEF_P5.md` (P5), P6 inline (G/H). Reportes: `docs/REPORT_P3.md`, `docs/REPORT_P4.md`, `docs/REPORT_P5.md`. Handoff P2: `docs/HANDOFF_REVIEW.md`. Guía manual: `docs/FM_MANUAL_NAVIGATION.md`.
+# STATE — MatchEdge / FootyMetrics (al cierre de P7)
+Rama `feature/fm-deterministic-navigation` (commits locales; PR #37 abierto con P1-P6). Briefs: `docs/new 6.txt` (P1), P2 inline, `docs/FM_AGENT_BRIEF_P3.md`, `docs/FM_AGENT_BRIEF_P4.md`, `docs/FM_AGENT_BRIEF_P5.md` (P5), P6 inline (G/H), P7 inline (Parte E). Reportes: `docs/REPORT_P3.md`, `docs/REPORT_P4.md`, `docs/REPORT_P5.md`. Handoff P2: `docs/HANDOFF_REVIEW.md`. Guía manual: `docs/FM_MANUAL_NAVIGATION.md`.
 
 ## Qué existe (endpoints)
 - `POST /api/fm/fixtures|snapshot|run` — catálogo/snapshots. Snapshot = dual scope por fixture: 3 navs (overview + player/team trends, `location=all`) + fetch API directo 0 navs para `<tab>+loc=match`. `/run` topN = Max/3 = 13/run.
@@ -9,6 +9,9 @@ Rama `feature/fm-deterministic-navigation` (commits locales, sin push). Briefs: 
 - `POST /api/fm/fixtures/{id}/manual-odds {bookmaker,market,line,odds_value}` — C4 P4 (source=manual).
 - **P6 G2** `POST /api/fm/teams/{teamApid}/collect {locations?=["home","away"], period?=15, stat?="corners"}` — `FmTeamController`: `teams/table` vía `FetchJsonAsync` con el navigation gate (0 navegaciones, nunca solapa una nav), parsea, upsertea y guarda raw en `C:\Services\MatchEdge\tmp\fm\teams\<apId>\`. Pausa 2-4s entre localizaciones.
 - **P6 G3** `GET /api/fm/teams/{teamApid}/matches?location=home|away&period=15&includePlayers=false` — solo lectura, sin navegador, 0 navs.
+- **P7 E1** `GET /api/fm/fixtures/{id}/report` — JSON 360° descriptivo (fixture, `sort_criteria`, markets[], player_signals[], notes); orden `own_windows.all.n` desc con `sort_criteria="sample_size_desc"`; 404 sin señales.
+- **P7 E5** `GET /api/fm/fixtures/{id}/report.md` — plantilla de código, 5 secciones fijas (encabezado / mercados / jugadores / cuotas / nota de cierre con el literal mandado por E5), nunca reordena ni omite mercados.
+- **P7 E4** `PUT /api/fm/fixtures/{id}/manual-odds/{market}/{line} {bookmaker,value}` — upsert in-place por (fixture, bookmaker, market, line, source='manual'); value en (0,10000).
 - Dev-only (Production 404): `/api/FootyMetricsTest/*` (`/navigate`, `/intercept`, `/eval`, `/fetch/raw`, `/start`, `/login-status`).
 - Bugfix P5: `FmSnapshotStore.GetLastSnapshotUrlAsync` filtraba la última url (era la ruta API `+loc=match`) → ahora solo acepta `https://www.footymetrics.com/fixtures/%`; test `GetLastSnapshotUrl_SkipsLocMatchApiPath`.
 
@@ -28,11 +31,17 @@ Rama `feature/fm-deterministic-navigation` (commits locales, sin push). Briefs: 
 - **`opponentStrength` vacío (`{}`) para el fixture más reciente** (33441811, jugado hace1 día); con datos para los anteriores. No bloquea: se persiste tal cual.
 - **`fixtures/league?id=` solo devuelve ventana corta** (para1538: 7 días futuros) y `[]` para ligas domésticas; `fixtures?date=` solo responde hoy/ayer (+1). Vía usada en H: `fixtures?date=<ayer+1>` → lista de ligas con `apid` y `hasTrends` → trends del fixture (0 navs).
 - **Navegación P6: 0 navegaciones** (todo `fetch/raw` + `POST /collect`). P5: 4 navs + ~12 fetches + 12 navs de reprocesado. Regla vigente: 1 a la vez, pausa 2-4s, nunca paralelo.
+- **P7 semántica de mercados (verificada 10/10 vs `fm_team_matches`)**: prefijo `home_`/`away_` = rol del sujeto EN ESTE fixture y `history[]` = valor PROPIO del sujeto → `own_windows`/`venue_split` se recalculan desde `fm_team_matches`/`fm_player_matches`; `total_*` = total de partido, solo `total_goals` reproducible (hgoals+agoals), el resto → `basis="not_reproducible"` → `INSUFFICIENT_SAMPLE`/`NO_DATA` (7/19 mercados en 33441811); stats de jugadores sin `fouls` en `stats_json` → `unmapped`.
+- **P7 bugfix**: `DedupByFixture` en `FmConfluenceReportBuilder` descartaba la fila del otro lado (ambas comparten `fixture_id`) → bloque `fixture` incompleto en producción; nuevo `DedupByFixtureTeam` (clave `fixture_id+team_apid`).
+- **P7 `fm_reported`**: `hits/sample` = `bestCount/bestTotal` de FM; `bestWindow` = ventana de `FmWindowCalculator` cuyos hits/n coinciden con la señal, si no `"no determinable"` (nunca inventado). `opponent_context` = serie propia del rival + su señal del mismo market/line.
+- **P7 F2 vs E5**: la nota de cierre de E5 contiene literalmente "recomendación de apuesta" → el grep de palabras prohibidas (test F2 y verificación en vivo) excluye solo ese literal mandado; JSON y resto del .md = 0 ocurrencias.
+- **P7 determinismo**: sin timestamps de generación, `\n` fijos, `InvariantCulture`, ties por (market, line, subject); doble render idéntico byte a byte (test F4 + live I6).
+- **Evidencia P7**: `tmp/fm/p7_verification.json` (I1-I7, 2 fixtures reales), `tmp/fm/p7_report_33441811.{json,md}`, `tmp/fm/p7_verify.js`.
 
 ## Pendientes reales
-- **PARA antes de Parte E** (brief P5/P6): E (reporte de confluencia con contexto+venue+odds) se diseña después de revisar este estado.
-- `POST /api/fm/collect` (§5 P2) sin implementar; `tab=trends` del team page y H2H del dropdown Period sin mapear.
+- **Parte E (P7) CERRADA**: E1-E6 implementados, F1-F4 + I2 en tests, I1-I7 verificados en vivo contra la DB real (puerto 5272; la app publicada quedó restaurada en `C:\Services\MatchEdge`).
+- `POST /api/fm/collect` (ítem 5 P2) sin implementar; `tab=trends` del team page y H2H del dropdown Period sin mapear.
 - `fm_player_matches` solo con perspectiva `team`; falta poblar desde `position-stats` (perspectiva rival, requiere `positions=` explícitas).
 - Re-resolve de los 108 NO_HISTORY_ELEMENT cuando FM ingiera history del 2026-09-24.
-- Tests: `FmDeterministicTests` **46/46 PASS** (5 nuevos en P6: parser con payloads reales + upsert idempotente + lectura con jugadores). `MatchEdge.UnitTests` 149/149 PASS. `DateTeamMatchingIntegrationTests` 6 FAIL **preexistentes** (requieren `src/MatchEdge.Api/matchedge.db` poblado por DataImporter; sin relación con FM).
+- Tests: `FmDeterministicTests` **51/51 PASS** (5 nuevos en P7: F1 recuento manual vs `own_windows`/`venue_split` en 2 mercados, F2 grep de palabras prohibidas, F3 datos faltantes etiquetados, F4 determinismo, I2 `Store_UpsertManualOdds_UpdatesExistingRow`). `MatchEdge.UnitTests` 149/149 PASS. `DateTeamMatchingIntegrationTests` 6 FAIL **preexistentes** (requieren `src/MatchEdge.Api/matchedge.db` poblado por DataImporter; sin relación con FM).
 - Riesgo vigente: canary SUSPECT (market-mix drift vs baseline P2) en algunos team/player tabs; fixture 33441811 source_conflict=4.
