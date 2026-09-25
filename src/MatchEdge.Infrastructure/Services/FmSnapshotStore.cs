@@ -101,7 +101,27 @@ CREATE TABLE IF NOT EXISTS fm_signal (
     FOREIGN KEY(snapshot_id) REFERENCES fm_snapshot(id)
 );
 CREATE INDEX IF NOT EXISTS ix_fm_signal_fixture ON fm_signal(fixture_id, snapshot_id);
-CREATE INDEX IF NOT EXISTS ix_fm_signal_subject ON fm_signal(fixture_id, subject_type, subject_name);", ct);
+CREATE INDEX IF NOT EXISTS ix_fm_signal_subject ON fm_signal(fixture_id, subject_type, subject_name);
+CREATE TABLE IF NOT EXISTS fm_market_odds (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    fixture_id TEXT NOT NULL,
+    bookmaker TEXT NOT NULL,
+    bookmaker_name TEXT,
+    subject_type TEXT,
+    subject_name TEXT,
+    market TEXT NOT NULL,
+    line REAL,
+    odds_value REAL NOT NULL,
+    side TEXT NOT NULL,
+    source TEXT NOT NULL DEFAULT 'fm',
+    source_timestamp_utc TEXT NOT NULL,
+    snapshot_id INTEGER,
+    created_at TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ','now')),
+    FOREIGN KEY(snapshot_id) REFERENCES fm_snapshot(id)
+);
+CREATE UNIQUE INDEX IF NOT EXISTS ux_fm_market_odds_capture
+    ON fm_market_odds(snapshot_id, fixture_id, subject_name, bookmaker, market, IFNULL(line, -1), side);
+CREATE INDEX IF NOT EXISTS ix_fm_market_odds_fixture ON fm_market_odds(fixture_id, id);", ct);
 
         await EnsureColumnAsync(conn, "fm_snapshot", "leakage_flag", "INTEGER NOT NULL DEFAULT 0", ct);
         await EnsureColumnAsync(conn, "fm_signal", "params_json", "TEXT", ct);
@@ -226,6 +246,104 @@ VALUES ($snapshotId, $fixtureId, $subjectType, $subjectName, $market, $line, $di
 
         await tx.CommitAsync(ct);
         return new FmSignalInsertResult(inserted, suspect, firstMotivo);
+    }
+
+    public async Task<int> InsertOddsAsync(
+        string fixtureId,
+        IReadOnlyList<FmOddsDraft> odds,
+        long snapshotId,
+        DateTime sourceTimestampUtc,
+        CancellationToken ct = default)
+    {
+        if (odds.Count == 0) return 0;
+
+        try { await EnsureOnceAsync(ct); }
+        catch { ResetEnsureFailure(); throw; }
+        await using var conn = Open();
+        await conn.OpenAsync(ct);
+        await using var tx = (SqliteTransaction)await conn.BeginTransactionAsync(ct);
+        var inserted = 0;
+        var ts = sourceTimestampUtc.ToString("yyyy-MM-dd HH:mm:ss.fff");
+
+        foreach (var o in odds)
+        {
+            await using var cmd = conn.CreateCommand();
+            cmd.Transaction = tx;
+            cmd.CommandText = @"
+INSERT OR IGNORE INTO fm_market_odds
+    (fixture_id, bookmaker, bookmaker_name, subject_type, subject_name, market, line,
+     odds_value, side, source, source_timestamp_utc, snapshot_id)
+VALUES ($fixtureId, $bookmaker, NULL, $subjectType, $subjectName, $market, $line,
+        $oddsValue, $side, 'fm', $ts, $snapshotId);";
+            cmd.Parameters.AddWithValue("$fixtureId", fixtureId);
+            cmd.Parameters.AddWithValue("$bookmaker", o.Bookmaker);
+            cmd.Parameters.AddWithValue("$subjectType", o.SubjectType);
+            cmd.Parameters.AddWithValue("$subjectName", o.SubjectName);
+            cmd.Parameters.AddWithValue("$market", (object?)o.Market ?? DBNull.Value);
+            cmd.Parameters.AddWithValue("$line", (object?)o.Line ?? DBNull.Value);
+            cmd.Parameters.AddWithValue("$oddsValue", o.OddsValue);
+            cmd.Parameters.AddWithValue("$side", o.Side);
+            cmd.Parameters.AddWithValue("$ts", ts);
+            cmd.Parameters.AddWithValue("$snapshotId", snapshotId);
+            inserted += await cmd.ExecuteNonQueryAsync(ct);
+        }
+
+        await tx.CommitAsync(ct);
+        return inserted;
+    }
+
+    public async Task<long> InsertManualOddsAsync(
+        string fixtureId, string bookmaker, string market,
+        double? line, double oddsValue, DateTime sourceTimestampUtc,
+        CancellationToken ct = default)
+    {
+        try { await EnsureOnceAsync(ct); }
+        catch { ResetEnsureFailure(); throw; }
+        await using var conn = Open();
+        await conn.OpenAsync(ct);
+        await using var cmd = conn.CreateCommand();
+        cmd.CommandText = @"
+INSERT INTO fm_market_odds
+    (fixture_id, bookmaker, bookmaker_name, market, line, odds_value, side,
+     source, source_timestamp_utc, snapshot_id)
+VALUES ($fixtureId, $bookmaker, $bookmakerName, $market, $line, $oddsValue, 'manual',
+        'manual', $ts, NULL);
+SELECT last_insert_rowid();";
+        cmd.Parameters.AddWithValue("$fixtureId", fixtureId);
+        cmd.Parameters.AddWithValue("$bookmaker", bookmaker);
+        cmd.Parameters.AddWithValue("$bookmakerName", bookmaker);
+        cmd.Parameters.AddWithValue("$market", market);
+        cmd.Parameters.AddWithValue("$line", (object?)line ?? DBNull.Value);
+        cmd.Parameters.AddWithValue("$oddsValue", oddsValue);
+        cmd.Parameters.AddWithValue("$ts", sourceTimestampUtc.ToString("yyyy-MM-dd HH:mm:ss.fff"));
+        var id = await cmd.ExecuteScalarAsync(ct);
+        return Convert.ToInt64(id);
+    }
+
+    public async Task<IReadOnlyList<(long Id, string Bookmaker, string? Market, double? Line,
+        double OddsValue, string Side, string Source)>> GetOddsAsync(
+        string fixtureId, CancellationToken ct = default)
+    {
+        try { await EnsureOnceAsync(ct); }
+        catch { ResetEnsureFailure(); throw; }
+        await using var conn = Open();
+        await conn.OpenAsync(ct);
+        await using var cmd = conn.CreateCommand();
+        cmd.CommandText = @"
+SELECT id, bookmaker, market, line, odds_value, side, source
+FROM fm_market_odds WHERE fixture_id = $fixtureId ORDER BY id;";
+        cmd.Parameters.AddWithValue("$fixtureId", fixtureId);
+        var rows = new List<(long Id, string Bookmaker, string? Market, double? Line,
+            double OddsValue, string Side, string Source)>();
+        await using var reader = await cmd.ExecuteReaderAsync(ct);
+        while (await reader.ReadAsync(ct))
+        {
+            rows.Add((reader.GetInt64(0), reader.GetString(1),
+                reader.IsDBNull(2) ? null : reader.GetString(2),
+                reader.IsDBNull(3) ? null : reader.GetDouble(3),
+                reader.GetDouble(4), reader.GetString(5), reader.GetString(6)));
+        }
+        return rows;
     }
 
     public async Task<IReadOnlyList<FmSignalRow>> GetLatestSignalsAsync(

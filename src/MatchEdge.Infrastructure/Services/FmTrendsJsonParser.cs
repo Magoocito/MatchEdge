@@ -17,6 +17,15 @@ public sealed record FmSignalDraft(
     double? ConfidenceScore,
     string? RecentValuesJson);
 
+public sealed record FmOddsDraft(
+    string SubjectType,
+    string SubjectName,
+    string? Market,
+    double? Line,
+    string Bookmaker,
+    double OddsValue,
+    string Side);
+
 public static class FmTrendsJsonParser
 {
     public const string ParserVersion = "fm-json-v1";
@@ -64,6 +73,59 @@ public static class FmTrendsJsonParser
                 OppSampleSize: oppSample,
                 ConfidenceScore: GetDouble(item, "score"),
                 RecentValuesJson: recent));
+        }
+
+        return result;
+    }
+
+    // C2: odds live in data[].odds = { bk, over, under } (bookmaker ids 1..5,
+    // verified by requesting a single bookmaker). One row per offered side.
+    public static List<FmOddsDraft> ParseOdds(string json, string subjectType)
+    {
+        var result = new List<FmOddsDraft>();
+        using var doc = JsonDocument.Parse(json);
+        if (doc.RootElement.ValueKind != JsonValueKind.Object ||
+            !doc.RootElement.TryGetProperty("data", out var data) ||
+            data.ValueKind != JsonValueKind.Array)
+            return result;
+
+        foreach (var item in data.EnumerateArray())
+        {
+            var subject = subjectType == "player"
+                ? GetString(item, "shortName")
+                : GetString(item, "name");
+            if (string.IsNullOrWhiteSpace(subject)) continue;
+
+            if (!item.TryGetProperty("odds", out var oddsNode)) continue;
+            // odds arrives as an array of {bk, over, under} entries (one per
+            // offered bookmaker); tolerate a bare object too.
+            var entries = oddsNode.ValueKind switch
+            {
+                JsonValueKind.Array => oddsNode.EnumerateArray().ToList(),
+                JsonValueKind.Object => new List<JsonElement> { oddsNode },
+                _ => new List<JsonElement>()
+            };
+            if (entries.Count == 0) continue;
+
+            var market = GetString(item, "market") ?? GetString(item, "key");
+            var line = GetDouble(item, "line");
+
+            foreach (var odds in entries)
+            {
+                if (odds.ValueKind != JsonValueKind.Object) continue;
+                var bk = GetDouble(odds, "bk");
+                if (bk is null) continue;
+
+                foreach (var side in new[] { "over", "under" })
+                {
+                    var value = GetDouble(odds, side);
+                    if (value is null or <= 0) continue;
+                    result.Add(new FmOddsDraft(
+                        subjectType, subject!, market, line,
+                        bk.Value.ToString(CultureInfo.InvariantCulture),
+                        value.Value, side));
+                }
+            }
         }
 
         return result;

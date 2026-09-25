@@ -206,7 +206,8 @@ public sealed class FmOutcomeResolver : IFmOutcomeResolver
             else
             {
                 historyReasons.TryGetValue(s.Id, out var historyReason);
-                draft = ComputeOutcome(fixture, s, stats, historyReason, warnings);
+                draft = ComputeOutcome(
+                    fixture, s, stats, historyReason.Code, historyReason.Detail, warnings);
             }
 
             drafts.Add(draft);
@@ -324,23 +325,25 @@ public sealed class FmOutcomeResolver : IFmOutcomeResolver
     private static FmOutcomeDraft ComputeOutcome(
         GlobalFixture fixture, FmSignalRow s,
         Dictionary<string, (double Home, double Away)>? stats,
-        string? historyReason,
+        string? historyReason, string? historyDetail,
         List<string> warnings)
     {
         if (s.SubjectType == "player")
         {
             var reason = string.IsNullOrEmpty(historyReason) ? ReasonOther : historyReason;
-            var detail = reason switch
-            {
-                ReasonNoDateMatch =>
-                    "history[] has no element within kickoff±1 day (FM ingestion lag); " +
-                    "stats panel is team-level.",
-                ReasonNoHistoryElement =>
-                    "signal has no history[] elements to match against; stats panel is team-level.",
-                _ =>
-                    "D0 order 1 unresolved (fetch/parse/opponent mismatch); " +
-                    "stats panel is team-level."
-            };
+            var detail = !string.IsNullOrEmpty(historyDetail)
+                ? $"{historyDetail} (stats panel is team-level, no player fallback)"
+                : reason switch
+                {
+                    ReasonNoDateMatch =>
+                        "history[] has no element within kickoff±1 day (FM ingestion lag); " +
+                        "stats panel is team-level.",
+                    ReasonNoHistoryElement =>
+                        "signal has no history[] elements to match against; stats panel is team-level.",
+                    _ =>
+                        "D0 order 1 unresolved (fetch/parse/opponent mismatch); " +
+                        "stats panel is team-level."
+                };
             return new FmOutcomeDraft(
                 s.Id, fixture.Id, null, null, StatusUnavailable, "none", detail, reason);
         }
@@ -414,17 +417,18 @@ public sealed class FmOutcomeResolver : IFmOutcomeResolver
 
     private async Task<(
         Dictionary<long, FmOutcomeDraft> Drafts,
-        Dictionary<long, string> Reasons)> TryHistoryAsync(
+        Dictionary<long, (string Code, string Detail)> Reasons)> TryHistoryAsync(
         GlobalFixture fixture, IReadOnlyList<FmSignalRow> signals,
         List<string> warnings, CancellationToken ct)
     {
         var drafts = new Dictionary<long, FmOutcomeDraft>();
-        var reasons = new Dictionary<long, string>();
+        var reasons = new Dictionary<long, (string, string)>();
 
         if (fixture.Apid is null || fixture.Timestamp is null || fixture.Timestamp.Length < 10 ||
             !DateOnly.TryParse(fixture.Timestamp[..10], out var kickoff))
         {
-            foreach (var s in signals) reasons[s.Id] = ReasonOther;
+            foreach (var s in signals)
+                reasons[s.Id] = (ReasonOther, "fixture has no parseable kickoff timestamp.");
             return (drafts, reasons);
         }
 
@@ -443,7 +447,8 @@ public sealed class FmOutcomeResolver : IFmOutcomeResolver
             catch (Exception ex)
             {
                 warnings.Add($"{fixture.Id}: D0 order 1 ({subjectType}) fetch failed: {ex.Message}");
-                foreach (var s in subset) reasons[s.Id] = ReasonOther;
+                foreach (var s in subset)
+                    reasons[s.Id] = (ReasonOther, $"trends fetch failed: {ex.Message}");
                 continue;
             }
 
@@ -454,7 +459,8 @@ public sealed class FmOutcomeResolver : IFmOutcomeResolver
                 if (!doc.RootElement.TryGetProperty("data", out var data) ||
                     data.ValueKind != JsonValueKind.Array)
                 {
-                    foreach (var s in subset) reasons[s.Id] = ReasonOther;
+                    foreach (var s in subset)
+                        reasons[s.Id] = (ReasonOther, "trends payload has no data array.");
                     continue;
                 }
                 rows = data.EnumerateArray().Select(e => e.Clone()).ToList();
@@ -462,7 +468,8 @@ public sealed class FmOutcomeResolver : IFmOutcomeResolver
             catch (JsonException ex)
             {
                 warnings.Add($"{fixture.Id}: D0 order 1 ({subjectType}) unparseable: {ex.Message}");
-                foreach (var s in subset) reasons[s.Id] = ReasonOther;
+                foreach (var s in subset)
+                    reasons[s.Id] = (ReasonOther, $"trends payload unparseable: {ex.Message}");
                 continue;
             }
 
@@ -474,63 +481,107 @@ public sealed class FmOutcomeResolver : IFmOutcomeResolver
                         StringComparison.OrdinalIgnoreCase));
                 if (row.ValueKind != JsonValueKind.Object)
                 {
-                    reasons[s.Id] = ReasonOther;
+                    reasons[s.Id] = (ReasonOther,
+                        $"market row '{s.Market}' not present in trends payload.");
                     continue;
                 }
                 if (!row.TryGetProperty("history", out var hist) ||
-                    hist.ValueKind != JsonValueKind.Array || hist.GetArrayLength() == 0)
+                    hist.ValueKind != JsonValueKind.Array)
                 {
-                    reasons[s.Id] = ReasonNoHistoryElement;
+                    reasons[s.Id] = (ReasonNoHistoryElement, "history[] missing for market row.");
                     continue;
                 }
 
-                var inWindow = false;
-                FmOutcomeDraft? matched = null;
-                foreach (var el in hist.EnumerateArray())
-                {
-                    var t = GetString(el, "t");
-                    if (t == null || t.Length < 10 || !DateOnly.TryParse(t[..10], out var elDate))
-                        continue;
-                    if (Math.Abs(elDate.DayNumber - kickoff.DayNumber) > 1) continue;
-                    inWindow = true;
-
-                    var opp = el.TryGetProperty("opp", out var oppEl) && oppEl.ValueKind == JsonValueKind.Object
-                        ? GetString(oppEl, "name") : null;
-                    if (opp != fixture.Home && opp != fixture.Away) continue;
-
-                    if (subjectType == "player")
-                    {
-                        var minutes = GetInt(el, "m");
-                        if (minutes is 0)
-                        {
-                            matched = new FmOutcomeDraft(
-                                s.Id, fixture.Id, 0, null, StatusNotPlayed, "history",
-                                "player did not play (minutes=0 in history element)");
-                        }
-                        else
-                        {
-                            var value = GetDouble(el, "v");
-                            matched = HitFromValue(fixture.Id, s, value, "history");
-                        }
-                    }
-                    else
-                    {
-                        var value = GetDouble(el, "vt");
-                        matched = HitFromValue(fixture.Id, s, value, "history");
-                    }
-                    break;
-                }
-
-                if (matched != null)
-                    drafts[s.Id] = matched;
-                else if (!inWindow)
-                    reasons[s.Id] = ReasonNoDateMatch;
-                else
-                    reasons[s.Id] = ReasonOther;
+                var elements = hist.EnumerateArray().ToList();
+                var (draft, reason) = MatchHistory(
+                    fixture.Id, fixture.Home, fixture.Away, s, kickoff, elements);
+                if (draft != null)
+                    drafts[s.Id] = draft;
+                else if (reason != null)
+                    reasons[s.Id] = reason.Value;
             }
         }
 
         return (drafts, reasons);
+    }
+
+    // A2: pure history classification — public static for unit tests.
+    public static (FmOutcomeDraft? Draft, (string Code, string Detail)? Reason) MatchHistory(
+        string fixtureId, string home, string away, FmSignalRow s, DateOnly kickoff,
+        List<JsonElement> elements)
+    {
+        if (elements.Count == 0)
+            return (null, (ReasonNoHistoryElement, "history[] empty for market row."));
+
+        FmOutcomeDraft? matched = null;
+        var hasOppElement = false;
+        var nearestDeltaDays = double.MaxValue;
+        var nearestDate = "";
+        var sameOppNearestDeltaDays = double.MaxValue;
+        var sameOppNearestDate = "";
+        var inWindowOpp = false;
+
+        foreach (var el in elements)
+        {
+            var t = GetString(el, "t");
+            if (t == null || t.Length < 10 || !DateOnly.TryParse(t[..10], out var elDate))
+                continue;
+            var delta = Math.Abs(elDate.DayNumber - kickoff.DayNumber);
+            if (delta < nearestDeltaDays)
+            {
+                nearestDeltaDays = delta;
+                nearestDate = elDate.ToString("yyyy-MM-dd");
+            }
+
+            var opp = el.TryGetProperty("opp", out var oppEl) && oppEl.ValueKind == JsonValueKind.Object
+                ? GetString(oppEl, "name") : null;
+            var isFixtureOpp = opp == home || opp == away;
+            if (isFixtureOpp && delta < sameOppNearestDeltaDays)
+            {
+                hasOppElement = true;
+                sameOppNearestDeltaDays = delta;
+                sameOppNearestDate = elDate.ToString("yyyy-MM-dd");
+            }
+            if (delta > 1 || !isFixtureOpp) continue;
+            inWindowOpp = true;
+
+            if (s.SubjectType == "player")
+            {
+                var minutes = GetInt(el, "m");
+                if (minutes is 0)
+                {
+                    matched = new FmOutcomeDraft(
+                        s.Id, fixtureId, 0, null, StatusNotPlayed, "history",
+                        "player did not play (minutes=0 in history element)");
+                }
+                else
+                {
+                    var value = GetDouble(el, "v");
+                    matched = HitFromValue(fixtureId, s, value, "history");
+                }
+            }
+            else
+            {
+                var value = GetDouble(el, "vt");
+                matched = HitFromValue(fixtureId, s, value, "history");
+            }
+            break;
+        }
+
+        if (matched != null)
+            return (matched, null);
+        if (hasOppElement)
+            return (null, (ReasonNoDateMatch,
+                $"same-opponent element exists but none within kickoff±1d " +
+                $"(nearest same-opponent t={sameOppNearestDate}, " +
+                $"Δ={sameOppNearestDeltaDays:0}d; kickoff={kickoff:yyyy-MM-dd})."));
+        if (inWindowOpp)
+            return (null, (ReasonOther,
+                "in-window fixture element matched but value could not be extracted."));
+        return (null, (ReasonNoHistoryElement,
+            $"no history element for this fixture: 0/{elements.Count} elements " +
+            $"with opponents [{home} / {away}] " +
+            $"(nearest t={nearestDate}, Δ={nearestDeltaDays:0}d from kickoff)."));
     }
 
     private static FmOutcomeDraft HitFromValue(

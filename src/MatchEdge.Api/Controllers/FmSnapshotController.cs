@@ -78,6 +78,41 @@ public class FmSnapshotController : ControllerBase
         return Ok(report);
     }
 
+    [HttpPost("fixtures/{fixtureId}/manual-odds")]
+    public async Task<IActionResult> ManualOdds(
+        string fixtureId, [FromBody] FmManualOddsRequest request, CancellationToken ct)
+    {
+        if (string.IsNullOrWhiteSpace(request.Market))
+            return BadRequest(new { error = "market is required." });
+        if (request.OddsValue is null || double.IsNaN(request.OddsValue.Value) ||
+            double.IsInfinity(request.OddsValue.Value) ||
+            request.OddsValue.Value <= 0 || request.OddsValue.Value > 10000)
+            return BadRequest(new { error = "odds_value must be a number in (0, 10000]." });
+        if (request.Line is not null &&
+            (double.IsNaN(request.Line.Value) || double.IsInfinity(request.Line.Value)))
+            return BadRequest(new { error = "line must be a finite number." });
+
+        var bookmaker = string.IsNullOrWhiteSpace(request.Bookmaker)
+            ? "Betano" : request.Bookmaker.Trim();
+        var id = await _store.InsertManualOddsAsync(
+            fixtureId, bookmaker, request.Market.Trim(),
+            request.Line, request.OddsValue!.Value, DateTime.UtcNow, ct);
+
+        _logger.LogInformation(
+            "Manual odds {Id} fixture {FixtureId} {Bookmaker} {Market} {Line} {Odds}",
+            id, fixtureId, bookmaker, request.Market, request.Line, request.OddsValue);
+        return Ok(new
+        {
+            id,
+            fixtureId,
+            bookmaker,
+            market = request.Market,
+            line = request.Line,
+            oddsValue = request.OddsValue,
+            source = "manual"
+        });
+    }
+
     [HttpPost("outcomes/resolve")]
     public async Task<IActionResult> ResolveOutcomes(
         [FromBody] FmResolveRequest? request, CancellationToken ct)
@@ -212,6 +247,9 @@ public class FmSnapshotController : ControllerBase
         if (!TryParseDate(request.Date, out var date))
             return BadRequest(new { error = "date must be yyyy-MM-dd." });
 
+        // B4: dual-scope capture = 3 navigations per fixture (overview +
+        // player/team trends); the location=match scope is a direct API fetch
+        // with 0 extra navigations.
         const int maxFixturesPerRun = FmNavigator.MaxNavigationsPerRun / 3;
         var topN = Math.Clamp(request.TopN ?? 5, 1, maxFixturesPerRun);
 
@@ -339,4 +377,14 @@ public sealed class FmRunRequest
     public string? League { get; set; }
     public string? Date { get; set; }
     public int? TopN { get; set; }
+}
+
+public sealed class FmManualOddsRequest
+{
+    public string? Bookmaker { get; set; }
+    public string? Market { get; set; }
+    public double? Line { get; set; }
+
+    [System.Text.Json.Serialization.JsonPropertyName("odds_value")]
+    public double? OddsValue { get; set; }
 }

@@ -1,4 +1,5 @@
-﻿using MatchEdge.Infrastructure.Clients;
+﻿using System.Text.Json;
+using MatchEdge.Infrastructure.Clients;
 using MatchEdge.Infrastructure.Services;
 using Xunit;
 
@@ -557,5 +558,212 @@ public class FmDeterministicTests
         Assert.False(teamPair.OverlapFlag, "opposing teams' match dates are disjoint");
         Assert.Equal(2, oppPairs.Count);
         Assert.All(oppPairs, o => Assert.True(o.OverlapFlag));
+    }
+
+    private static List<JsonElement> Elements(string jsonArray)
+    {
+        using var doc = JsonDocument.Parse(jsonArray);
+        return doc.RootElement.EnumerateArray().Select(e => e.Clone()).ToList();
+    }
+
+    private static readonly FmSignalRow RonaldoSignal =
+        new(53, "player", "C. Ronaldo", "shots", 1.5, "over");
+
+    private static readonly DateOnly Kickoff = new(2026, 9, 24);
+
+    [Fact]
+    public void MatchHistory_NoFixtureElement_NoHistoryElement_WithNearestDelta()
+    {
+        var elements = Elements("""
+        [
+          { "t": "2026-07-06T16:00:00.000Z", "v": 3, "m": 90, "opp": { "name": "Croatia" } },
+          { "t": "2025-10-11T16:00:00.000Z", "v": 1, "m": 90, "opp": { "name": "Scotland" } }
+        ]
+        """);
+
+        var (draft, reason) = FmOutcomeResolver.MatchHistory(
+            "33441811", "Portugal", "Wales", RonaldoSignal, Kickoff, elements);
+
+        Assert.Null(draft);
+        Assert.Equal(FmOutcomeResolver.ReasonNoHistoryElement, reason!.Value.Code);
+        Assert.Contains("0/2 elements", reason.Value.Detail);
+        Assert.Contains("Δ=80d", reason.Value.Detail);
+        Assert.Contains("Wales", reason.Value.Detail);
+    }
+
+    [Fact]
+    public void MatchHistory_SameOpponentFarDate_NoDateMatch()
+    {
+        var elements = Elements("""
+        [
+          { "t": "2026-06-06T16:00:00.000Z", "v": 2, "m": 90, "opp": { "name": "Wales" } },
+          { "t": "2026-03-26T16:00:00.000Z", "v": 4, "m": 90, "opp": { "name": "Denmark" } }
+        ]
+        """);
+
+        var (draft, reason) = FmOutcomeResolver.MatchHistory(
+            "33441811", "Portugal", "Wales", RonaldoSignal, Kickoff, elements);
+
+        Assert.Null(draft);
+        Assert.Equal(FmOutcomeResolver.ReasonNoDateMatch, reason!.Value.Code);
+        Assert.Contains("nearest same-opponent t=2026-06-06", reason.Value.Detail);
+        Assert.Contains("Δ=110d", reason.Value.Detail);
+    }
+
+    [Fact]
+    public void MatchHistory_InWindowOpponent_ResolvesHit()
+    {
+        var elements = Elements("""
+        [
+          { "t": "2026-09-24T18:45:00.000Z", "v": 3, "m": 90, "opp": { "name": "Wales" } }
+        ]
+        """);
+
+        var (draft, reason) = FmOutcomeResolver.MatchHistory(
+            "33441811", "Portugal", "Wales", RonaldoSignal, Kickoff, elements);
+
+        Assert.Null(reason);
+        Assert.NotNull(draft);
+        Assert.Equal(FmOutcomeResolver.StatusResolved, draft!.Status);
+        Assert.Equal(3d, draft.ActualValue);
+        Assert.Equal(1, draft.Hit);
+        Assert.Equal("history", draft.Source);
+    }
+
+    [Fact]
+    public void MatchHistory_ZeroMinutes_NotPlayed()
+    {
+        var elements = Elements("""
+        [
+          { "t": "2026-09-24T18:45:00.000Z", "v": 0, "m": 0, "opp": { "name": "Wales" } }
+        ]
+        """);
+
+        var (draft, reason) = FmOutcomeResolver.MatchHistory(
+            "33441811", "Portugal", "Wales", RonaldoSignal, Kickoff, elements);
+
+        Assert.Null(reason);
+        Assert.Equal(FmOutcomeResolver.StatusNotPlayed, draft!.Status);
+    }
+
+    [Fact]
+    public void MatchHistory_EmptyElements_NoHistoryElement()
+    {
+        var (draft, reason) = FmOutcomeResolver.MatchHistory(
+            "33441811", "Portugal", "Wales", RonaldoSignal, Kickoff,
+            new List<JsonElement>());
+
+        Assert.Null(draft);
+        Assert.Equal(FmOutcomeResolver.ReasonNoHistoryElement, reason!.Value.Code);
+        Assert.Contains("history[] empty", reason.Value.Detail);
+    }
+
+    [Fact]
+    public void ParseOdds_ExtractsSidesBookmakerAndLine()
+    {
+        const string json = """
+        {
+          "data": [
+            { "shortName": "C. Ronaldo", "market": "shots", "line": "1.5",
+              "odds": [ { "bk": 3, "over": 1.02, "under": null } ] },
+            { "shortName": "B. Fernandes", "market": "fouls_drawn", "line": "0.5",
+              "odds": [
+                { "bk": 2, "over": 1.25, "under": 1.6 },
+                { "bk": 4, "over": 1.3, "under": 1.55 }
+              ] },
+            { "shortName": "X", "market": "tackles", "line": "1.5", "odds": [] },
+            { "shortName": "Y", "market": "cards", "line": "2.5",
+              "odds": { "bk": 5, "over": 2.0, "under": null } }
+          ],
+          "pagination": { "count": 4 }
+        }
+        """;
+
+        var odds = FmTrendsJsonParser.ParseOdds(json, "player");
+
+        Assert.Equal(6, odds.Count);
+        Assert.All(odds, o => Assert.Equal("player", o.SubjectType));
+
+        var ronaldoOver = odds.Single(o => o.SubjectName == "C. Ronaldo");
+        Assert.Equal("shots", ronaldoOver.Market);
+        Assert.Equal(1.5, ronaldoOver.Line);
+        Assert.Equal("3", ronaldoOver.Bookmaker);
+        Assert.Equal(1.02, ronaldoOver.OddsValue);
+        Assert.Equal("over", ronaldoOver.Side);
+
+        var fernandes = odds.Where(o => o.SubjectName == "B. Fernandes").ToList();
+        Assert.Equal(4, fernandes.Count);
+        Assert.Contains(fernandes, o => o.Bookmaker == "2" && o.Side == "under" && o.OddsValue == 1.6);
+        Assert.Contains(fernandes, o => o.Bookmaker == "4" && o.Side == "over" && o.OddsValue == 1.3);
+
+        Assert.DoesNotContain(odds, o => o.SubjectName == "X");
+        Assert.Single(odds, o => o.SubjectName == "Y" && o.Bookmaker == "5");
+    }
+
+    [Fact]
+    public void ParseOdds_TeamRows_UsesTeamName()
+    {
+        const string json = """
+        {
+          "data": [
+            { "name": "Portugal", "market": "total_corners", "line": "9.5",
+              "odds": [ { "bk": "1", "over": "2.1", "under": "1.72" } ] }
+          ]
+        }
+        """;
+
+        var odds = FmTrendsJsonParser.ParseOdds(json, "team");
+
+        Assert.Equal(2, odds.Count);
+        Assert.All(odds, o =>
+        {
+            Assert.Equal("Portugal", o.SubjectName);
+            Assert.Equal("1", o.Bookmaker);
+        });
+        Assert.Equal(2.1, odds.Single(o => o.Side == "over").OddsValue);
+        Assert.Equal(1.72, odds.Single(o => o.Side == "under").OddsValue);
+    }
+
+    [Fact]
+    public async Task OddsStore_CaptureDedupes_PerSnapshot_ManualInsertPersists()
+    {
+        var dbPath = Path.Combine(Path.GetTempPath(), $"fmtest_{Guid.NewGuid():N}.db");
+        try
+        {
+            var store = new FmSnapshotStore($"Data Source={dbPath}");
+            var snap1 = await store.InsertSnapshotAsync(
+                "33441811", "player-trends", "http://x", DateTime.UtcNow, "p", "s", "v", "OK");
+            var snap2 = await store.InsertSnapshotAsync(
+                "33441811", "player-trends", "http://x", DateTime.UtcNow, "p", "s", "v", "OK");
+            var odds = new List<FmOddsDraft>
+            {
+                new("player", "C. Ronaldo", "shots", 1.5, "3", 1.02, "over"),
+                new("player", "C. Ronaldo", "shots", 1.5, "3", 0.80, "under")
+            };
+
+            Assert.Equal(2, await store.InsertOddsAsync("33441811", odds, snap1, DateTime.UtcNow));
+            // same snapshot + same keys → unique index ignores the replay
+            Assert.Equal(0, await store.InsertOddsAsync("33441811", odds, snap1, DateTime.UtcNow));
+            // different snapshot → new capture series rows
+            Assert.Equal(2, await store.InsertOddsAsync("33441811", odds, snap2, DateTime.UtcNow));
+
+            var manualId = await store.InsertManualOddsAsync(
+                "33441811", "Betano", "total_goals", 2.5, 1.90, DateTime.UtcNow);
+            Assert.True(manualId > 0);
+
+            var rows = await store.GetOddsAsync("33441811");
+            Assert.Equal(5, rows.Count);
+            var manual = Assert.Single(rows, r => r.Source == "manual");
+            Assert.Equal("Betano", manual.Bookmaker);
+            Assert.Equal(1.90, manual.OddsValue);
+            Assert.Equal("manual", manual.Side);
+            Assert.All(rows.Where(r => r.Source == "fm"),
+                r => Assert.Equal("fm", r.Source));
+        }
+        finally
+        {
+            Microsoft.Data.Sqlite.SqliteConnection.ClearAllPools();
+            File.Delete(dbPath);
+        }
     }
 }

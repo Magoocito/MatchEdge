@@ -22,17 +22,20 @@ public sealed class FmFixtureSnapshotService : IFmFixtureSnapshotService
 
     private readonly FmNavigator _navigator;
     private readonly FootyMetricsBrowserManager _browserManager;
+    private readonly FootyMetricsBrowserCollector _collector;
     private readonly FmSnapshotStore _store;
     private readonly ILogger<FmFixtureSnapshotService> _logger;
 
     public FmFixtureSnapshotService(
         FmNavigator navigator,
         FootyMetricsBrowserManager browserManager,
+        FootyMetricsBrowserCollector collector,
         FmSnapshotStore store,
         ILogger<FmFixtureSnapshotService> logger)
     {
         _navigator = navigator;
         _browserManager = browserManager;
+        _collector = collector;
         _store = store;
         _logger = logger;
     }
@@ -46,6 +49,7 @@ public sealed class FmFixtureSnapshotService : IFmFixtureSnapshotService
         var tabs = new List<FmTabOutcome>();
         var rawPaths = new List<string>();
         var warnings = new List<string>();
+        var trendUrls = new Dictionary<string, string>();
 
         foreach (var (tab, readyPattern, kind, ext) in Tabs)
         {
@@ -80,6 +84,8 @@ public sealed class FmFixtureSnapshotService : IFmFixtureSnapshotService
                 else
                 {
                     raw = outcome.ResponseBody ?? string.Empty;
+                    if (!string.IsNullOrEmpty(outcome.ResponseUrl))
+                        trendUrls[tab] = outcome.ResponseUrl!;
                     var (statusComputed, count, suspectWarning) =
                         await ComputeTrendsTabAsync(fixture.FixtureId, tab, raw, sourceTs, ct);
                     status = statusComputed;
@@ -113,21 +119,33 @@ public sealed class FmFixtureSnapshotService : IFmFixtureSnapshotService
                             : HtmlParserVersion,
                         status, leakage, ct);
 
-                    if (kind == FmReadySignalKind.ResponsePattern && signalCount > 0)
+                    if (kind == FmReadySignalKind.ResponsePattern)
                     {
-                        var drafts = FmTrendsJsonParser.Parse(raw, TabSubjectType(tab));
-                        var (venueScope, compScope) = ScopesFromUrl(outcome.ResponseUrl);
-                        var insertResult = await _store.InsertSignalsAsync(
-                            snapshotId, fixture.FixtureId, drafts,
-                            venueScope, compScope, sourceTs,
-                            ParamsJsonFromUrl(outcome.ResponseUrl), ct);
-                        if (insertResult.Suspect > 0)
+                        if (signalCount > 0)
                         {
-                            status = "SUSPECT";
-                            warnings.Add(
-                                $"validation: {insertResult.Suspect} signal(s) SUSPECT for {tab}: {insertResult.FirstMotivo}");
+                            var drafts = FmTrendsJsonParser.Parse(raw, TabSubjectType(tab));
+                            var (venueScope, compScope) = ScopesFromUrl(outcome.ResponseUrl);
+                            var insertResult = await _store.InsertSignalsAsync(
+                                snapshotId, fixture.FixtureId, drafts,
+                                venueScope, compScope, sourceTs,
+                                ParamsJsonFromUrl(outcome.ResponseUrl), ct);
+                            if (insertResult.Suspect > 0)
+                            {
+                                status = "SUSPECT";
+                                warnings.Add(
+                                    $"validation: {insertResult.Suspect} signal(s) SUSPECT for {tab}: {insertResult.FirstMotivo}");
+                            }
                         }
-                    }                }
+
+                        // C2: capture FM odds (data[].odds = array of {bk, over, under}).
+                        var oddsDrafts = FmTrendsJsonParser.ParseOdds(
+                            raw, TabSubjectType(tab));
+                        var oddsInserted = await _store.InsertOddsAsync(
+                            fixture.FixtureId, oddsDrafts, snapshotId, sourceTs, ct);
+                        if (oddsInserted > 0)
+                            warnings.Add($"{tab}: {oddsInserted} odds row(s) captured");
+                    }
+                }
                 catch (Exception ex)
                 {
                     warnings.Add($"db insert failed for {tab}: {ex.Message}");
@@ -155,8 +173,129 @@ public sealed class FmFixtureSnapshotService : IFmFixtureSnapshotService
             }
         }
 
+        if (trendUrls.Count > 0)
+            await CaptureMatchScopeAsync(fixture, trendUrls, tabs, rawPaths, warnings, ct);
+
         var partial = tabs.Any(t => t.Status is not ("OK" or "SUSPECT" or "EMPTY"));
         return new FmSnapshotOutcome(fixture.FixtureId, tabs, rawPaths, warnings, partial);
+    }
+
+    // B4: same-venue scope (location=match) captured via direct API fetch —
+    // 0 extra navigations: the SPA drops ?location= on soft navigations
+    // (evidence tmp/fm/p4_b1_location_discovery.json), and the API itself
+    // answers location=match with data:[] for every fixture tested (D5 + B1).
+    private async Task CaptureMatchScopeAsync(
+        FmFixtureRef fixture, IReadOnlyDictionary<string, string> trendUrls,
+        List<FmTabOutcome> tabs, List<string> rawPaths, List<string> warnings,
+        CancellationToken ct)
+    {
+        foreach (var (tab, responseUrl) in trendUrls)
+        {
+            var dbTab = $"{tab}+loc=match";
+            var apiPath = WithLocationMatch(ToPathAndQuery(responseUrl));
+            try
+            {
+                string? raw;
+                var gate = _browserManager.NavigationGate;
+                await gate.WaitAsync(ct);
+                try
+                {
+                    raw = await _collector.FetchJsonAsync(apiPath, ct);
+                }
+                finally
+                {
+                    gate.Release();
+                }
+
+                if (string.IsNullOrEmpty(raw))
+                {
+                    warnings.Add($"{tab} location=match: no response from API fetch");
+                    tabs.Add(new FmTabOutcome(dbTab, "NO_DATA", 0, null, null));
+                    continue;
+                }
+
+                var sourceTs = DateTime.UtcNow;
+                var (status, count, suspectWarning) =
+                    await ComputeTrendsTabAsync(fixture.FixtureId, tab, raw, sourceTs, ct);
+                if (suspectWarning != null) warnings.Add(suspectWarning);
+                warnings.Add(
+                    $"{tab} location=match scope: {count} row(s) " +
+                    $"(direct API fetch, response location={ScopesFromUrl(apiPath).VenueScope})");
+
+                string? rawPath = null;
+                string sha;
+                try
+                {
+                    rawPath = await WriteRawAsync(fixture.FixtureId, dbTab, "json", raw, ct);
+                    rawPaths.Add(rawPath);
+                    sha = Sha256Hex(raw);
+                }
+                catch (Exception ex)
+                {
+                    warnings.Add($"raw write failed for {dbTab}: {ex.Message}");
+                    sha = string.Empty;
+                }
+
+                try
+                {
+                    var leakage = fixture.KickoffUtc.HasValue &&
+                                  sourceTs > fixture.KickoffUtc.Value;
+                    var snapshotId = await _store.InsertSnapshotAsync(
+                        fixture.FixtureId, dbTab, apiPath, sourceTs,
+                        rawPath ?? string.Empty, sha,
+                        FmTrendsJsonParser.ParserVersion, status, leakage, ct);
+
+                    var (venueScope, compScope) = ScopesFromUrl(apiPath);
+                    var paramsJson = ParamsJsonFromUrl(apiPath);
+                    if (count > 0)
+                    {
+                        var drafts = FmTrendsJsonParser.Parse(raw, TabSubjectType(tab));
+                        var insertResult = await _store.InsertSignalsAsync(
+                            snapshotId, fixture.FixtureId, drafts,
+                            venueScope, compScope, sourceTs, paramsJson, ct);
+                        if (insertResult.Suspect > 0)
+                        {
+                            warnings.Add(
+                                $"validation: {insertResult.Suspect} signal(s) SUSPECT for {dbTab}: {insertResult.FirstMotivo}");
+                        }
+                    }
+
+                    var oddsDrafts = FmTrendsJsonParser.ParseOdds(raw, TabSubjectType(tab));
+                    await _store.InsertOddsAsync(
+                        fixture.FixtureId, oddsDrafts, snapshotId, sourceTs, ct);
+                }
+                catch (Exception ex)
+                {
+                    warnings.Add($"db insert failed for {dbTab}: {ex.Message}");
+                    status = "ERROR";
+                }
+
+                tabs.Add(new FmTabOutcome(dbTab, status, count, rawPath, null));
+            }
+            catch (Exception ex)
+            {
+                warnings.Add($"{dbTab} failed: {ex.Message}");
+                tabs.Add(new FmTabOutcome(dbTab, "ERROR", 0, null, ex.Message));
+            }
+        }
+    }
+
+    private static string ToPathAndQuery(string url) =>
+        url.StartsWith("http", StringComparison.OrdinalIgnoreCase)
+            ? new Uri(url).PathAndQuery
+            : url;
+
+    // Replaces (never appends to) any location param the SPA may have left in
+    // the intercepted base URL, so the request carries exactly location=match.
+    private static string WithLocationMatch(string pathAndQuery)
+    {
+        var q = pathAndQuery.IndexOf('?');
+        if (q < 0) return pathAndQuery + "?location=match";
+        var basePath = pathAndQuery[..q];
+        var kept = pathAndQuery[(q + 1)..]
+            .Split('&', StringSplitOptions.RemoveEmptyEntries)
+            .Where(p => !p.StartsWith("location=", StringComparison.Ordinal));
+        return $"{basePath}?{string.Join("&", kept)}&location=match";
     }
 
     private async Task<(string Status, int Count, string? Warning)> ComputeTrendsTabAsync(
