@@ -17,6 +17,7 @@ public class FmSnapshotController : ControllerBase
     private readonly IFmOutcomeResolver _outcomes;
     private readonly FmFixtureCatalog _catalog;
     private readonly FmSnapshotStore _store;
+    private readonly FmOutcomeStore _outcomeStore;
     private readonly FmNavigator _navigator;
     private readonly ILogger<FmSnapshotController> _logger;
 
@@ -26,6 +27,7 @@ public class FmSnapshotController : ControllerBase
         IFmOutcomeResolver outcomes,
         FmFixtureCatalog catalog,
         FmSnapshotStore store,
+        FmOutcomeStore outcomeStore,
         FmNavigator navigator,
         ILogger<FmSnapshotController> logger)
     {
@@ -34,8 +36,46 @@ public class FmSnapshotController : ControllerBase
         _outcomes = outcomes;
         _catalog = catalog;
         _store = store;
+        _outcomeStore = outcomeStore;
         _navigator = navigator;
         _logger = logger;
+    }
+
+    [HttpGet("fixtures/{fixtureId}/confluence")]
+    public async Task<IActionResult> Confluence(string fixtureId, CancellationToken ct)
+    {
+        var signals = await _store.GetLatestSignalDetailsAsync(fixtureId, ct);
+        if (signals.Count == 0)
+            return NotFound(new { error = $"fixture {fixtureId} has no OK/SUSPECT signals." });
+
+        var outcomes = await _outcomeStore.GetByFixtureAsync(fixtureId, ct);
+        var leakage = await _store.HasLeakageAsync(fixtureId, ct);
+        var url = await _store.GetLastSnapshotUrlAsync(fixtureId, ct);
+
+        var (venue, compFromUrl) = FmFixtureSnapshotService.ScopesFromUrl(url);
+        var paramsJson = signals.Select(s => s.ParamsJson)
+            .FirstOrDefault(p => !string.IsNullOrEmpty(p));
+        if (!string.IsNullOrEmpty(paramsJson))
+        {
+            try
+            {
+                using var doc = System.Text.Json.JsonDocument.Parse(paramsJson);
+                if (doc.RootElement.TryGetProperty("location", out var loc) &&
+                    loc.ValueKind == System.Text.Json.JsonValueKind.String)
+                    venue = loc.GetString() ?? venue;
+            }
+            catch (System.Text.Json.JsonException)
+            {
+                // keep URL-derived venue
+            }
+        }
+        var competitionScope = signals
+            .Select(s => s.CompetitionScope)
+            .FirstOrDefault(c => !string.IsNullOrEmpty(c)) ?? compFromUrl;
+
+        var report = FmConfluenceBuilder.Build(
+            fixtureId, signals, outcomes, leakage, venue, competitionScope);
+        return Ok(report);
     }
 
     [HttpPost("outcomes/resolve")]

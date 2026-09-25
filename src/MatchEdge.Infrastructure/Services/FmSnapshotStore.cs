@@ -12,6 +12,23 @@ public sealed record FmSignalRow(
     double? Line,
     string? Direction);
 
+public sealed record FmSignalDetailRow(
+    long Id,
+    string SubjectType,
+    string SubjectName,
+    string? Market,
+    double? Line,
+    string? Direction,
+    int? Hits,
+    int? SampleSize,
+    double? ObservedHitRate,
+    double? OppHits,
+    double? OppSampleSize,
+    string? RecentValuesJson,
+    string? ParamsJson,
+    string? VenueScope,
+    string? CompetitionScope);
+
 public sealed class FmSnapshotStore
 {
     private readonly string _connectionString;
@@ -243,6 +260,65 @@ ORDER BY s.id;";
                 reader.IsDBNull(5) ? null : reader.GetString(5)));
         }
         return rows;
+    }
+
+    public async Task<IReadOnlyList<FmSignalDetailRow>> GetLatestSignalDetailsAsync(
+        string fixtureId, CancellationToken ct = default)
+    {
+        try { await EnsureOnceAsync(ct); }
+        catch { ResetEnsureFailure(); throw; }
+        await using var conn = Open();
+        await conn.OpenAsync(ct);
+        await using var cmd = conn.CreateCommand();
+        cmd.CommandText = @"
+SELECT s.id, s.subject_type, s.subject_name, s.market, s.line, s.direction,
+       s.hits, s.sample_size, s.observed_hit_rate, s.opp_hits, s.opp_sample_size,
+       s.recent_values_json, s.params_json, s.venue_scope, s.competition_scope
+FROM fm_signal s
+JOIN (
+    SELECT tab, MAX(id) AS mid FROM fm_snapshot
+    WHERE fixture_id = $fixtureId AND status IN ('OK', 'SUSPECT')
+    GROUP BY tab
+) l ON s.snapshot_id = l.mid
+WHERE s.fixture_id = $fixtureId
+ORDER BY s.id;";
+        cmd.Parameters.AddWithValue("$fixtureId", fixtureId);
+        var rows = new List<FmSignalDetailRow>();
+        await using var reader = await cmd.ExecuteReaderAsync(ct);
+        while (await reader.ReadAsync(ct))
+        {
+            rows.Add(new FmSignalDetailRow(
+                reader.GetInt64(0),
+                reader.GetString(1),
+                reader.GetString(2),
+                reader.IsDBNull(3) ? null : reader.GetString(3),
+                reader.IsDBNull(4) ? null : reader.GetDouble(4),
+                reader.IsDBNull(5) ? null : reader.GetString(5),
+                reader.IsDBNull(6) ? null : reader.GetInt32(6),
+                reader.IsDBNull(7) ? null : reader.GetInt32(7),
+                reader.IsDBNull(8) ? null : reader.GetDouble(8),
+                reader.IsDBNull(9) ? null : reader.GetDouble(9),
+                reader.IsDBNull(10) ? null : reader.GetDouble(10),
+                reader.IsDBNull(11) ? null : reader.GetString(11),
+                reader.IsDBNull(12) ? null : reader.GetString(12),
+                reader.IsDBNull(13) ? null : reader.GetString(13),
+                reader.IsDBNull(14) ? null : reader.GetString(14)));
+        }
+        return rows;
+    }
+
+    public async Task<bool> HasLeakageAsync(string fixtureId, CancellationToken ct = default)
+    {
+        try { await EnsureOnceAsync(ct); }
+        catch { ResetEnsureFailure(); throw; }
+        await using var conn = Open();
+        await conn.OpenAsync(ct);
+        await using var cmd = conn.CreateCommand();
+        cmd.CommandText = @"
+SELECT MAX(leakage_flag) FROM fm_snapshot WHERE fixture_id = $fixtureId;";
+        cmd.Parameters.AddWithValue("$fixtureId", fixtureId);
+        var result = await cmd.ExecuteScalarAsync(ct);
+        return result is long l && l != 0 || result is int i && i != 0;
     }
 
     public async Task<string?> GetLastSnapshotUrlAsync(string fixtureId, CancellationToken ct = default)

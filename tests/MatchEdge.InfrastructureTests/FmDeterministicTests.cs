@@ -453,4 +453,109 @@ public class FmDeterministicTests
         Assert.Contains("total_shots_on_target", conflicts2);
         Assert.Contains("total_shots", conflicts2);
     }
+
+    private static string Hist(params (string Date, double V, bool Met)[] items)
+    {
+        var els = string.Join(",", items.Select(i =>
+            $"{{\"t\":\"{i.Date}T19:00:00.000Z\"," +
+            $"\"v\":{i.V.ToString(System.Globalization.CultureInfo.InvariantCulture)}," +
+            $"\"met\":{(i.Met ? "true" : "false")}}}"));
+        return "[" + els + "]";
+    }
+
+    [Fact]
+    public void WindowCalculator_ComputesFixedWindows_FromRawHistoryIgnoringBestCount()
+    {
+        var history = Hist(
+            ("2026-09-20", 10, true), ("2026-09-13", 9, true), ("2026-09-06", 8, true),
+            ("2026-08-30", 7, true), ("2026-08-23", 6, true), ("2026-08-16", 5, false),
+            ("2026-08-09", 4, false), ("2026-08-02", 3, false), ("2026-07-26", 2, false),
+            ("2026-07-19", 1, false));
+
+        var windows = FmWindowCalculator.Compute("team", history, 5.5, "over");
+        Assert.Equal(3, windows.Count);
+
+        var w5 = windows.Single(w => w.Window == "5");
+        Assert.Equal(FmWindowCalculator.StatusOk, w5.Status);
+        Assert.Equal(5, w5.N);
+        Assert.Equal(5, w5.Hits);
+        Assert.Equal(1.0, w5.ObservedRate);
+        Assert.Equal(8.0, w5.Mean);
+        Assert.Equal(8.0, w5.Median);
+        Assert.Equal(6.0, w5.Min);
+        Assert.Equal(10.0, w5.Max);
+
+        var w10 = windows.Single(w => w.Window == "10");
+        Assert.Equal(10, w10.N);
+        Assert.Equal(5, w10.Hits);
+        Assert.Equal(0.5, w10.ObservedRate);
+
+        var wall = windows.Single(w => w.Window == "all");
+        Assert.Equal(10, wall.N);
+        Assert.Equal(5, wall.Hits);
+    }
+
+    [Fact]
+    public void WindowCalculator_InsufficientSample_TeamVsPlayerThresholds()
+    {
+        var history = Hist(
+            ("2026-09-20", 2, true), ("2026-09-13", 1, true), ("2026-09-06", 0, false));
+
+        var team = FmWindowCalculator.Compute("team", history, 1.5, "over");
+        Assert.All(team, w =>
+            Assert.Equal(FmWindowCalculator.StatusInsufficient, w.Status));
+        Assert.All(team, w => Assert.Null(w.Hits));
+
+        var player = FmWindowCalculator.Compute("player", history, 1.5, "over");
+        Assert.All(player, w =>
+            Assert.Equal(FmWindowCalculator.StatusOk, w.Status));
+        Assert.Equal(2, player.Single(w => w.Window == "5").Hits);
+    }
+
+    [Fact]
+    public void Confluence_PlayerTeamSharedDates_OverlapFlagged_OpposingTeamNot()
+    {
+        var denmarkDates = Hist(
+            ("2026-09-24", 4, true), ("2026-09-20", 6, true), ("2026-09-13", 5, true),
+            ("2026-09-06", 7, true), ("2026-08-30", 3, false), ("2026-08-23", 8, true),
+            ("2026-08-16", 5, false), ("2026-08-09", 9, true), ("2026-08-02", 6, true),
+            ("2026-07-26", 4, false));
+        var norwayDates = Hist(
+            ("2026-02-10", 5, false), ("2026-02-05", 7, true), ("2026-01-30", 2, false),
+            ("2026-01-24", 6, true), ("2026-01-18", 4, false), ("2026-01-12", 8, true),
+            ("2026-01-06", 3, false), ("2025-12-30", 9, true), ("2025-12-24", 5, false),
+            ("2025-12-18", 6, true));
+
+        var signals = new List<FmSignalDetailRow>
+        {
+            new(1, "team", "Denmark", "away_shots", 8.5, "over",
+                7, 10, 0.7, 4.0, 10.0, denmarkDates, null, "all", "all"),
+            new(2, "team", "Norway", "away_shots", 8.5, "over",
+                6, 10, 0.6, 5.0, 10.0, norwayDates, null, "all", "all"),
+            new(3, "player", "E. Haaland", "shots", 8.5, "over",
+                8, 10, 0.8, null, null, denmarkDates, null, "all", "all")
+        };
+
+        var report = FmConfluenceBuilder.Build(
+            "fx-1", signals, new Dictionary<long, FmOutcomeRecord>(),
+            leakageFlag: false, venue: "all", competitionScope: "all");
+
+        var group = report.Groups.Single(g => g.Market == "away_shots");
+        Assert.Equal(5, group.Pieces.Count); // 2 team + 2 opponent + 1 player
+        Assert.Contains(group.Pieces, p => p.Kind == "team_attack" && p.Windows != null);
+        Assert.Contains(group.Pieces, p => p.Kind == "opponent" && p.Windows == null);
+
+        var playerOverlap = group.Overlaps.Single(o =>
+            (o.PieceA.Contains("Denmark") && o.PieceB.Contains("E. Haaland")) ||
+            (o.PieceA.Contains("E. Haaland") && o.PieceB.Contains("Denmark")));
+        var teamPair = group.Overlaps.Single(o =>
+            o.PieceA.Contains("Denmark") && o.PieceB.Contains("Norway"));
+        var oppPairs = group.Overlaps.Where(o => o.Basis == "same_source_row").ToList();
+
+        Assert.True(playerOverlap.OverlapFlag, "player window shares its team's match dates");
+        Assert.Equal(1.0, playerOverlap.Ratio);
+        Assert.False(teamPair.OverlapFlag, "opposing teams' match dates are disjoint");
+        Assert.Equal(2, oppPairs.Count);
+        Assert.All(oppPairs, o => Assert.True(o.OverlapFlag));
+    }
 }
