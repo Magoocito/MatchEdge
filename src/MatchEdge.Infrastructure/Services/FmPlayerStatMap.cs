@@ -23,7 +23,14 @@ public static class FmPlayerStatMap
             ["foul_involvements"] = "fouls-involvements",
             ["fouls_drawn"] = "fouls-won",
             ["fouls_committed"] = "fouls-committed",
-            ["goalkeeper_saves"] = "saves"
+            ["goalkeeper_saves"] = "saves",
+            // P9 B: slugs verificados en vivo contra position-stats (200) y el
+            // dropdown de 45 opciones de la UI. chances_created NO tiene slug
+            // (chances-created -> 400 y no aparece en el dropdown): su campo
+            // llega gratis en el pivot de ataque (group=attack), por lo que se
+            // deja en pass-through en vez de inventar una equivalencia.
+            ["shots_created"] = "shots-created",
+            ["penalties"] = "penalties"
         };
 
     // market -> stats_json field candidates, in preference order. The extra
