@@ -1124,7 +1124,7 @@ VALUES ('33441811', '4', NULL, 'total_corners', 1.9, 'over', 'fm', '2026-09-25 0
             $"{{\"t\":\"2026-{(9 - i / 4):00}-{(20 - i * 2):00}T18:00:00.000Z\"," +
             $"\"vt\":{value},\"met\":{(i < hits ? "true" : "false")}}}")) + "]";
 
-    private static async Task SeedReportDataAsync(
+    private static async Task<long> SeedReportDataAsync(
         FmSnapshotStore store, bool withTeamRows, bool withOdds)
     {
         var snapshotId = await store.InsertSnapshotAsync(
@@ -1157,7 +1157,7 @@ VALUES ('33441811', '4', NULL, 'total_corners', 1.9, 'over', 'fm', '2026-09-25 0
                 ReportFixtureId, "Betano", "away_corners", 3.5, 1.85, DateTime.UtcNow);
         }
 
-        if (!withTeamRows) return;
+        if (!withTeamRows) return snapshotId;
 
         var kickoff = new DateTime(2026, 9, 24, 18, 45, 0, DateTimeKind.Utc);
         var ptHome = new List<FmTeamMatchDraft>
@@ -1216,6 +1216,7 @@ VALUES ('33441811', '4', NULL, 'total_corners', 1.9, 'over', 'fm', '2026-09-25 0
             18721, "home", 15, "corners", waHome, players, "teams/table", DateTime.UtcNow);
         await store.UpsertTeamMatchesAsync(
             18721, "away", 15, "corners", waAway, players, "teams/table", DateTime.UtcNow);
+        return snapshotId;
     }
 
     private static async Task<FmReport> BuildReportAsync(
@@ -1474,6 +1475,65 @@ VALUES ('33441811', '4', NULL, 'total_corners', 1.9, 'over', 'fm', '2026-09-25 0
             var entry = Assert.Single(report.Markets, m => m.Market == "home_saves");
             Assert.True(entry.DataQuality.SourceConflict,
                 "outcome written against the older snapshot id must still be visible");
+        }
+        finally
+        {
+            Microsoft.Data.Sqlite.SqliteConnection.ClearAllPools();
+            File.Delete(dbPath);
+        }
+    }
+
+    // K4 regression: total_* signals arrive once per subject (the same
+    // fixture-level market seen from the home and the away view), which used
+    // to render two identical report entries, each one carrying a full copy
+    // of the odds table. One entry per fixture+market+line, subject is the
+    // fixture itself, and every bookmaker/side appears exactly once.
+    [Fact]
+    public async Task Report_DuplicateTotalSignals_ProduceSingleMarketEntryAndOdds()
+    {
+        var dbPath = Path.Combine(Path.GetTempPath(), $"fmtest_{Guid.NewGuid():N}.db");
+        try
+        {
+            var store = new FmSnapshotStore($"Data Source={dbPath}");
+            var outcomes = new FmOutcomeStore($"Data Source={dbPath}");
+            var snapshotId = await SeedReportDataAsync(
+                store, withTeamRows: true, withOdds: false);
+
+            var totalHistory = History(10, 2, 9);
+            await store.InsertSignalsAsync(
+                snapshotId, ReportFixtureId, new List<FmSignalDraft>
+                {
+                    new("team", "Wales", "total_goals", 1.5, "over", 9, 10, 0.9,
+                        null, null, null, totalHistory),
+                    new("team", "Portugal", "total_goals", 1.5, "over", 9, 10, 0.9,
+                        null, null, null, totalHistory)
+                }, "all", "all", DateTime.UtcNow, """{"location":"all"}""");
+
+            var oddsRows = new List<FmOddsDraft>();
+            foreach (var subject in new[] { "Wales", "Portugal" })
+            {
+                oddsRows.Add(new("team", subject, "total_goals", 1.5, "1", 1.90, "over"));
+                oddsRows.Add(new("team", subject, "total_goals", 1.5, "1", 2.10, "under"));
+                oddsRows.Add(new("team", subject, "total_goals", 1.5, "2", 1.85, "over"));
+                oddsRows.Add(new("team", subject, "total_goals", 1.5, "2", 2.20, "under"));
+            }
+            await store.InsertOddsAsync(
+                ReportFixtureId, oddsRows, snapshotId, DateTime.UtcNow);
+            await store.UpsertManualOddsAsync(
+                ReportFixtureId, "Betano", "total_goals", 1.5, 2.10, DateTime.UtcNow);
+
+            var report = await BuildReportAsync(store, outcomes);
+
+            var entry = Assert.Single(report.Markets,
+                m => m.Market == "total_goals" && m.Line == 1.5);
+            Assert.Equal("Portugal vs Wales", entry.Subject);
+            Assert.Null(entry.SubjectRole);
+            Assert.Equal(2.10, entry.ManualOdds.Value);
+
+            Assert.Equal(4, entry.MarketOddsFm.Count);
+            Assert.Equal(
+                entry.MarketOddsFm.Count,
+                entry.MarketOddsFm.Select(o => (o.Bookmaker, o.Side)).Distinct().Count());
         }
         finally
         {

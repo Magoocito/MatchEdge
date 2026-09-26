@@ -198,10 +198,21 @@ public static class FmConfluenceReportBuilder
         if (awayApid is long aa && !string.IsNullOrWhiteSpace(awayName))
             roles[awayName!] = (aa, "away");
 
+        // K2: a match-total market (total_*) describes the fixture, not a side.
+        // Signals come once per subject (home and away view), which used to
+        // produce two identical report entries - group them fixture-level and
+        // keep the home-side signal as the canonical data source.
         var teamSignals = input.Signals
             .Where(s => s.SubjectType == "team" && !string.IsNullOrEmpty(s.Market))
-            .GroupBy(s => (s.Market!, s.Line, s.SubjectName))
-            .Select(g => g.OrderBy(s => s.Id).First())
+            .GroupBy(s => (s.Market!, s.Line,
+                s.Market!.StartsWith("total_", StringComparison.Ordinal)
+                    ? string.Empty
+                    : s.SubjectName))
+            .Select(g => g
+                .OrderBy(s => homeName is not null && NameMatches(s.SubjectName, homeName)
+                    ? 0 : 1)
+                .ThenBy(s => s.Id)
+                .First())
             .ToList();
         var playerSignals = input.Signals
             .Where(s => s.SubjectType == "player" && !string.IsNullOrEmpty(s.Market))
@@ -236,17 +247,24 @@ public static class FmConfluenceReportBuilder
                 BuildVenueSplit(opponentRows, s.Market!, s.Line, s.Direction));
 
             var dataQuality = BuildDataQuality(s, input.Outcomes, skipReason ?? oppSkip);
+            // K2 subject criterion: match totals are fixture-level, shown as
+            // "Home vs Away" with no venue_role; team markets keep their side.
+            var isMatchTotal = s.Market.StartsWith("total_", StringComparison.Ordinal);
+            var subject = isMatchTotal && homeName is not null && awayName is not null
+                ? $"{homeName} vs {awayName}"
+                : s.SubjectName;
             var market = new FmReportMarket(
                 s.Market!,
                 s.Line,
-                s.SubjectName,
-                role.Apid != 0 ? role.Role : null,
+                subject,
+                isMatchTotal ? null : (role.Apid != 0 ? role.Role : null),
                 basis,
                 new FmReportAttack(BuildFmReported(s), ownWindows, venueSplit),
                 new FmReportOpponentContext(opponentAttack),
                 BuildOverlapFlags(subjectRows, opponentApid, opponentName),
                 dataQuality,
-                BuildFmOdds(input.Odds, s.Market!, s.Line, s.SubjectName),
+                BuildFmOdds(input.Odds, s.Market!, s.Line,
+                    isMatchTotal ? null : s.SubjectName),
                 BuildManualOdds(input.Odds, s.Market!, s.Line));
             markets.Add((market, WindowN(ownWindows)));
         }
@@ -734,13 +752,16 @@ public static class FmConfluenceReportBuilder
             .ToList();
 
     private static List<FmReportOdds> BuildFmOdds(
-        IReadOnlyList<FmReportOddsRow> odds, string market, double? line, string subject)
+        IReadOnlyList<FmReportOddsRow> odds, string market, double? line, string? subject)
     {
         var rows = odds.Where(o =>
             string.Equals(o.Source, "fm", StringComparison.OrdinalIgnoreCase) &&
             NameMatches(o.Market, market) &&
             LineEquals(o.Line, line) &&
-            (o.SubjectName is null || NameMatches(o.SubjectName, subject)));
+            // K3: match totals pass subject = null and take every subject's
+            // copy of the same fixture market; the (Bookmaker, Side) dedupe
+            // below keeps exactly one row per bookmaker/side.
+            (subject is null || o.SubjectName is null || NameMatches(o.SubjectName, subject)));
 
         var latest = new Dictionary<(string Bookmaker, string Side), FmReportOddsRow>();
         foreach (var o in rows)
