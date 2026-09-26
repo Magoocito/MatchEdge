@@ -124,3 +124,35 @@
 - tmp/fm/p8_a_unmapped.json: 0 unmapped, 147 missing/non-numeric player, 38 not_reproducible total_* (total_corners 24, total_shots 7, total_shots_on_target 5, total_offsides 1, total_tackles 1) todos INSUFFICIENT_SAMPLE
 - Player: tackles 40, foul_involvements 30, fouls_drawn 26, fouls_committed 22, goalkeeper_saves 19, shots 4, sot 3
 - P4-P7 respetados: solo 1/odds descriptivo, sin Betano/EV, navegación secuencial 2-4s
+
+## PBI 2.2 / P10 - POST /api/fm/collect (collect global) - 2026-09-26
+- Cerrado el item 5 de P2: endpoint global que orquesta el mismo `CollectTeamBatchAsync`
+  del collect por equipo (lógica extraida, cero copia), equipo por equipo, secuencial,
+  en el navigation gate actual y con el throttle de 2-4 s que ya vive en ese loop.
+  Evidencia: `tmp/fm/p10_global_collect.json`.
+
+### Detalle de ejecucion
+- **Arquitectura**: el orquestador vive en `MatchEdge.Infrastructure`
+  (`FmGlobalCollectOrchestrator`) porque `MatchEdge.InfrastructureTests` solo
+  referencia Infrastructure y no la Api -> permite testear validacion y orden sin
+  montar web host ni sesion FM; el loop real sigue en el controller (actions).
+- **Sin cambio de comportamiento en el collect por equipo**: su action conserva su
+  validacion inline (`venue=left` -> mismo 400 de siempre) y la normalizacion
+  heredada `period<=0 -> 15`; solo el global rechaza `period<=0` con 400, y esa
+  diferencia esta documentada en `docs/STATE.md`.
+- **`FmPositionsBatch`**: el refactor de `CollectPositions` devolvia un cuerpo con
+  codigo 409/502 que la action traducia; se extrajo ese record para que la action
+  y el orquestador compartan la misma respuesta (contadores `fetches`/`errors`
+  incluidos) en vez de reimplementarlos.
+- **Orden `collect -> positions` por equipo**: position-stats resuelve
+  `fid -> fixture_id/location` contra `fm_team_matches` -> las posiciones de un
+  equipo corren siempre despues de su teams/table y se saltan si ese collect fallo.
+- Validacion 400 unica y testeada: `teams` vacio, location fuera de home|away,
+  `period<=0`, `includePositions` con period fuera de {5,10,15,20}.
+- Tests: `dotnet build` 0 errores; `dotnet test --filter Fm` -> **67/67**
+  (58 de P9 intactos + 9 nuevos `FmGlobalCollectTests`).
+- En vivo (D): run1 18643+18701 home/away p30 -> 200, `fetches 4 = 2x1x2`,
+  `errors 0`, `fm_team_matches` 1992 -> 2110 (+118 filas) y
+  `fm_player_matches` 48745 -> 51701; run2 con `includePositions` p15 ->
+  `positionFetches 6` y `positions` tras el collect del mismo equipo.
+  Regresion: el endpoint por equipo sigue con el mismo shape (status OK, written 30).
