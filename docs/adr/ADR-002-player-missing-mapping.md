@@ -87,3 +87,28 @@ si el reinicio perdiera la sesión FM): `tmp/fm/p8c_raw/` +
   solo ~22/48 jugadores por partido y `saves` solo al GK) → no cierra 147.
 - Re-escribir las filas corners con el pivot completo → destruiría la
   evidencia de la Parte B y el índice único por `stat`.
+
+## P9 (2026-09-26): los 3 mercados residuales
+
+Extensión tras PR #40 (PBI 2.2 / brief P9). Sonda live de
+`shots_created`, `chances_created` y `penalties` sobre 18643 y 18701
+(`tmp/fm/p9_b_unmapped_probe.json`, 19 requests secuenciales 2-4 s):
+
+- **Los 3 tienen campo real en `pivotData` del pivot de ataque**
+  (`shotsCreated`, `chancesCreated`, `penalties`; 704/721 filas no nulas)
+  y ya estaban en `FieldByMarket` → en los 7 fixtures hay **0**
+  `player.unmapped` (`shots_created` emite 10 señales con dato;
+  `chances_created`/`penalties` no tienen filas en `fm_signal`).
+- **Nuevo en `SlugByMarket`**: `shots_created → shots-created`,
+  `penalties → penalties` (ambos 200 en
+  `position-stats` con `value` no nulo y presentes en el dropdown de 45
+  opciones). `chances_created` **no** recibe slug: `chances-created` → 400
+  y no existe en la UI; su dato se recolecta gratis con cualquier stat de
+  ataque (`group=attack`). No se mapea a `key-passes` para no inventar una
+  equivalencia (aunque `keyp == chancesCreated` en 44/44 filas de Austria).
+- **Regla de evidencia de slugs**: `teams/table` no valida `stat`
+  (control `zz-bogus-p9` → 200), así que solo `position-stats` (400) y el
+  dropdown de la UI sirven para afirmar que un slug existe.
+- Tests: `PlayerStatMap_ResidualMarkets_UseProbeBackedFieldsAndSlugs`
+  (theory ×3) y `Report_ResidualPlayerMarkets_AreMappedAndUnknownStaysUnmapped`
+  (además fija que un mercado sin mapeo sigue con motivo `has no mapping`).
