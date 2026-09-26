@@ -1613,4 +1613,87 @@ VALUES ('33441811', '4', NULL, 'total_corners', 1.9, 'over', 'fm', '2026-09-25 0
             File.Delete(dbPath);
         }
     }
+
+    // P9 B2/B3: the three residual markets map to the fields and slugs proven
+    // live in tmp/fm/p9_b_unmapped_probe.json (attack pivot field on both
+    // teams + position-stats 200). chances_created has no FM slug at all
+    // (chances-created -> 400, absent from the 45-option dropdown), so it
+    // stays a pass-through instead of inventing an equivalence.
+    [Theory]
+    [InlineData("shots_created", "shotsCreated", "shots-created")]
+    [InlineData("chances_created", "chancesCreated", "chances_created")]
+    [InlineData("penalties", "penalties", "penalties")]
+    public void PlayerStatMap_ResidualMarkets_UseProbeBackedFieldsAndSlugs(
+        string market, string field, string slug)
+    {
+        Assert.Equal(new[] { field }, FmPlayerStatMap.FieldsFor(market));
+        Assert.Equal(slug, FmPlayerStatMap.ResolveSlug(market));
+        Assert.Equal("attack", FmPlayerStatMap.GroupForStat(slug));
+    }
+
+    // P9 B3: report side - the two markets with real rows build a player_own
+    // series (they never show up as unmapped), while a market without a
+    // mapping keeps the explicit unmapped motivo.
+    [Fact]
+    public async Task Report_ResidualPlayerMarkets_AreMappedAndUnknownStaysUnmapped()
+    {
+        var dbPath = Path.Combine(Path.GetTempPath(), $"fmtest_{Guid.NewGuid():N}.db");
+        try
+        {
+            var store = new FmSnapshotStore($"Data Source={dbPath}");
+            var outcomes = new FmOutcomeStore($"Data Source={dbPath}");
+            var kickoff = new DateTime(2026, 9, 24, 18, 45, 0, DateTimeKind.Utc);
+            var snapshotId = await SeedReportDataAsync(
+                store, withTeamRows: true, withOdds: false);
+
+            await store.InsertSignalsAsync(
+                snapshotId, ReportFixtureId, new List<FmSignalDraft>
+                {
+                    new("player", "C. Ronaldo", "chances_created", 1.5, "over",
+                        6, 8, 0.75, null, null, null, History(8, 3, 6)),
+                    new("player", "C. Ronaldo", "penalties", 0.5, "over",
+                        3, 8, 0.375, null, null, null, History(8, 1, 3)),
+                    new("player", "C. Ronaldo", "xg_chain", 1.5, "over",
+                        5, 8, 0.625, null, null, null, History(8, 2, 5))
+                }, "all", "all", DateTime.UtcNow, """{"location":"all"}""");
+
+            // Current fixture rows must carry the attack-pivot fields (the
+            // seed only writes sh/sot) on both locations.
+            foreach (var loc in new[] { "home", "away" })
+            {
+                var curPlayers = new List<FmPlayerMatchDraft>
+                {
+                    new(18701, 580, "C. Ronaldo", ReportFixtureId, 900_001,
+                        kickoff, loc, "team",
+                        """{"sh":2,"sot":1,"chancesCreated":3,"penalties":1}""",
+                        15, "corners")
+                };
+                await store.UpsertTeamMatchesAsync(
+                    18701, loc, 15, "corners", new List<FmTeamMatchDraft>(),
+                    curPlayers, "teams/table", DateTime.UtcNow);
+            }
+
+            var report = await BuildReportAsync(store, outcomes);
+
+            var chances = Assert.Single(report.PlayerSignals,
+                p => p.Market == "chances_created");
+            Assert.Equal(FmConfluenceReportBuilder.BasisPlayerOwn, chances.Basis);
+            Assert.DoesNotContain("has no mapping", chances.DataQuality.Motivo ?? "");
+
+            var penalties = Assert.Single(report.PlayerSignals,
+                p => p.Market == "penalties");
+            Assert.Equal(FmConfluenceReportBuilder.BasisPlayerOwn, penalties.Basis);
+            Assert.DoesNotContain("has no mapping", penalties.DataQuality.Motivo ?? "");
+
+            var unknown = Assert.Single(report.PlayerSignals,
+                p => p.Market == "xg_chain");
+            Assert.Equal(FmConfluenceReportBuilder.BasisUnmapped, unknown.Basis);
+            Assert.Contains("has no mapping", unknown.DataQuality.Motivo);
+        }
+        finally
+        {
+            Microsoft.Data.Sqlite.SqliteConnection.ClearAllPools();
+            File.Delete(dbPath);
+        }
+    }
 }
