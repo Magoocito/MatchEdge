@@ -16,6 +16,14 @@ public sealed record FmTeamCollectRequest(
 // them in fm_player_matches with perspective 'position'.
 public sealed record FmPositionCollectRequest(int? Period);
 
+// P10 (item 5 de P2): N equipos en una sola llamada. Mismos defaults que el
+// collect por equipo (stats=corners, locations=home+away, period=15) y el
+// añadido includePositions, que dispara collect-positions por equipo despues
+// de su teams/table.
+public sealed record FmGlobalCollectRequest(
+    long[]? Teams, string[]? Stats, string[]? Locations, string? Venue,
+    int? Period, bool? IncludePositions);
+
 [ApiController]
 [Route("api/fm")]
 public class FmTeamController : ControllerBase
@@ -101,17 +109,109 @@ public class FmTeamController : ControllerBase
         [FromBody] FmTeamCollectRequest? request,
         CancellationToken ct)
     {
-        var locations = request?.Locations is { Length: > 0 }
-            ? request.Locations.Select(l => l.ToLowerInvariant()).Distinct().ToArray()
-            : VenueTokens(request?.Venue);
-        if (locations.Length == 0) locations = new[] { "home", "away" };
+        var locations = LocationTokens(request?.Locations, request?.Venue);
         var invalid = locations.Where(l => Array.IndexOf(AllowedLocations, l) < 0).ToArray();
         if (invalid.Length > 0)
             return BadRequest(new { error = $"invalid location(s): {string.Join(",", invalid)}" });
 
         var period = request?.Period is > 0 ? request.Period.Value : 15;
-        var stats = StatTokens(request);
+        var stats = StatTokens(request?.Stats, request?.Stat);
+        var batch = await CollectTeamBatchAsync(teamApid, stats, locations, period, ct);
+        return Ok(new
+        {
+            teamApid,
+            period,
+            stat = stats.Length == 1 ? stats[0] : null,
+            stats,
+            locations,
+            results = batch.Response
+        });
+    }
+
+    // P10 (item 5 de P2): una sola llamada HTTP para N equipos. Ejecuta el
+    // MISMO CollectTeamBatchAsync de arriba, un equipo tras otro, en el mismo
+    // navigation gate: el orquestador no añade paralelismo ni throttle (los
+    // 2-4 s entre fetches viven en el loop del batch). includePositions
+    // reutiliza CollectPositionsCoreAsync del MISMO equipo, siempre despues de
+    // su teams/table (position-stats necesita fm_team_matches/fm_player_matches
+    // poblados). Un equipo que falla no aborta a los demas: su entrada lleva
+    // error y el resto sigue; el 400 solo sale del body invalido.
+    [HttpPost("collect")]
+    public async Task<IActionResult> CollectGlobal(
+        [FromBody] FmGlobalCollectRequest? request,
+        CancellationToken ct)
+    {
+        var locations = LocationTokens(request?.Locations, request?.Venue);
+        var period = request?.Period ?? 15;
+        var includePositions = request?.IncludePositions ?? false;
+        var stats = StatTokens(request?.Stats, stat: null);
+
+        var validation = FmGlobalCollectOrchestrator.Validate(
+            request?.Teams, period, locations, includePositions);
+        if (validation is not null)
+            return BadRequest(new { error = validation });
+
+        var outcome = await FmGlobalCollectOrchestrator.RunAsync(
+            request!.Teams!,
+            period,
+            includePositions,
+            async (team, token) =>
+            {
+                var batch = await CollectTeamBatchAsync(team, stats, locations, period, token);
+                _logger.LogInformation(
+                    "P10 global collect team {Team}: {Fetches} fetches, {Errors} errors",
+                    team, batch.Fetches, batch.Errors);
+                return batch;
+            },
+            includePositions
+                ? async (team, token) =>
+                {
+                    var pos = await CollectPositionsCoreAsync(team, period, token);
+                    return new FmGlobalCollectBatch(
+                        pos.Body,
+                        pos.Fetches,
+                        pos.StatusCode == StatusCodes.Status200OK
+                            ? pos.Errors
+                            : pos.Errors + 1);
+                }
+                : null,
+            ct);
+
+        return Ok(new
+        {
+            teams = outcome.Teams.Select(t => new
+            {
+                t.TeamApid,
+                period,
+                stat = stats.Length == 1 ? stats[0] : null,
+                stats,
+                locations,
+                results = t.Collect,
+                error = t.Error,
+                positions = t.Positions
+            }).ToList(),
+            summary = new
+            {
+                teams = outcome.Teams.Count,
+                fetches = outcome.Fetches,
+                positionFetches = outcome.PositionFetches,
+                errors = outcome.Errors,
+                elapsedMs = outcome.ElapsedMs
+            }
+        });
+    }
+
+    // Cuerpo comun de los dos endpoints de collect (G2 por equipo y P10
+    // global): un teams/table fetch por stat x location, serializado en el
+    // navigation gate y con la pausa de 2-4 s entre fetches. Devuelve la lista
+    // de results tal cual (mismo shape que siempre) mas los contadores de
+    // fetches/errores que resume el orquestador global.
+    private async Task<FmGlobalCollectBatch> CollectTeamBatchAsync(
+        long teamApid, string[] stats, string[] locations, int period,
+        CancellationToken ct)
+    {
         var results = new List<object>();
+        var errors = 0;
 
         foreach (var stat in stats)
         foreach (var location in locations)
@@ -144,6 +244,7 @@ public class FmTeamController : ControllerBase
 
             if (string.IsNullOrWhiteSpace(raw))
             {
+                errors++;
                 results.Add(new
                 {
                     location,
@@ -162,6 +263,7 @@ public class FmTeamController : ControllerBase
             }
             catch (Exception ex)
             {
+                errors++;
                 results.Add(new
                 {
                     location,
@@ -206,15 +308,7 @@ public class FmTeamController : ControllerBase
             await Task.Delay(TimeSpan.FromSeconds(2 + Random.Shared.NextDouble() * 2), ct);
         }
 
-        return Ok(new
-        {
-            teamApid,
-            period,
-            stat = stats.Length == 1 ? stats[0] : null,
-            stats,
-            locations,
-            results
-        });
+        return new FmGlobalCollectBatch(results, results.Count, errors);
     }
 
     // venue=home,away (PBI spelling) -> ["home","away"]
@@ -229,14 +323,25 @@ public class FmTeamController : ControllerBase
                    .Distinct(StringComparer.OrdinalIgnoreCase)
                    .ToArray();
 
-    // "tackles,fouls-committed" | "goalkeeper_saves" | null -> FM slugs.
-    private static string[] StatTokens(FmTeamCollectRequest? request)
+    // locations[] / venue=home,away -> tokens, con el default home+away cuando
+    // no llega ninguno de los dos (misma semantica heredada del collect por
+    // equipo; la validacion de tokens es del caller).
+    private static string[] LocationTokens(string[]? locations, string? venue)
     {
-        var raw = request?.Stats is { Length: > 0 }
-            ? request.Stats
-            : string.IsNullOrWhiteSpace(request?.Stat)
+        var resolved = locations is { Length: > 0 }
+            ? locations.Select(l => l.ToLowerInvariant()).Distinct().ToArray()
+            : VenueTokens(venue);
+        return resolved.Length == 0 ? new[] { "home", "away" } : resolved;
+    }
+
+    // "tackles,fouls-committed" | "goalkeeper_saves" | null -> FM slugs.
+    private static string[] StatTokens(string[]? stats, string? stat)
+    {
+        var raw = stats is { Length: > 0 }
+            ? stats
+            : string.IsNullOrWhiteSpace(stat)
                 ? new[] { "corners" }
-                : request!.Stat!.Split(
+                : stat!.Split(
                     ',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
         return raw.Select(FmPlayerStatMap.ResolveSlug)
             .Distinct(StringComparer.OrdinalIgnoreCase)
@@ -256,11 +361,24 @@ public class FmTeamController : ControllerBase
         CancellationToken ct)
     {
         var period = request?.Period is > 0 ? request.Period.Value : 20;
+        var batch = await CollectPositionsCoreAsync(teamApid, period, ct);
+        if (batch.StatusCode == StatusCodes.Status409Conflict)
+            return Conflict(batch.Body);
+        if (batch.StatusCode == StatusCodes.Status502BadGateway)
+            return StatusCode(StatusCodes.Status502BadGateway, batch.Body);
+        return Ok(batch.Body);
+    }
+
+    // P10: el mismo trabajo de la action de arriba devuelto como batch, para
+    // que el orquestador global lo reutilice sin copiar codigo.
+    private async Task<FmPositionsBatch> CollectPositionsCoreAsync(
+        long teamApid, int period, CancellationToken ct)
+    {
         var source = $"position-stats?period={period}&venue=both&perspective=for";
 
         var indexRows = await _store.GetTeamFixtureIndexAsync(teamApid, ct);
         if (indexRows.Count == 0)
-            return Conflict(new
+            return FmPositionsBatch.Conflict(new
             {
                 error = $"no fm_team_matches rows for team {teamApid}; run POST /api/fm/teams/{teamApid}/collect first"
             });
@@ -277,12 +395,14 @@ public class FmTeamController : ControllerBase
                 playerApidByName[name] = r.PlayerApid;
         }
         if (playerApidByName.Count == 0)
-            return Conflict(new
+            return FmPositionsBatch.Conflict(new
             {
                 error = $"no fm_player_matches rows for team {teamApid}; run POST /api/fm/teams/{teamApid}/collect first"
             });
 
         var fetches = new List<object>();
+        var fetchCount = 0;
+        var errorCount = 0;
         var entries = new Dictionary<string, PositionEntry>(StringComparer.Ordinal);
         var skippedFixture = new HashSet<long>();
         var skippedPlayer = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
@@ -310,6 +430,8 @@ public class FmTeamController : ControllerBase
 
             var status = string.IsNullOrWhiteSpace(raw) ? "NO_DATA" : "OK";
             fetches.Add(new { label, apiPath, status, error });
+            fetchCount++;
+            if (status != "OK") errorCount++;
             if (string.IsNullOrWhiteSpace(raw))
             {
                 warnings.Add($"{label}: {error}");
@@ -391,7 +513,8 @@ public class FmTeamController : ControllerBase
         var gkPath = BuildPositionPath(teamApid, period, "GK", "fouls-involvements");
         var gkRaw = await FetchAsync(gkPath, "gk_fouls", delay: false);
         if (gkRaw is null)
-            return StatusCode(StatusCodes.Status502BadGateway, new { error = "breakdown probe failed", fetches });
+            return FmPositionsBatch.BadGateway(
+                new { error = "breakdown probe failed", fetches }, fetchCount, errorCount);
 
         var codes = new List<string>();
         try
@@ -410,7 +533,8 @@ public class FmTeamController : ControllerBase
         }
         catch (JsonException)
         {
-            return StatusCode(StatusCodes.Status502BadGateway, new { error = "breakdown is not valid JSON", fetches });
+            return FmPositionsBatch.BadGateway(
+                new { error = "breakdown is not valid JSON", fetches }, fetchCount, errorCount);
         }
         if (codes.Count == 0)
             warnings.Add("breakdown returned no non-GK positions with apps>0");
@@ -478,7 +602,7 @@ public class FmTeamController : ControllerBase
             "P8 collect-positions team {Team}: {Rows} rows merged, {Written} upserted, {SkippedFx} unknown fixture, {SkippedPl} unknown player, {Warn} warning(s)",
             teamApid, entries.Count, written, skippedFixture.Count, skippedPlayer.Count, warnings.Count);
 
-        return Ok(new
+        return FmPositionsBatch.Ok(new
         {
             teamApid,
             period,
@@ -491,7 +615,7 @@ public class FmTeamController : ControllerBase
             skippedUnknownPlayer = skippedPlayer.OrderBy(x => x).Take(10).ToArray(),
             warnings = warnings.Take(20).ToArray(),
             navigations = 0
-        });
+        }, fetchCount, errorCount);
     }
 
     private static string BuildPositionPath(
@@ -503,6 +627,20 @@ public class FmTeamController : ControllerBase
 
     private static string Key(long fid, string name) =>
         fid.ToString(System.Globalization.CultureInfo.InvariantCulture) + "\u001f" + name;
+
+    // Resultado de CollectPositionsCoreAsync: la action lo traduce a 409/502/200
+    // y el orquestador global lee Body + contadores (fetches/errores).
+    private sealed record FmPositionsBatch(object Body, int StatusCode, int Fetches, int Errors)
+    {
+        public static FmPositionsBatch Ok(object body, int fetches, int errors) =>
+            new(body, StatusCodes.Status200OK, fetches, errors);
+
+        public static FmPositionsBatch Conflict(object body) =>
+            new(body, StatusCodes.Status409Conflict, 0, 0);
+
+        public static FmPositionsBatch BadGateway(object body, int fetches, int errors) =>
+            new(body, StatusCodes.Status502BadGateway, fetches, errors);
+    }
 
     private sealed class PositionEntry
     {
