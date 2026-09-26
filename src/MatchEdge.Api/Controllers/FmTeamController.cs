@@ -1,4 +1,5 @@
 using System.Text;
+using System.Text.Json;
 using System.Text.Json.Nodes;
 using MatchEdge.Infrastructure.Clients;
 using MatchEdge.Infrastructure.Services;
@@ -7,6 +8,10 @@ using Microsoft.AspNetCore.Mvc;
 namespace MatchEdge.Api.Controllers;
 
 public sealed record FmTeamCollectRequest(string[]? Locations, int? Period, string? Stat);
+
+// P8 J5: collects /api/front/position-stats rows (perspective=for) and stores
+// them in fm_player_matches with perspective 'position'.
+public sealed record FmPositionCollectRequest(int? Period);
 
 [ApiController]
 [Route("api/fm")]
@@ -194,6 +199,282 @@ public class FmTeamController : ControllerBase
         return Ok(new { teamApid, period, stat, results });
     }
 
+    // P8 J3/J5: position-stats (0 navigations, same gate as collect).
+    // Breakdown probe = GK chunk with stat=fouls-involvements (gives the
+    // position codes with apps>0), then one fetch per chunk of <=4 codes
+    // (max accepted by the endpoint) plus stat=saves for the GK chunk.
+    // Rows are persisted as fm_player_matches with perspective 'position',
+    // stat 'position-stats', period from the request (default 20, max window).
+    [HttpPost("teams/{teamApid}/collect-positions")]
+    public async Task<IActionResult> CollectPositions(
+        long teamApid,
+        [FromBody] FmPositionCollectRequest? request,
+        CancellationToken ct)
+    {
+        var period = request?.Period is > 0 ? request.Period.Value : 20;
+        var source = $"position-stats?period={period}&venue=both&perspective=for";
+
+        var indexRows = await _store.GetTeamFixtureIndexAsync(teamApid, ct);
+        if (indexRows.Count == 0)
+            return Conflict(new
+            {
+                error = $"no fm_team_matches rows for team {teamApid}; run POST /api/fm/teams/{teamApid}/collect first"
+            });
+        var fixtureByApid = new Dictionary<long, FmTeamFixtureIndexRow>();
+        foreach (var r in indexRows)
+            if (!fixtureByApid.ContainsKey(r.FixtureApid))
+                fixtureByApid[r.FixtureApid] = r;
+
+        var playerApidByName = new Dictionary<string, long>(StringComparer.OrdinalIgnoreCase);
+        foreach (var r in await _store.GetPlayerMatchesAsync(teamApid, null, null, null, ct))
+        {
+            var name = r.PlayerName?.Trim();
+            if (!string.IsNullOrEmpty(name) && !playerApidByName.ContainsKey(name))
+                playerApidByName[name] = r.PlayerApid;
+        }
+        if (playerApidByName.Count == 0)
+            return Conflict(new
+            {
+                error = $"no fm_player_matches rows for team {teamApid}; run POST /api/fm/teams/{teamApid}/collect first"
+            });
+
+        var fetches = new List<object>();
+        var entries = new Dictionary<string, PositionEntry>(StringComparer.Ordinal);
+        var skippedFixture = new HashSet<long>();
+        var skippedPlayer = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        var warnings = new List<string>();
+
+        async Task<string?> FetchAsync(string apiPath, string label, bool delay)
+        {
+            ct.ThrowIfCancellationRequested();
+            string? raw = null;
+            var error = "none";
+            var gate = _browserManager.NavigationGate;
+            await gate.WaitAsync(ct);
+            try
+            {
+                raw = await _collector.FetchJsonAsync(apiPath, ct);
+            }
+            catch (Exception ex)
+            {
+                error = ex.Message;
+            }
+            finally
+            {
+                gate.Release();
+            }
+
+            var status = string.IsNullOrWhiteSpace(raw) ? "NO_DATA" : "OK";
+            fetches.Add(new { label, apiPath, status, error });
+            if (string.IsNullOrWhiteSpace(raw))
+            {
+                warnings.Add($"{label}: {error}");
+                return null;
+            }
+
+            await WritePositionRawAsync(teamApid, period, label, raw, ct);
+            if (delay)
+                await Task.Delay(TimeSpan.FromSeconds(2 + Random.Shared.NextDouble() * 2), ct);
+            return raw;
+        }
+
+        // valueKey: which metric the payload's value column carries for this
+        // fetch ("foulInvolvements" for stat=fouls-involvements, "saves" for
+        // stat=saves). Scalar columns come from the fouls fetch only, so the
+        // saves fetch cannot clobber them with its own zeros.
+        void MergeAppearances(string raw, string? valueKey, bool includeScalars)
+        {
+            JsonNode? root;
+            try { root = JsonNode.Parse(raw); }
+            catch (JsonException)
+            {
+                warnings.Add("payload is not valid JSON");
+                return;
+            }
+            if (root?["appearances"] is not JsonArray apps)
+            {
+                warnings.Add("payload has no appearances[]");
+                return;
+            }
+
+            foreach (var item in apps)
+            {
+                if (item is not JsonObject o) continue;
+                if (o["fid"] is not { } fidNode ||
+                    !long.TryParse(fidNode.ToString(), out var fid)) continue;
+                var playerName = o["player"]?["name"]?.GetValue<string>()?.Trim();
+                if (string.IsNullOrEmpty(playerName)) continue;
+
+                var key = Key(fid, playerName!);
+                if (!entries.TryGetValue(key, out var entry))
+                {
+                    entry = new PositionEntry
+                    {
+                        Fid = fid,
+                        PlayerName = playerName!,
+                        Ts = ParseTs(o["ts"]?.GetValue<string>()),
+                        Stats = new JsonObject()
+                    };
+                    entries[key] = entry;
+                }
+
+                if (valueKey is not null && o["value"] is { } vn &&
+                    vn.GetValueKind() == JsonValueKind.Number &&
+                    !entry.Stats.ContainsKey(valueKey))
+                {
+                    entry.Stats[valueKey] = vn.DeepClone();
+                }
+                if (includeScalars)
+                {
+                    foreach (var prop in new[]
+                             {
+                                 "pos", "mins", "rating", "foulsC", "foulsD", "tackles",
+                                 "tacklesWon", "interceptions", "yellowCards", "redCards",
+                                 "goals", "assists", "sh", "sot", "keyp", "passes", "touches"
+                             })
+                    {
+                        if (o[prop] is { } v && v.GetValueKind() != JsonValueKind.Null &&
+                            !entry.Stats.ContainsKey(prop))
+                        {
+                            entry.Stats[prop] = v.DeepClone();
+                        }
+                    }
+                }
+            }
+        }
+
+        // 1) GK chunk = breakdown probe (position codes with apps>0).
+        var gkPath = BuildPositionPath(teamApid, period, "GK", "fouls-involvements");
+        var gkRaw = await FetchAsync(gkPath, "gk_fouls", delay: false);
+        if (gkRaw is null)
+            return StatusCode(StatusCodes.Status502BadGateway, new { error = "breakdown probe failed", fetches });
+
+        var codes = new List<string>();
+        try
+        {
+            var root = JsonNode.Parse(gkRaw);
+            if (root?["breakdown"] is JsonArray breakdown)
+            {
+                foreach (var b in breakdown)
+                {
+                    var pos = b?["pos"]?.GetValue<string>()?.Trim();
+                    var apps = b?["apps"]?.GetValue<int?>() ?? 0;
+                    if (!string.IsNullOrEmpty(pos) && pos != "GK" && apps > 0 && !codes.Contains(pos))
+                        codes.Add(pos);
+                }
+            }
+        }
+        catch (JsonException)
+        {
+            return StatusCode(StatusCodes.Status502BadGateway, new { error = "breakdown is not valid JSON", fetches });
+        }
+        if (codes.Count == 0)
+            warnings.Add("breakdown returned no non-GK positions with apps>0");
+
+        MergeAppearances(gkRaw, "foulInvolvements", includeScalars: true);
+
+        // 2) saves for the GK chunk.
+        var gkSavesRaw = await FetchAsync(
+            BuildPositionPath(teamApid, period, "GK", "saves"), "gk_saves", delay: true);
+        if (gkSavesRaw is not null) MergeAppearances(gkSavesRaw, "saves", includeScalars: false);
+
+        // 3) remaining positions in chunks of <=4 (endpoint hard limit).
+        var chunkIndex = 0;
+        for (var i = 0; i < codes.Count; i += 4)
+        {
+            var chunk = string.Join(",", codes.Skip(i).Take(4));
+            var raw = await FetchAsync(
+                BuildPositionPath(teamApid, period, chunk, "fouls-involvements"),
+                $"chunk{chunkIndex++}_fouls",
+                delay: i + 4 < codes.Count);
+            if (raw is not null) MergeAppearances(raw, "foulInvolvements", includeScalars: true);
+        }
+
+        // 4) resolve against fm_team_matches + fm_player_matches and upsert.
+        var now = DateTime.UtcNow;
+        var rows = new List<FmPlayerMatchRow>();
+        foreach (var e in entries.Values)
+        {
+            if (!fixtureByApid.TryGetValue(e.Fid, out var fx))
+            {
+                skippedFixture.Add(e.Fid);
+                continue;
+            }
+            if (!playerApidByName.TryGetValue(e.PlayerName.Trim(), out var playerApid))
+            {
+                skippedPlayer.Add(e.PlayerName);
+                continue;
+            }
+            if (e.Ts is null)
+            {
+                warnings.Add($"no ts for {e.PlayerName} @ {e.Fid}");
+                continue;
+            }
+            rows.Add(new FmPlayerMatchRow(
+                TeamApid: teamApid,
+                PlayerApid: playerApid,
+                PlayerName: e.PlayerName,
+                FixtureId: fx.FixtureId,
+                FixtureApid: e.Fid,
+                TsUtc: e.Ts!.Value,
+                Location: fx.Location,
+                Perspective: "position",
+                StatsJson: e.Stats.ToJsonString(),
+                Period: period,
+                Stat: "position-stats",
+                Source: source,
+                SourceTimestampUtc: now));
+        }
+
+        var written = rows.Count == 0
+            ? 0
+            : await _store.UpsertPlayerMatchesAsync(teamApid, rows, source, now, ct);
+
+        _logger.LogInformation(
+            "P8 collect-positions team {Team}: {Rows} rows merged, {Written} upserted, {SkippedFx} unknown fixture, {SkippedPl} unknown player, {Warn} warning(s)",
+            teamApid, entries.Count, written, skippedFixture.Count, skippedPlayer.Count, warnings.Count);
+
+        return Ok(new
+        {
+            teamApid,
+            period,
+            source,
+            positionCodes = codes,
+            fetches,
+            merged = entries.Count,
+            upserted = written,
+            skippedUnknownFixture = skippedFixture.OrderBy(x => x).Take(10).ToArray(),
+            skippedUnknownPlayer = skippedPlayer.OrderBy(x => x).Take(10).ToArray(),
+            warnings = warnings.Take(20).ToArray(),
+            navigations = 0
+        });
+    }
+
+    private static string BuildPositionPath(
+        long teamApid, int period, string positions, string stat) =>
+        $"/api/front/position-stats?team={teamApid}" +
+        $"&positions={Uri.EscapeDataString(positions)}&stat={Uri.EscapeDataString(stat)}" +
+        $"&period={period}&venue=both&perspective=for&teamFormations=&oppFormations=" +
+        "&leagues=&superSub=false";
+
+    private static string Key(long fid, string name) =>
+        fid.ToString(System.Globalization.CultureInfo.InvariantCulture) + "\u001f" + name;
+
+    private sealed class PositionEntry
+    {
+        public long Fid;
+        public string PlayerName = "";
+        public DateTime? Ts;
+        public JsonObject Stats = new();
+    }
+
+    private static DateTime? ParseTs(string? ts) =>
+        string.IsNullOrWhiteSpace(ts)
+            ? null
+            : DateTime.Parse(ts, System.Globalization.CultureInfo.InvariantCulture,
+                System.Globalization.DateTimeStyles.AssumeUniversal |
+                System.Globalization.DateTimeStyles.AdjustToUniversal);
+
     private static object? ParseOrNull(string? json)
     {
         if (string.IsNullOrWhiteSpace(json)) return null;
@@ -219,5 +500,17 @@ public class FmTeamController : ControllerBase
             $"{location}_p{period}_{stat}_{DateTime.UtcNow:yyyyMMddHHmmssfff}.json");
         await System.IO.File.WriteAllTextAsync(path, content, new UTF8Encoding(false), ct);
         return path;
+    }
+
+    private static async Task WritePositionRawAsync(
+        long teamApid, int period, string label, string content, CancellationToken ct)
+    {
+        var dir = Path.Combine(
+            AppContext.BaseDirectory, "tmp", "fm", "teams",
+            teamApid.ToString(System.Globalization.CultureInfo.InvariantCulture));
+        Directory.CreateDirectory(dir);
+        var path = Path.Combine(dir,
+            $"positions_p{period}_{label}_{DateTime.UtcNow:yyyyMMddHHmmssfff}.json");
+        await System.IO.File.WriteAllTextAsync(path, content, new UTF8Encoding(false), ct);
     }
 }

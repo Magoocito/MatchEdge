@@ -1,5 +1,6 @@
 using System.Globalization;
 using System.Text.Json;
+using System.Text.Json.Nodes;
 using System.Text.Json.Serialization;
 
 namespace MatchEdge.Infrastructure.Services;
@@ -163,7 +164,13 @@ public static class FmConfluenceReportBuilder
         ["chances_created"] = "chancesCreated",
         ["cards"] = "cards",
         ["yellow_cards"] = "yellowCards",
-        ["penalties"] = "penalties"
+        ["penalties"] = "penalties",
+        // P8 J4: filled from position-stats (perspective 'position') rows.
+        ["fouls_committed"] = "foulsC",
+        ["fouls_drawn"] = "foulsD",
+        ["tackles"] = "tackles",
+        ["foul_involvements"] = "foulInvolvements",
+        ["goalkeeper_saves"] = "saves"
     };
 
     public static FmReport Build(string fixtureId, FmReportInput input)
@@ -359,15 +366,52 @@ public static class FmConfluenceReportBuilder
         return result;
     }
 
+    // P8 J4: position-perspective rows share fixtures with team-perspective
+    // rows. Merge them into one row per fixture (team row as base, position
+    // stats fill the gaps) so foul/tackle/save markets read the same series.
     private static List<FmPlayerMatchRow> DedupPlayerByFixture(List<FmPlayerMatchRow> rows)
     {
-        var seen = new HashSet<string>(StringComparer.Ordinal);
-        var result = new List<FmPlayerMatchRow>();
+        var order = new List<string>();
+        var groups = new Dictionary<string, List<FmPlayerMatchRow>>(StringComparer.Ordinal);
         foreach (var row in rows) // store order: ts DESC, player_apid
         {
-            if (seen.Add(row.FixtureId)) result.Add(row);
+            if (!groups.TryGetValue(row.FixtureId, out var list))
+            {
+                list = new List<FmPlayerMatchRow>();
+                groups[row.FixtureId] = list;
+                order.Add(row.FixtureId);
+            }
+            list.Add(row);
+        }
+
+        var result = new List<FmPlayerMatchRow>(order.Count);
+        foreach (var fixtureId in order)
+        {
+            var group = groups[fixtureId];
+            result.Add(group.Count == 1 ? group[0] : MergePlayerRows(group));
         }
         return result;
+    }
+
+    private static FmPlayerMatchRow MergePlayerRows(List<FmPlayerMatchRow> rows)
+    {
+        var basis = rows.FirstOrDefault(r =>
+            string.Equals(r.Perspective, "team", StringComparison.OrdinalIgnoreCase)) ?? rows[0];
+
+        var merged = new JsonObject();
+        foreach (var row in new[] { basis }.Concat(rows))
+        {
+            if (row.StatsJson is null) continue;
+            JsonNode? node;
+            try { node = JsonNode.Parse(row.StatsJson); }
+            catch (JsonException) { continue; }
+            if (node is not JsonObject obj) continue;
+            foreach (var (key, value) in obj)
+            {
+                if (!merged.ContainsKey(key)) merged[key] = value?.DeepClone();
+            }
+        }
+        return basis with { StatsJson = merged.ToJsonString() };
     }
 
     private static (List<FmWindowPoint> Points, string Basis, string? SkipReason) BuildTeamSeries(

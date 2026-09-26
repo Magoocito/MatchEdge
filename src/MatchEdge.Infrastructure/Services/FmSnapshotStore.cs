@@ -42,6 +42,14 @@ public sealed record FmTeamMatchRow(
 
 public sealed record FmTeamMatchUpsertResult(int Written, int Inserted, int Updated, int PlayerWritten);
 
+// P8 J3: fixture_id/fixture_apid/location index for a team, used to persist
+// position-stats rows against the canonical fm_team_matches fixtures.
+public sealed record FmTeamFixtureIndexRow(
+    string FixtureId,
+    long FixtureApid,
+    string Location,
+    DateTime TsUtc);
+
 public sealed record FmSignalRow(
     long Id,
     string SubjectType,
@@ -1043,6 +1051,95 @@ WHERE team_apid = $team
                     DateTimeStyles.AssumeUniversal | DateTimeStyles.AdjustToUniversal)));
         }
         return rows;
+    }
+
+    // P8 J3: fixture index (one row per fixture, canonical location) so
+    // position-stats fetches can be persisted against known fixtures.
+    public async Task<IReadOnlyList<FmTeamFixtureIndexRow>> GetTeamFixtureIndexAsync(
+        long teamApid, CancellationToken ct = default)
+    {
+        try { await EnsureOnceAsync(ct); }
+        catch { ResetEnsureFailure(); throw; }
+        await using var conn = Open();
+        await conn.OpenAsync(ct);
+        await using var cmd = conn.CreateCommand();
+        cmd.CommandText = @"
+SELECT fixture_id, fixture_apid, location, MAX(ts_utc)
+FROM fm_team_matches
+WHERE team_apid = $team
+GROUP BY fixture_id
+ORDER BY MAX(ts_utc) DESC;";
+        cmd.Parameters.AddWithValue("$team", teamApid);
+
+        var rows = new List<FmTeamFixtureIndexRow>();
+        await using var reader = await cmd.ExecuteReaderAsync(ct);
+        while (await reader.ReadAsync(ct))
+        {
+            rows.Add(new FmTeamFixtureIndexRow(
+                FixtureId: reader.GetString(0),
+                FixtureApid: reader.GetInt64(1),
+                Location: reader.GetString(2),
+                TsUtc: DateTime.Parse(reader.GetString(3), CultureInfo.InvariantCulture,
+                    DateTimeStyles.AssumeUniversal | DateTimeStyles.AdjustToUniversal)));
+        }
+        return rows;
+    }
+
+    // P8 J3: upsert standalone fm_player_matches rows (position perspective).
+    // The unique index already covers perspective, so these coexist with the
+    // team-collected rows without a schema change.
+    public async Task<int> UpsertPlayerMatchesAsync(
+        long teamApid,
+        IReadOnlyList<FmPlayerMatchRow> rows,
+        string source,
+        DateTime sourceTimestampUtc,
+        CancellationToken ct = default)
+    {
+        if (rows.Count == 0) return 0;
+
+        try { await EnsureOnceAsync(ct); }
+        catch { ResetEnsureFailure(); throw; }
+        await using var conn = Open();
+        await conn.OpenAsync(ct);
+        await using var tx = (SqliteTransaction)await conn.BeginTransactionAsync(ct);
+        var ts = sourceTimestampUtc.ToString("yyyy-MM-dd HH:mm:ss.fff");
+        var written = 0;
+
+        foreach (var p in rows)
+        {
+            await using var cmd = conn.CreateCommand();
+            cmd.Transaction = tx;
+            cmd.CommandText = @"
+INSERT INTO fm_player_matches
+    (team_apid, player_apid, player_name, fixture_id, fixture_apid, ts_utc, location,
+     perspective, stats_json, period, stat, source, source_timestamp_utc)
+VALUES ($team, $player, $playerName, $fixtureId, $fixtureApid, $tsUtc, $location,
+        $perspective, $stats, $period, $stat, $source, $ts)
+ON CONFLICT(team_apid, player_apid, fixture_id, location, period, stat, source, perspective)
+DO UPDATE SET
+    ts_utc = excluded.ts_utc,
+    fixture_apid = excluded.fixture_apid,
+    player_name = COALESCE(excluded.player_name, fm_player_matches.player_name),
+    stats_json = excluded.stats_json,
+    source_timestamp_utc = excluded.source_timestamp_utc;";
+            cmd.Parameters.AddWithValue("$team", teamApid);
+            cmd.Parameters.AddWithValue("$player", p.PlayerApid);
+            cmd.Parameters.AddWithValue("$playerName", (object?)p.PlayerName ?? DBNull.Value);
+            cmd.Parameters.AddWithValue("$fixtureId", p.FixtureId);
+            cmd.Parameters.AddWithValue("$fixtureApid", (object?)p.FixtureApid ?? DBNull.Value);
+            cmd.Parameters.AddWithValue("$tsUtc", p.TsUtc.ToString("yyyy-MM-dd HH:mm:ss"));
+            cmd.Parameters.AddWithValue("$location", p.Location);
+            cmd.Parameters.AddWithValue("$perspective", p.Perspective);
+            cmd.Parameters.AddWithValue("$stats", (object?)p.StatsJson ?? DBNull.Value);
+            cmd.Parameters.AddWithValue("$period", p.Period);
+            cmd.Parameters.AddWithValue("$stat", p.Stat);
+            cmd.Parameters.AddWithValue("$source", source);
+            cmd.Parameters.AddWithValue("$ts", ts);
+            written += await cmd.ExecuteNonQueryAsync(ct);
+        }
+
+        await tx.CommitAsync(ct);
+        return written;
     }
 
     private static async Task<bool> ExistsAsync(
