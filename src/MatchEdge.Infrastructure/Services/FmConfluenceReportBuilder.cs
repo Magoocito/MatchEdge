@@ -151,27 +151,12 @@ public static class FmConfluenceReportBuilder
         ["assists"] = "assists"
     };
 
-    // player market -> fm_player_matches.stats_json stat.
-    private static readonly Dictionary<string, string> PlayerStats = new(StringComparer.Ordinal)
-    {
-        ["goals"] = "goals",
-        ["shots"] = "sh",
-        ["shots_on_target"] = "sot",
-        ["score_assist"] = "assists",
-        ["assists"] = "assists",
-        ["offsides"] = "offsides",
-        ["shots_created"] = "shotsCreated",
-        ["chances_created"] = "chancesCreated",
-        ["cards"] = "cards",
-        ["yellow_cards"] = "yellowCards",
-        ["penalties"] = "penalties",
-        // P8 J4: filled from position-stats (perspective 'position') rows.
-        ["fouls_committed"] = "foulsC",
-        ["fouls_drawn"] = "foulsD",
-        ["tackles"] = "tackles",
-        ["foul_involvements"] = "foulInvolvements",
-        ["goalkeeper_saves"] = "saves"
-    };
+    // player market -> fm_player_matches.stats_json stat, with the FM slugs
+    // documented in FmPlayerStatMap (PBI 2.1 Parte C). Several markets need a
+    // fallback list because the same number is spelled differently by the two
+    // FM surfaces (teams/table discipline pivot vs position-stats rows).
+    private static string[] PlayerStatFields(string market) =>
+        FmPlayerStatMap.FieldsFor(market) ?? Array.Empty<string>();
 
     public static FmReport Build(string fixtureId, FmReportInput input)
     {
@@ -288,7 +273,7 @@ public static class FmConfluenceReportBuilder
             playerRows = DedupPlayerByFixture(playerRows);
 
             var (points, basis, skipReason) = BuildPlayerSeries(
-                playerRows, s.Market!, s.Line, s.Direction);
+                playerRows, s.Market!, s.Line, s.Direction, fixtureId);
             var ownWindows = BuildOwnWindows(points, "player");
             var opponentApid = subjectRole == "home" ? awayApid
                 : subjectRole == "away" ? homeApid : null;
@@ -360,13 +345,33 @@ public static class FmConfluenceReportBuilder
     private static bool LineEquals(double? a, double? b) =>
         a is null ? b is null : b is not null && Math.Abs(a.Value - b.Value) < 1e-9;
 
-    private static List<FmTeamMatchRow> DedupByFixture(IReadOnlyList<FmTeamMatchRow> rows)
+    // A fixture can hold several fm_team_matches rows - one per collected stat
+    // (corners, tackles, fouls-committed...). Keep one row per fixture but pick
+    // the one whose team_stats_json actually carries this market's stat, so the
+    // newer defense/discipline rows can never hide the corners row behind them.
+    private static List<FmTeamMatchRow> DedupByFixtureForMarket(
+        IReadOnlyList<FmTeamMatchRow> rows, string market)
     {
-        var seen = new HashSet<string>(StringComparer.Ordinal);
-        var result = new List<FmTeamMatchRow>();
-        foreach (var row in rows) // store order: ts DESC, fixture_id
+        var order = new List<string>();
+        var groups = new Dictionary<string, List<FmTeamMatchRow>>(StringComparer.Ordinal);
+        foreach (var row in rows)
         {
-            if (seen.Add(row.FixtureId)) result.Add(row);
+            if (!groups.TryGetValue(row.FixtureId, out var list))
+            {
+                list = new List<FmTeamMatchRow>();
+                groups[row.FixtureId] = list;
+                order.Add(row.FixtureId);
+            }
+            list.Add(row);
+        }
+
+        var result = new List<FmTeamMatchRow>(order.Count);
+        foreach (var fixtureId in order)
+        {
+            var list = groups[fixtureId];
+            var chosen = list.FirstOrDefault(r => TryTeamValue(market, r, out _, out _, out _))
+                         ?? list[0];
+            result.Add(chosen);
         }
         return result;
     }
@@ -438,7 +443,7 @@ public static class FmConfluenceReportBuilder
         var points = new List<FmWindowPoint>();
         string basis = BasisTeamOwn;
         string? skip = null;
-        var deduped = DedupByFixture(rows);
+        var deduped = DedupByFixtureForMarket(rows, market);
 
         if (deduped.Count == 0)
             return (points, BasisUnresolvedSubject, "no fm_team_matches rows for this team");
@@ -456,7 +461,8 @@ public static class FmConfluenceReportBuilder
     }
 
     private static (List<FmWindowPoint> Points, string Basis, string? SkipReason) BuildPlayerSeries(
-        IReadOnlyList<FmPlayerMatchRow> rows, string market, double? line, string? direction)
+        IReadOnlyList<FmPlayerMatchRow> rows, string market, double? line,
+        string? direction, string fixtureId)
     {
         var points = new List<FmWindowPoint>();
         if (rows.Count == 0)
@@ -468,7 +474,12 @@ public static class FmConfluenceReportBuilder
         {
             if (!TryPlayerValue(market, row, out var value, out basis, out var reason))
             {
-                skip ??= reason;
+                // PBI 2.1 C: only the current fixture's row can flag this
+                // signal. Older fixtures may carry defense/discipline rows
+                // only (their attack stats were never collected), which
+                // shrinks the window but says nothing about today's value.
+                if (string.Equals(row.FixtureId, fixtureId, StringComparison.Ordinal))
+                    skip ??= reason;
                 continue;
             }
             points.Add(new FmWindowPoint(value, Met(line, direction, value)));
@@ -537,11 +548,8 @@ public static class FmConfluenceReportBuilder
         out string basis, out string? reason)
     {
         value = 0;
-        var m = market.Trim().ToLowerInvariant();
-        if (m.StartsWith("home_", StringComparison.Ordinal)) m = m["home_".Length..];
-        else if (m.StartsWith("away_", StringComparison.Ordinal)) m = m["away_".Length..];
-
-        if (!PlayerStats.TryGetValue(m, out var stat))
+        var fields = PlayerStatFields(market.Trim().ToLowerInvariant());
+        if (fields.Length == 0)
         {
             basis = BasisUnmapped;
             reason = $"market '{market}' has no mapping to fm_player_matches.stats_json";
@@ -549,13 +557,21 @@ public static class FmConfluenceReportBuilder
         }
 
         basis = BasisPlayerOwn;
-        if (!TryReadStat(row.StatsJson, stat, out value))
+        foreach (var stat in fields)
         {
-            reason = $"stat '{stat}' missing or non-numeric in fm_player_matches.stats_json";
-            return false;
+            if (TryReadStat(row.StatsJson, stat, out value))
+            {
+                reason = null;
+                return true;
+            }
         }
-        reason = null;
-        return true;
+
+        value = 0;
+        reason = $"stat '{fields[0]}' missing or non-numeric in fm_player_matches.stats_json" +
+                 (fields.Length > 1
+                     ? $" (also tried: {string.Join(", ", fields.Skip(1))})"
+                     : string.Empty);
+        return false;
     }
 
     private static bool TryReadStat(string? json, string stat, out double value)
@@ -624,7 +640,7 @@ public static class FmConfluenceReportBuilder
     private static Dictionary<string, object> BuildVenueSplit(
         IReadOnlyList<FmTeamMatchRow> rows, string market, double? line, string? direction)
     {
-        var deduped = DedupByFixture(rows);
+        var deduped = DedupByFixtureForMarket(rows, market);
         var result = new Dictionary<string, object>(StringComparer.Ordinal);
         foreach (var location in new[] { "home", "away" })
         {

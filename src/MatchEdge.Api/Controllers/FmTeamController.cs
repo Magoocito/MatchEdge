@@ -7,7 +7,10 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace MatchEdge.Api.Controllers;
 
-public sealed record FmTeamCollectRequest(string[]? Locations, int? Period, string? Stat);
+// PBI 2.1 C: locations accepts the PBI's venue=home,away spelling and stat
+// accepts market names (goalkeeper_saves) or FM slugs (saves), comma separated.
+public sealed record FmTeamCollectRequest(
+    string[]? Locations, int? Period, string? Stat, string? Venue, string[]? Stats);
 
 // P8 J5: collects /api/front/position-stats rows (perspective=for) and stores
 // them in fm_player_matches with perspective 'position'.
@@ -100,21 +103,26 @@ public class FmTeamController : ControllerBase
     {
         var locations = request?.Locations is { Length: > 0 }
             ? request.Locations.Select(l => l.ToLowerInvariant()).Distinct().ToArray()
-            : new[] { "home", "away" };
+            : VenueTokens(request?.Venue);
+        if (locations.Length == 0) locations = new[] { "home", "away" };
         var invalid = locations.Where(l => Array.IndexOf(AllowedLocations, l) < 0).ToArray();
         if (invalid.Length > 0)
             return BadRequest(new { error = $"invalid location(s): {string.Join(",", invalid)}" });
 
         var period = request?.Period is > 0 ? request.Period.Value : 15;
-        var stat = string.IsNullOrWhiteSpace(request?.Stat) ? "corners" : request.Stat!;
+        var stats = StatTokens(request);
         var results = new List<object>();
 
+        foreach (var stat in stats)
         foreach (var location in locations)
         {
             ct.ThrowIfCancellationRequested();
+            // PBI 2.1 C: the pivot payload is keyed on group, not on stat, so
+            // a defense/discipline stat must never be requested with group=attack.
+            var group = FmPlayerStatMap.GroupForStat(stat);
             var apiPath =
                 $"/api/front/teams/table?stat={Uri.EscapeDataString(stat)}&id={teamApid}" +
-                $"&period={period}&location={location}&group=attack&selectedLeagues=&half=" +
+                $"&period={period}&location={location}&group={group}&selectedLeagues=&half=" +
                 "&dl=true&se=false&sm=easier";
 
             string? raw = null;
@@ -175,12 +183,14 @@ public class FmTeamController : ControllerBase
                 ct);
 
             _logger.LogInformation(
-                "G2 collect team {Team} {Location}: {Written} team rows ({Inserted} new), {Players} player rows, {Warnings} warning(s)",
-                teamApid, location, upsert.Written, upsert.Inserted,
+                "G2 collect team {Team} {Stat}/{Group} {Location}: {Written} team rows ({Inserted} new), {Players} player rows, {Warnings} warning(s)",
+                teamApid, stat, group, location, upsert.Written, upsert.Inserted,
                 upsert.PlayerWritten, parsed.Warnings.Count);
 
             results.Add(new
             {
+                stat,
+                group,
                 location,
                 apiPath,
                 status = parsed.TeamMatches.Count > 0 ? "OK" : "EMPTY",
@@ -196,7 +206,41 @@ public class FmTeamController : ControllerBase
             await Task.Delay(TimeSpan.FromSeconds(2 + Random.Shared.NextDouble() * 2), ct);
         }
 
-        return Ok(new { teamApid, period, stat, results });
+        return Ok(new
+        {
+            teamApid,
+            period,
+            stat = stats.Length == 1 ? stats[0] : null,
+            stats,
+            locations,
+            results
+        });
+    }
+
+    // venue=home,away (PBI spelling) -> ["home","away"]
+    private static string[] VenueTokens(string? venue) =>
+        string.IsNullOrWhiteSpace(venue)
+            ? Array.Empty<string>()
+            : venue.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+                   .Select(v => v.StartsWith("venue=", StringComparison.OrdinalIgnoreCase)
+                       ? v["venue=".Length..]
+                       : v)
+                   .Select(v => v.ToLowerInvariant())
+                   .Distinct(StringComparer.OrdinalIgnoreCase)
+                   .ToArray();
+
+    // "tackles,fouls-committed" | "goalkeeper_saves" | null -> FM slugs.
+    private static string[] StatTokens(FmTeamCollectRequest? request)
+    {
+        var raw = request?.Stats is { Length: > 0 }
+            ? request.Stats
+            : string.IsNullOrWhiteSpace(request?.Stat)
+                ? new[] { "corners" }
+                : request!.Stat!.Split(
+                    ',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+        return raw.Select(FmPlayerStatMap.ResolveSlug)
+            .Distinct(StringComparer.OrdinalIgnoreCase)
+            .ToArray();
     }
 
     // P8 J3/J5: position-stats (0 navigations, same gate as collect).

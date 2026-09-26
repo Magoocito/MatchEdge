@@ -1541,4 +1541,76 @@ VALUES ('33441811', '4', NULL, 'total_corners', 1.9, 'over', 'fm', '2026-09-25 0
             File.Delete(dbPath);
         }
     }
+
+    // PBI 2.1 C: only the CURRENT fixture's player row can flag a
+    // missing/non-numeric stat. Older fixtures may hold defense/discipline rows
+    // only (their attack stats were never collected), which used to poison the
+    // motivo of the whole window.
+    [Fact]
+    public async Task Report_PlayerStatMissingOnlyInOlderFixture_DoesNotFlagSignal()
+    {
+        var dbPath = Path.Combine(Path.GetTempPath(), $"fmtest_{Guid.NewGuid():N}.db");
+        try
+        {
+            var store = new FmSnapshotStore($"Data Source={dbPath}");
+            var outcomes = new FmOutcomeStore($"Data Source={dbPath}");
+            var kickoff = new DateTime(2026, 9, 24, 18, 45, 0, DateTimeKind.Utc);
+            await SeedReportDataAsync(store, withTeamRows: true, withOdds: false);
+
+            // Older fixture collected with stat=tackles: no 'sh' anywhere.
+            var oldKickoff = kickoff.AddDays(-20);
+            var oldTeam = new List<FmTeamMatchDraft>
+            {
+                new(18701, "fx-pt-old", 900_777, oldKickoff, "home", 18721,
+                    "Wales", null, "UEFA Nations League", 1, 0,
+                    """{"tackles":4}""", null, 30, "tackles")
+            };
+            var oldPlayers = new List<FmPlayerMatchDraft>
+            {
+                new(18701, 580, "C. Ronaldo", "fx-pt-old", 900_777, oldKickoff,
+                    "home", "team", """{"tackles":2}""", 30, "tackles")
+            };
+            await store.UpsertTeamMatchesAsync(
+                18701, "home", 30, "tackles", oldTeam, oldPlayers,
+                "teams/table", DateTime.UtcNow);
+
+            var report = await BuildReportAsync(store, outcomes);
+            var signal = Assert.Single(report.PlayerSignals,
+                p => p.Market == "shots" && p.Subject == "C. Ronaldo");
+            Assert.DoesNotContain("missing or non-numeric", signal.DataQuality.Motivo);
+
+            // Same fixture without 'sh' -> the flag must come back. The seed
+            // writes a copy of the current fixture per location, so both sides
+            // have to lose the stat (player rows only: no extra team row).
+            foreach (var loc in new[] { "home", "away" })
+            {
+                var curPlayers = new List<FmPlayerMatchDraft>
+                {
+                    new(18701, 580, "C. Ronaldo", ReportFixtureId, 900_001,
+                        kickoff, loc, "team", """{"sot":1}""", 15, "corners")
+                };
+                await store.UpsertTeamMatchesAsync(
+                    18701, loc, 15, "corners", new List<FmTeamMatchDraft>(),
+                    curPlayers, "teams/table", DateTime.UtcNow);
+            }
+
+            var currentFixtureRows = (await store.GetPlayerMatchesAsync(
+                    18701, null, null, null, CancellationToken.None))
+                .Where(r => r.FixtureId == ReportFixtureId)
+                .Select(r => $"{r.TeamApid}/{r.Perspective}/{r.Stat}/{r.Period}/{r.Location}={r.StatsJson}")
+                .ToList();
+
+            report = await BuildReportAsync(store, outcomes);
+            signal = Assert.Single(report.PlayerSignals,
+                p => p.Market == "shots" && p.Subject == "C. Ronaldo");
+            Assert.True(
+                signal.DataQuality.Motivo?.Contains("missing or non-numeric") == true,
+                $"motivo was: {signal.DataQuality.Motivo}; rows: {string.Join(" | ", currentFixtureRows)}");
+        }
+        finally
+        {
+            Microsoft.Data.Sqlite.SqliteConnection.ClearAllPools();
+            File.Delete(dbPath);
+        }
+    }
 }
