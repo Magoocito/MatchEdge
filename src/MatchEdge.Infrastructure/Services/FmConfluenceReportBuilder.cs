@@ -106,11 +106,43 @@ public sealed record FmReportPlayerSignal(
     [property: JsonPropertyName("overlap_flags")] List<string> OverlapFlags,
     [property: JsonPropertyName("data_quality")] FmReportDataQuality DataQuality);
 
+// P11: fixed-window evidence entry. hits is null when the window cannot be
+// scored (n below FmWindowCalculator.MinSample, or a line/direction missing);
+// n always reflects the values actually observed in the DB.
+public sealed record FmReportEvidenceWindow(
+    [property: JsonPropertyName("hits")] int? Hits,
+    [property: JsonPropertyName("n")] int N);
+
+// P11: opponent evidence for the same market/line. Only written when the
+// opponent really has its own series (team markets in P7); absent otherwise,
+// never padded with zeros.
+public sealed record FmReportEvidenceRival(
+    [property: JsonPropertyName("subject")] string Subject,
+    [property: JsonPropertyName("source")] string Source,
+    [property: JsonPropertyName("sequence")] List<double> Sequence,
+    [property: JsonPropertyName("windows")] Dictionary<string, FmReportEvidenceWindow> Windows);
+
+// P11: descriptive observation only - raw sequence + fixed windows. Nothing
+// here implies a future probability; sort is by sample size (SortCriteria).
+public sealed record FmReportEvidence(
+    [property: JsonPropertyName("subject")] string Subject,
+    [property: JsonPropertyName("market")] string Market,
+    [property: JsonPropertyName("line")] double? Line,
+    [property: JsonPropertyName("role")] string? Role,
+    [property: JsonPropertyName("source")] string Source,
+    [property: JsonPropertyName("sequence")] List<double> Sequence,
+    [property: JsonPropertyName("windows")] Dictionary<string, FmReportEvidenceWindow> Windows,
+    [property: JsonPropertyName("rival_context")]
+    [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    FmReportEvidenceRival? RivalContext);
+
 public sealed record FmReport(
     [property: JsonPropertyName("fixture")] FmReportFixture Fixture,
     [property: JsonPropertyName("sort_criteria")] string SortCriteria,
     [property: JsonPropertyName("markets")] List<FmReportMarket> Markets,
     [property: JsonPropertyName("player_signals")] List<FmReportPlayerSignal> PlayerSignals,
+    [property: JsonPropertyName("player_evidence")] List<FmReportEvidence> PlayerEvidence,
+    [property: JsonPropertyName("team_evidence")] List<FmReportEvidence> TeamEvidence,
     [property: JsonPropertyName("notes")] List<string> Notes);
 
 public static class FmConfluenceReportBuilder
@@ -120,6 +152,21 @@ public static class FmConfluenceReportBuilder
     public const string NoteDescriptive =
         "Esta sección es puramente descriptiva. Ninguna cifra debe interpretarse " +
         "como probabilidad de resultado futuro sin validación out-of-sample.";
+
+    // P11: explicit disclaimer inside the JSON contract for the evidence block.
+    // (Keeps clear of the forbidden-wording list the report tests scan for.)
+    public const string NoteEvidence =
+        "player_evidence y team_evidence son observaciones históricas: secuencia cruda " +
+        "y ventanas fijas (last5/last10/all) sobre datos persistidos; " +
+        "describen lo ocurrido y no implican probabilidad futura.";
+
+    // P11 A3: per-section row cap so the markdown cannot explode; the JSON and
+    // the markdown always render the same (already capped) list.
+    public const int EvidenceCap = 30;
+
+    // P11 B2: sequence carries the newest 10 values (the same set counted by
+    // windows.last10), ordered oldest -> newest (the newest value closes it).
+    public const int EvidenceSequenceLength = 10;
 
     public const string StatusInsufficient = "INSUFFICIENT_SAMPLE";
     public const string StatusNoData = "NO_DATA";
@@ -206,6 +253,7 @@ public static class FmConfluenceReportBuilder
             .ToList();
 
         var markets = new List<(FmReportMarket Market, int OwnN)>();
+        var teamEvidence = new List<(FmReportEvidence Evidence, int AllN)>();
         foreach (var s in teamSignals)
         {
             roles.TryGetValue(s.SubjectName, out var role);
@@ -221,7 +269,7 @@ public static class FmConfluenceReportBuilder
             var opponentApid = role.Role == "home" ? awayApid : homeApid;
             var opponentName = role.Role == "home" ? awayName : homeName;
             var opponentRows = opponentApid is long oa ? RowsFor(input, oa) : Array.Empty<FmTeamMatchRow>();
-            var (oppPoints, _, oppSkip) = BuildTeamSeries(
+            var (oppPoints, oppBasis, oppSkip) = BuildTeamSeries(
                 opponentRows, s.Market!, s.Line, s.Direction);
             var opponentReported = FindSignal(teamSignals, opponentName, s.Market, s.Line) is { } oppSig
                 ? BuildFmReported(oppSig)
@@ -252,9 +300,31 @@ public static class FmConfluenceReportBuilder
                     isMatchTotal ? null : s.SubjectName),
                 BuildManualOdds(input.Odds, s.Market!, s.Line));
             markets.Add((market, WindowN(ownWindows)));
+
+            // P11: evidence only when this subject really has observed values
+            // (A3: markets without mapped data in the DB are left out).
+            if (points.Count > 0)
+            {
+                teamEvidence.Add((
+                    new FmReportEvidence(
+                        subject, s.Market!, s.Line,
+                        isMatchTotal ? null : (role.Apid != 0 ? role.Role : null),
+                        basis,
+                        BuildSequence(points),
+                        BuildEvidenceWindows(points, "team"),
+                        isMatchTotal || oppPoints.Count == 0 || opponentName is null
+                            ? null
+                            : new FmReportEvidenceRival(
+                                opponentName,
+                                oppBasis,
+                                BuildSequence(oppPoints),
+                                BuildEvidenceWindows(oppPoints, "team"))),
+                    points.Count));
+            }
         }
 
         var playerList = new List<(FmReportPlayerSignal Signal, int OwnN)>();
+        var playerEvidence = new List<(FmReportEvidence Evidence, int AllN)>();
         foreach (var s in playerSignals)
         {
             roles.TryGetValue(s.SubjectName, out var role);
@@ -293,6 +363,24 @@ public static class FmConfluenceReportBuilder
                 BuildPlayerOverlapFlags(playerRows, h2h),
                 BuildDataQuality(s, input.Outcomes, skipReason)),
                 WindowN(ownWindows)));
+
+            // P11: same inclusion rule as team evidence - observed values only.
+            // No opponent logic exists for players in P7, so rival_context stays
+            // null (field omitted in JSON, nothing invented).
+            if (points.Count > 0)
+            {
+                playerEvidence.Add((
+                    new FmReportEvidence(
+                        s.SubjectName,
+                        s.Market!,
+                        s.Line,
+                        subjectRole,
+                        basis,
+                        BuildSequence(points),
+                        BuildEvidenceWindows(points, "player"),
+                        null),
+                    points.Count));
+            }
         }
 
         var fixture = new FmReportFixture(
@@ -318,13 +406,31 @@ public static class FmConfluenceReportBuilder
             .Select(p => p.Signal)
             .ToList();
 
+        // P11 A3: deterministic order (sample_size_desc, then market/line/subject)
+        // and a per-section cap shared by JSON and markdown.
+        var orderedPlayerEvidence = OrderEvidence(playerEvidence);
+        var orderedTeamEvidence = OrderEvidence(teamEvidence);
+
         return new FmReport(
             fixture,
             SortCriteria,
             orderedMarkets,
             orderedPlayers,
-            new List<string> { NoteDescriptive });
+            orderedPlayerEvidence,
+            orderedTeamEvidence,
+            new List<string> { NoteDescriptive, NoteEvidence });
     }
+
+    private static List<FmReportEvidence> OrderEvidence(
+        List<(FmReportEvidence Evidence, int AllN)> entries) =>
+        entries
+            .OrderByDescending(e => e.AllN)
+            .ThenBy(e => e.Evidence.Market, StringComparer.Ordinal)
+            .ThenBy(e => e.Evidence.Line)
+            .ThenBy(e => e.Evidence.Subject, StringComparer.Ordinal)
+            .Select(e => e.Evidence)
+            .Take(EvidenceCap)
+            .ToList();
 
     private static IReadOnlyList<FmTeamMatchRow> RowsFor(FmReportInput input, long teamApid) =>
         input.TeamRows.TryGetValue(teamApid, out var rows) ? rows : Array.Empty<FmTeamMatchRow>();
@@ -633,6 +739,33 @@ public static class FmConfluenceReportBuilder
                     Round(w.ObservedRate, 4), Round(w.Mean, 4),
                     Round(w.Median, 4), Round(w.Min, 4), Round(w.Max, 4))
                 : (object)StatusInsufficient;
+        }
+        return result;
+    }
+
+    // P11 B2: raw values of the newest EvidenceSequenceLength matches, ordered
+    // oldest -> newest so the newest value closes the sequence. Rows whose stat
+    // is missing/non-numeric never enter the series (the builders skip them),
+    // so the sequence is never padded with invented zeros.
+    private static List<double> BuildSequence(IReadOnlyList<FmWindowPoint> points) =>
+        points.Take(EvidenceSequenceLength).Select(p => p.Value).Reverse().ToList();
+
+    // P11 B1: same calculator and same points as own_windows, reduced to the
+    // {hits, n} pair the evidence contract promises. hits stays null when the
+    // window cannot be scored (INSUFFICIENT_SAMPLE or no line/direction).
+    private static Dictionary<string, FmReportEvidenceWindow> BuildEvidenceWindows(
+        IReadOnlyList<FmWindowPoint> points, string subjectType)
+    {
+        var result = new Dictionary<string, FmReportEvidenceWindow>(StringComparer.Ordinal);
+        foreach (var w in FmWindowCalculator.ComputeFromPoints(subjectType, points))
+        {
+            result[w.Window switch
+            {
+                "5" => "last5",
+                "10" => "last10",
+                _ => WindowAll
+            }] = new FmReportEvidenceWindow(
+                w.Status == FmWindowCalculator.StatusOk ? w.Hits : null, w.N);
         }
         return result;
     }

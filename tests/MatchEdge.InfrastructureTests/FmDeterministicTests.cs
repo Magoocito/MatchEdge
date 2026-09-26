@@ -1233,8 +1233,12 @@ VALUES ('33441811', '4', NULL, 'total_corners', 1.9, 'over', 'fm', '2026-09-25 0
         return doc.RootElement.GetProperty(stat).GetDouble();
     }
 
+    // P11 B5: wording that would turn a descriptive report into a betting
+    // claim. "edge" and "ev" are word-bounded so the product name (MatchEdge)
+    // and words like "evento" stay allowed; the mandated closing line of E5 is
+    // stripped from the markdown before the scan.
     private static readonly System.Text.RegularExpressions.Regex Forbidden =
-        new("recomend|apuesta|edge|value bet|elegid",
+        new(@"recomend|apuesta|\bedge\b|value bet|elegid|banker|sub[ -]?hero|\bpick\b|\bev\b",
             System.Text.RegularExpressions.RegexOptions.IgnoreCase);
 
     // F1: own_windows.last10 and venue_split equal a manual recount from
@@ -1694,6 +1698,238 @@ VALUES ('33441811', '4', NULL, 'total_corners', 1.9, 'over', 'fm', '2026-09-25 0
         {
             Microsoft.Data.Sqlite.SqliteConnection.ClearAllPools();
             File.Delete(dbPath);
+        }
+    }
+
+    // ---- P11 (evidencia descriptiva) -----------------------------------------
+
+    private static List<DateTime> SeriesTimestamps(List<FmPlayerMatchRow> rows) =>
+        rows.Select(r => r.TsUtc).ToList();
+
+    private static double PlayerValue(FmPlayerMatchRow row, string stat)
+    {
+        using var doc = JsonDocument.Parse(row.StatsJson!);
+        return doc.RootElement.GetProperty(stat).GetDouble();
+    }
+
+    private static async Task<List<FmPlayerMatchRow>> PlayerSeriesAsync(
+        FmSnapshotStore store, long teamApid, string playerName) =>
+        (await store.GetPlayerMatchesAsync(teamApid, null, null, null))
+            .Where(p => string.Equals(p.PlayerName, playerName, StringComparison.OrdinalIgnoreCase))
+            .GroupBy(p => p.FixtureId, StringComparer.Ordinal)
+            .Select(g => g.First())
+            .OrderByDescending(p => p.TsUtc)
+            .ToList();
+
+    private static async Task<List<FmTeamMatchRow>> TeamSeriesAsync(
+        FmSnapshotStore store, long teamApid) =>
+        (await store.GetTeamMatchesAsync(teamApid, null, null, false))
+            .GroupBy(r => r.FixtureId, StringComparer.Ordinal)
+            .Select(g => g.First())
+            .OrderByDescending(r => r.TsUtc)
+            .ToList();
+
+    // P11 C2: sequence is the newest 10 raw values ordered oldest -> newest and
+    // every fixed window equals a manual recount over fm_player_matches.
+    [Fact]
+    public async Task Report_PlayerEvidence_SequenceAndWindowsMatchManualRecount()
+    {
+        var dbPath = Path.Combine(Path.GetTempPath(), $"fmtest_{Guid.NewGuid():N}.db");
+        try
+        {
+            var store = new FmSnapshotStore($"Data Source={dbPath}");
+            var outcomes = new FmOutcomeStore($"Data Source={dbPath}");
+            await SeedReportDataAsync(store, withTeamRows: true, withOdds: true);
+
+            var report = await BuildReportAsync(store, outcomes);
+            var ev = Assert.Single(report.PlayerEvidence,
+                e => e.Market == "shots" && e.Subject == "C. Ronaldo");
+
+            var rows = await PlayerSeriesAsync(store, 18701, "C. Ronaldo");
+            var values = rows.Select(r => PlayerValue(r, "sh")).ToList();
+            int Hits(int n) => values.Take(n).Count(v => v > 1.5);
+
+            var stamps = SeriesTimestamps(rows);
+            // Ties are possible (two fixtures kicked off at the same minute);
+            // the series only has to be non-increasing, like ORDER BY ts DESC.
+            Assert.True(stamps.Zip(stamps.Skip(1), (a, b) => a >= b).All(x => x),
+                "mock series must be newest-first: " +
+                string.Join(", ", stamps.Select(s => s.ToString("O"))));
+
+            Assert.Equal(values.Count, ev.Windows["all"].N);
+            Assert.Equal(Hits(values.Count), ev.Windows["all"].Hits);
+            Assert.Equal(Math.Min(5, values.Count), ev.Windows["last5"].N);
+            Assert.Equal(Hits(5), ev.Windows["last5"].Hits);
+            Assert.Equal(Math.Min(10, values.Count), ev.Windows["last10"].N);
+            Assert.Equal(Hits(10), ev.Windows["last10"].Hits);
+
+            Assert.Equal(values.Take(10).Reverse().ToList(), ev.Sequence);
+            Assert.Equal(FmConfluenceReportBuilder.BasisPlayerOwn, ev.Source);
+            Assert.Equal("home", ev.Role);
+            Assert.Null(ev.RivalContext); // P7 has no opponent-player logic
+            Assert.Contains(FmConfluenceReportBuilder.NoteEvidence, report.Notes);
+
+            // JSON contract: rival_context omitted for players, present for teams.
+            Assert.DoesNotContain("rival_context", JsonSerializer.Serialize(ev));
+        }
+        finally
+        {
+            Microsoft.Data.Sqlite.SqliteConnection.ClearAllPools();
+            File.Delete(dbPath);
+        }
+    }
+
+    // P11 C2: team evidence + rival context equal manual recounts from both
+    // fm_team_matches series (same market/line, opponent side).
+    [Fact]
+    public async Task Report_TeamEvidence_RivalContextMatchesOpponentRecount()
+    {
+        var dbPath = Path.Combine(Path.GetTempPath(), $"fmtest_{Guid.NewGuid():N}.db");
+        try
+        {
+            var store = new FmSnapshotStore($"Data Source={dbPath}");
+            var outcomes = new FmOutcomeStore($"Data Source={dbPath}");
+            await SeedReportDataAsync(store, withTeamRows: true, withOdds: true);
+
+            var report = await BuildReportAsync(store, outcomes);
+            Assert.Equal(2, report.TeamEvidence.Count);
+
+            var ev = Assert.Single(report.TeamEvidence, e => e.Market == "home_saves");
+            Assert.Equal("Portugal", ev.Subject);
+            Assert.Equal("home", ev.Role);
+            Assert.Equal(FmConfluenceReportBuilder.BasisTeamOwn, ev.Source);
+
+            var rows = await TeamSeriesAsync(store, 18701);
+            var values = rows.Select(r => StatOf(r, "saves")).ToList();
+            int Hits(int n) => values.Take(n).Count(v => v > 1.5);
+
+            Assert.Equal(values.Count, ev.Windows["all"].N);
+            Assert.Equal(Hits(values.Count), ev.Windows["all"].Hits);
+            Assert.Equal(5, ev.Windows["last5"].N);
+            Assert.Equal(Hits(5), ev.Windows["last5"].Hits);
+            Assert.Equal(Hits(10), ev.Windows["last10"].Hits);
+            Assert.Equal(values.Take(10).Reverse().ToList(), ev.Sequence);
+
+            var rival = ev.RivalContext;
+            Assert.NotNull(rival);
+            Assert.Equal("Wales", rival!.Subject);
+            var oppRows = await TeamSeriesAsync(store, 18721);
+            var oppValues = oppRows.Select(r => StatOf(r, "saves")).ToList();
+            Assert.Equal(oppValues.Take(10).Reverse().ToList(), rival.Sequence);
+            int OppHits(int n) => oppValues.Take(n).Count(v => v > 1.5);
+            Assert.Equal(oppValues.Count, rival.Windows["all"].N);
+            Assert.Equal(OppHits(oppValues.Count), rival.Windows["all"].Hits);
+            Assert.Equal(OppHits(10), rival.Windows["last10"].Hits);
+            Assert.Contains("rival_context", JsonSerializer.Serialize(ev));
+
+            var corners = Assert.Single(report.TeamEvidence, e => e.Market == "away_corners");
+            Assert.Equal("Wales", corners.Subject);
+            Assert.Equal("away", corners.Role);
+            Assert.NotNull(corners.RivalContext);
+        }
+        finally
+        {
+            Microsoft.Data.Sqlite.SqliteConnection.ClearAllPools();
+            File.Delete(dbPath);
+        }
+    }
+
+    // P11 C2: deterministic double build and the fixed markdown section, which
+    // always sits between "Señales de jugadores" and "Cuotas".
+    [Fact]
+    public async Task Report_EvidenceBlock_IsDeterministicAndRendersFixedLineTemplate()
+    {
+        var dbPath = Path.Combine(Path.GetTempPath(), $"fmtest_{Guid.NewGuid():N}.db");
+        try
+        {
+            var store = new FmSnapshotStore($"Data Source={dbPath}");
+            var outcomes = new FmOutcomeStore($"Data Source={dbPath}");
+            await SeedReportDataAsync(store, withTeamRows: true, withOdds: true);
+
+            var first = await BuildReportAsync(store, outcomes);
+            var second = await BuildReportAsync(store, outcomes);
+
+            Assert.Equal(
+                JsonSerializer.Serialize(first.PlayerEvidence),
+                JsonSerializer.Serialize(second.PlayerEvidence));
+            Assert.Equal(
+                JsonSerializer.Serialize(first.TeamEvidence),
+                JsonSerializer.Serialize(second.TeamEvidence));
+
+            var mdFirst = FmConfluenceReportMarkdown.Render(first);
+            var mdSecond = FmConfluenceReportMarkdown.Render(second);
+            Assert.Equal(mdFirst, mdSecond);
+
+            var playersIdx = mdFirst.IndexOf("## Señales de jugadores", StringComparison.Ordinal);
+            var evidenceIdx = mdFirst.IndexOf("## Evidencia histórica", StringComparison.Ordinal);
+            var oddsIdx = mdFirst.IndexOf("## Cuotas", StringComparison.Ordinal);
+            Assert.True(playersIdx >= 0 && oddsIdx > playersIdx);
+            Assert.InRange(evidenceIdx, playersIdx + 1, oddsIdx - 1);
+
+            // One line per prop: Nombre — market @ line: [seq] | last5 h/n | ...
+            Assert.Contains("- C. Ronaldo — shots @ 1.5: [", mdFirst);
+            Assert.Contains("] | last5 ", mdFirst);
+            Assert.Contains(" | last10 ", mdFirst);
+            Assert.Contains(" | all ", mdFirst);
+            Assert.Contains("- Portugal — home_saves @ 1.5: [", mdFirst);
+            Assert.Contains("  - Rival (Wales): [", mdFirst);
+        }
+        finally
+        {
+            Microsoft.Data.Sqlite.SqliteConnection.ClearAllPools();
+            File.Delete(dbPath);
+        }
+    }
+
+    // P11 A3/C2: a signal with no observed values is reported in
+    // player_signals (as before) but stays out of the evidence sections.
+    [Fact]
+    public async Task Report_WithoutObservedValues_EvidenceSectionsAreEmpty()
+    {
+        var dbPath = Path.Combine(Path.GetTempPath(), $"fmtest_{Guid.NewGuid():N}.db");
+        try
+        {
+            var store = new FmSnapshotStore($"Data Source={dbPath}");
+            var outcomes = new FmOutcomeStore($"Data Source={dbPath}");
+            await SeedReportDataAsync(store, withTeamRows: false, withOdds: false);
+
+            var report = await BuildReportAsync(store, outcomes);
+
+            Assert.NotEmpty(report.PlayerSignals);
+            Assert.NotEmpty(report.Markets);
+            Assert.Empty(report.PlayerEvidence);
+            Assert.Empty(report.TeamEvidence);
+
+            var md = FmConfluenceReportMarkdown.Render(report);
+            Assert.Contains(
+                "- sin señales de jugador con valores observados en la DB", md);
+            Assert.Contains(
+                "- sin señales de equipo con valores observados en la DB", md);
+        }
+        finally
+        {
+            Microsoft.Data.Sqlite.SqliteConnection.ClearAllPools();
+            File.Delete(dbPath);
+        }
+    }
+
+    // P11 B5: the forbidden-wording list covers the betting vocabulary while
+    // word-bounded terms keep the product name and everyday words usable.
+    [Fact]
+    public void ForbiddenWordPattern_CoversPickBankerSubHeroAndEv()
+    {
+        foreach (var word in new[]
+                 {
+                     "banker", "SUB HERO", "sub-hero", "pick", "Pick", "EV", "ev",
+                     "value bet", "recomendación", "apuesta", "edge", "elegido"
+                 })
+        {
+            Assert.True(Forbidden.IsMatch(word), $"expected forbidden: {word}");
+        }
+
+        foreach (var allowed in new[] { "MatchEdge", "evento", "valor", "value" })
+        {
+            Assert.False(Forbidden.IsMatch(allowed), $"expected allowed: {allowed}");
         }
     }
 }
