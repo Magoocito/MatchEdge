@@ -1102,4 +1102,443 @@ VALUES ('33441811', '4', NULL, 'total_corners', 1.9, 'over', 'fm', '2026-09-25 0
             File.Delete(dbPath);
         }
     }
+
+    // ---- P7 (Parte E) --------------------------------------------------------
+
+    private const string ReportFixtureId = "33441811";
+
+    private static FmTeamMatchDraft TeamDraft(
+        long teamApid, string fixtureId, DateTime ts, string location,
+        long opponentApid, string opponent, int hg, int ag, string statsJson) =>
+        new(teamApid, fixtureId, 900_000 + (Math.Abs(fixtureId.GetHashCode()) % 100_000),
+            ts, location, opponentApid, opponent, null, "UEFA Nations League",
+            hg, ag, statsJson, null, 15, "corners");
+
+    private static string Stats(int saves, int corners) =>
+        $"{{\"saves\":{saves},\"corners\":{corners},\"sh\":10,\"cards\":1}}";
+
+    private static string PlayerStats(int shots) => $"{{\"sh\":{shots},\"sot\":1}}";
+
+    private static string History(int entries, double value, int hits) =>
+        "[" + string.Join(",", Enumerable.Range(0, entries).Select(i =>
+            $"{{\"t\":\"2026-{(9 - i / 4):00}-{(20 - i * 2):00}T18:00:00.000Z\"," +
+            $"\"vt\":{value},\"met\":{(i < hits ? "true" : "false")}}}")) + "]";
+
+    private static async Task<long> SeedReportDataAsync(
+        FmSnapshotStore store, bool withTeamRows, bool withOdds)
+    {
+        var snapshotId = await store.InsertSnapshotAsync(
+            ReportFixtureId, "team-trends", "https://www.footymetrics.com/fixtures/1-x",
+            DateTime.UtcNow, "p", "s", "fm-json-v1", "OK");
+
+        var signals = new List<FmSignalDraft>
+        {
+            new("team", "Portugal", "home_saves", 1.5, "over", 10, 10, 1.0,
+                null, null, null, History(10, 5, 10)),
+            new("team", "Wales", "away_corners", 3.5, "over", 8, 10, 0.8,
+                null, null, null, History(10, 6, 8)),
+            new("player", "C. Ronaldo", "shots", 1.5, "over", 6, 8, 0.75,
+                null, null, null, History(8, 3, 6))
+        };
+        await store.InsertSignalsAsync(
+            snapshotId, ReportFixtureId, signals, "all", "all", DateTime.UtcNow,
+            """{"location":"all"}""");
+
+        if (withOdds)
+        {
+            await store.InsertOddsAsync(ReportFixtureId, new List<FmOddsDraft>
+            {
+                new("team", "Portugal", "home_saves", 1.5, "1", 1.91, "over"),
+                new("team", "Wales", "away_corners", 3.5, "1", 2.05, "over")
+            }, snapshotId, DateTime.UtcNow);
+            await store.UpsertManualOddsAsync(
+                ReportFixtureId, "Betano", "home_saves", 1.5, 2.00, DateTime.UtcNow);
+            await store.UpsertManualOddsAsync(
+                ReportFixtureId, "Betano", "away_corners", 3.5, 1.85, DateTime.UtcNow);
+        }
+
+        if (!withTeamRows) return snapshotId;
+
+        var kickoff = new DateTime(2026, 9, 24, 18, 45, 0, DateTimeKind.Utc);
+        var ptHome = new List<FmTeamMatchDraft>
+        {
+            TeamDraft(18701, ReportFixtureId, kickoff, "home", 18721, "Wales", 1, 0, Stats(5, 7)),
+            TeamDraft(18701, "fx-pt-h1", kickoff.AddDays(-4), "home", 18721, "Wales", 2, 1, Stats(4, 8)),
+            TeamDraft(18701, "fx-pt-h2", kickoff.AddDays(-8), "home", 18873, "Serbia", 1, 1, Stats(3, 5)),
+            TeamDraft(18701, "fx-pt-h3", kickoff.AddDays(-12), "home", 18568, "Greece", 3, 0, Stats(6, 9)),
+            TeamDraft(18701, "fx-pt-h4", kickoff.AddDays(-16), "home", 18721, "Wales", 2, 2, Stats(2, 6)),
+            TeamDraft(18701, "fx-pt-h5", kickoff.AddDays(-20), "home", 18660, "Germany", 0, 1, Stats(1, 4)),
+            TeamDraft(18701, "fx-pt-h6", kickoff.AddDays(-24), "home", 18873, "Serbia", 1, 0, Stats(7, 10))
+        };
+        var ptAway = new List<FmTeamMatchDraft>
+        {
+            TeamDraft(18701, "fx-pt-a1", kickoff.AddDays(-2), "away", 18721, "Wales", 1, 1, Stats(3, 6)),
+            TeamDraft(18701, "fx-pt-a2", kickoff.AddDays(-6), "away", 18660, "Germany", 0, 2, Stats(2, 5)),
+            TeamDraft(18701, "fx-pt-a3", kickoff.AddDays(-10), "away", 18873, "Serbia", 1, 0, Stats(5, 7)),
+            TeamDraft(18701, "fx-pt-a4", kickoff.AddDays(-14), "away", 18568, "Greece", 2, 0, Stats(4, 8)),
+            TeamDraft(18701, "fx-pt-a5", kickoff.AddDays(-18), "away", 18721, "Wales", 0, 0, Stats(1, 3)),
+            TeamDraft(18701, "fx-pt-a6", kickoff.AddDays(-22), "away", 18660, "Germany", 1, 2, Stats(6, 9))
+        };
+        var waAway = new List<FmTeamMatchDraft>
+        {
+            TeamDraft(18721, ReportFixtureId, kickoff, "away", 18701, "Portugal", 1, 0, Stats(1, 4)),
+            TeamDraft(18721, "fx-wa-a1", kickoff.AddDays(-4), "away", 18660, "Germany", 0, 3, Stats(2, 7)),
+            TeamDraft(18721, "fx-wa-a2", kickoff.AddDays(-8), "away", 18643, "Austria", 1, 1, Stats(3, 5)),
+            TeamDraft(18721, "fx-wa-a3", kickoff.AddDays(-12), "away", 18654, "Ireland", 2, 0, Stats(2, 9)),
+            TeamDraft(18721, "fx-wa-a4", kickoff.AddDays(-16), "away", 18657, "Israel", 1, 2, Stats(4, 6)),
+            TeamDraft(18721, "fx-wa-a5", kickoff.AddDays(-20), "away", 18870, "Liechtenstein", 5, 0, Stats(1, 8)),
+            TeamDraft(18721, "fx-wa-a6", kickoff.AddDays(-24), "away", 27065, "Lithuania", 3, 1, Stats(2, 5))
+        };
+        var waHome = new List<FmTeamMatchDraft>
+        {
+            TeamDraft(18721, "fx-wa-h1", kickoff.AddDays(-2), "home", 18643, "Austria", 1, 0, Stats(3, 6)),
+            TeamDraft(18721, "fx-wa-h2", kickoff.AddDays(-6), "home", 18654, "Ireland", 0, 1, Stats(2, 4)),
+            TeamDraft(18721, "fx-wa-h3", kickoff.AddDays(-10), "home", 18657, "Israel", 2, 2, Stats(5, 7)),
+            TeamDraft(18721, "fx-wa-h4", kickoff.AddDays(-14), "home", 18870, "Liechtenstein", 4, 0, Stats(1, 3)),
+            TeamDraft(18721, "fx-wa-h5", kickoff.AddDays(-18), "home", 27065, "Lithuania", 2, 1, Stats(4, 9)),
+            TeamDraft(18721, "fx-wa-h6", kickoff.AddDays(-22), "home", 18660, "Germany", 1, 3, Stats(2, 5))
+        };
+
+        var players = new List<FmPlayerMatchDraft>();
+        foreach (var row in ptHome.Concat(ptAway).Concat(waHome).Concat(waAway))
+        {
+            players.Add(new FmPlayerMatchDraft(
+                row.TeamApid, 580, "C. Ronaldo", row.FixtureId, row.FixtureApid,
+                row.TsUtc, row.Location, "team", PlayerStats(row.TsUtc.Day % 5),
+                15, "corners"));
+        }
+
+        await store.UpsertTeamMatchesAsync(
+            18701, "home", 15, "corners", ptHome, players, "teams/table", DateTime.UtcNow);
+        await store.UpsertTeamMatchesAsync(
+            18701, "away", 15, "corners", ptAway, players, "teams/table", DateTime.UtcNow);
+        await store.UpsertTeamMatchesAsync(
+            18721, "home", 15, "corners", waHome, players, "teams/table", DateTime.UtcNow);
+        await store.UpsertTeamMatchesAsync(
+            18721, "away", 15, "corners", waAway, players, "teams/table", DateTime.UtcNow);
+        return snapshotId;
+    }
+
+    private static async Task<FmReport> BuildReportAsync(
+        FmSnapshotStore store, FmOutcomeStore outcomes)
+    {
+        var input = await FmConfluenceReportLoader.LoadAsync(store, outcomes, ReportFixtureId);
+        Assert.NotNull(input);
+        return FmConfluenceReportBuilder.Build(ReportFixtureId, input!);
+    }
+
+    private static double StatOf(FmTeamMatchRow row, string stat)
+    {
+        using var doc = JsonDocument.Parse(row.TeamStatsJson!);
+        return doc.RootElement.GetProperty(stat).GetDouble();
+    }
+
+    private static readonly System.Text.RegularExpressions.Regex Forbidden =
+        new("recomend|apuesta|edge|value bet|elegid",
+            System.Text.RegularExpressions.RegexOptions.IgnoreCase);
+
+    // F1: own_windows.last10 and venue_split equal a manual recount from
+    // fm_team_matches for two markets (Portugal/home_saves, Wales/away_corners).
+    [Fact]
+    public async Task Report_OwnWindowsAndVenueSplit_MatchManualTeamMatchRecount()
+    {
+        var dbPath = Path.Combine(Path.GetTempPath(), $"fmtest_{Guid.NewGuid():N}.db");
+        try
+        {
+            var store = new FmSnapshotStore($"Data Source={dbPath}");
+            var outcomes = new FmOutcomeStore($"Data Source={dbPath}");
+            await SeedReportDataAsync(store, withTeamRows: true, withOdds: true);
+
+            var report = await BuildReportAsync(store, outcomes);
+
+            Assert.Equal("sample_size_desc", report.SortCriteria);
+            Assert.Equal("Portugal", report.Fixture.Home);
+            Assert.Equal("Wales", report.Fixture.Away);
+            Assert.Equal("2026-09-24T18:45:00Z", report.Fixture.KickoffUtc);
+
+            foreach (var (apid, market, line, subject, stat) in new[]
+                     {
+                         (18701L, "home_saves", 1.5, "Portugal", "saves"),
+                         (18721L, "away_corners", 3.5, "Wales", "corners")
+                     })
+            {
+                var entry = Assert.Single(report.Markets,
+                    m => m.Market == market && m.Subject == subject);
+                var rows = (await store.GetTeamMatchesAsync(apid, null, null, false))
+                    .GroupBy(r => r.FixtureId)
+                    .Select(g => g.First())
+                    .ToList();
+
+                var last10 = rows.Take(10).ToList();
+                var expectedHits = last10.Count(r => StatOf(r, stat) > line);
+                var window = Assert.IsType<FmReportWindow>(entry.TeamAttack.OwnWindows["last10"]);
+                Assert.Equal(last10.Count, window.N);
+                Assert.Equal(expectedHits, window.Hits);
+
+                foreach (var location in new[] { "home", "away" })
+                {
+                    var subset = rows.Where(r => r.Location == location).ToList();
+                    var venue = Assert.IsType<FmReportVenue>(
+                        entry.TeamAttack.VenueSplit[location]);
+                    Assert.Equal(subset.Count, venue.N);
+                    Assert.Equal(subset.Count(r => StatOf(r, stat) > line), venue.Hits);
+                    Assert.Equal(
+                        Math.Round(
+                            (double)subset.Count(r => StatOf(r, stat) > line) / subset.Count, 4),
+                        venue.Rate);
+                }
+
+                Assert.NotNull(entry.TeamAttack.FmReported);
+                Assert.NotEmpty(entry.MarketOddsFm);
+                var (manualValue, manualProb) = market == "home_saves"
+                    ? (2.00, 0.5)
+                    : (1.85, 0.541);
+                Assert.Equal(manualValue, entry.ManualOdds.Value);
+                Assert.Equal(manualProb, entry.ManualOdds.ImpliedProb);
+            }
+
+            var savesEntry = report.Markets.Single(m => m.Market == "home_saves");
+            var opponentAll = Assert.IsType<FmReportWindow>(
+                savesEntry.OpponentContext.ConcededEquivalent.OwnWindows["all"]);
+            Assert.Equal(13, opponentAll.N);
+        }
+        finally
+        {
+            Microsoft.Data.Sqlite.SqliteConnection.ClearAllPools();
+            File.Delete(dbPath);
+        }
+    }
+
+    // F2: no forbidden wording in the outputs; the mandated closing
+    // disclaimer of E5 (which requires it verbatim) is stripped before the scan.
+    [Fact]
+    public async Task Report_SerializedJsonAndMarkdown_HaveNoForbiddenWords()
+    {
+        var dbPath = Path.Combine(Path.GetTempPath(), $"fmtest_{Guid.NewGuid():N}.db");
+        try
+        {
+            var store = new FmSnapshotStore($"Data Source={dbPath}");
+            var outcomes = new FmOutcomeStore($"Data Source={dbPath}");
+            await SeedReportDataAsync(store, withTeamRows: true, withOdds: true);
+            var report = await BuildReportAsync(store, outcomes);
+
+            var json = JsonSerializer.Serialize(report);
+            var md = FmConfluenceReportMarkdown.Render(report)
+                .Replace(FmConfluenceReportMarkdown.ClosingNote, "");
+
+            Assert.DoesNotMatch(Forbidden, json);
+            Assert.DoesNotMatch(Forbidden, md);
+        }
+        finally
+        {
+            Microsoft.Data.Sqlite.SqliteConnection.ClearAllPools();
+            File.Delete(dbPath);
+        }
+    }
+
+    // F3: missing data is labelled in JSON and markdown, never omitted.
+    [Fact]
+    public async Task Report_MissingData_MarksNoDataAndInsufficientSample()
+    {
+        var dbPath = Path.Combine(Path.GetTempPath(), $"fmtest_{Guid.NewGuid():N}.db");
+        try
+        {
+            var store = new FmSnapshotStore($"Data Source={dbPath}");
+            var outcomes = new FmOutcomeStore($"Data Source={dbPath}");
+            await SeedReportDataAsync(store, withTeamRows: false, withOdds: false);
+            var report = await BuildReportAsync(store, outcomes);
+
+            var entry = Assert.Single(report.Markets, m => m.Market == "home_saves");
+            Assert.All(entry.TeamAttack.OwnWindows.Values,
+                v => Assert.Equal(FmConfluenceReportBuilder.StatusInsufficient, v));
+            Assert.All(entry.TeamAttack.VenueSplit.Values,
+                v => Assert.Equal(FmConfluenceReportBuilder.StatusNoData, v));
+            Assert.Equal(FmConfluenceReportBuilder.StatusInsufficient,
+                entry.OpponentContext.ConcededEquivalent.OwnWindows["all"]);
+            Assert.Empty(entry.MarketOddsFm);
+            Assert.Null(entry.ManualOdds.Value);
+            Assert.Contains("no fm_team_matches rows", entry.DataQuality.Motivo);
+
+            var md = FmConfluenceReportMarkdown.Render(report);
+            Assert.Contains(FmConfluenceReportBuilder.StatusInsufficient, md);
+            Assert.Contains(FmConfluenceReportBuilder.StatusNoData, md);
+            Assert.Contains("no cargada", md);
+            Assert.Contains("desconocido", md);
+        }
+        finally
+        {
+            Microsoft.Data.Sqlite.SqliteConnection.ClearAllPools();
+            File.Delete(dbPath);
+        }
+    }
+
+    // F4: two renders of the same data are byte-identical (no timestamps).
+    [Fact]
+    public async Task Report_MarkdownAndJson_AreDeterministicAcrossRenders()
+    {
+        var dbPath = Path.Combine(Path.GetTempPath(), $"fmtest_{Guid.NewGuid():N}.db");
+        try
+        {
+            var store = new FmSnapshotStore($"Data Source={dbPath}");
+            var outcomes = new FmOutcomeStore($"Data Source={dbPath}");
+            await SeedReportDataAsync(store, withTeamRows: true, withOdds: true);
+
+            var first = await BuildReportAsync(store, outcomes);
+            var second = await BuildReportAsync(store, outcomes);
+
+            Assert.Equal(
+                FmConfluenceReportMarkdown.Render(first),
+                FmConfluenceReportMarkdown.Render(second));
+            Assert.Equal(
+                JsonSerializer.Serialize(first),
+                JsonSerializer.Serialize(second));
+        }
+        finally
+        {
+            Microsoft.Data.Sqlite.SqliteConnection.ClearAllPools();
+            File.Delete(dbPath);
+        }
+    }
+
+    // I2 (store side): manual odds update in place, never duplicate rows.
+    [Fact]
+    public async Task Store_UpsertManualOdds_UpdatesExistingRow()
+    {
+        var dbPath = Path.Combine(Path.GetTempPath(), $"fmtest_{Guid.NewGuid():N}.db");
+        try
+        {
+            var store = new FmSnapshotStore($"Data Source={dbPath}");
+            var first = await store.UpsertManualOddsAsync(
+                ReportFixtureId, "Betano", "total_goals", 2.5, 1.90, DateTime.UtcNow);
+            var second = await store.UpsertManualOddsAsync(
+                ReportFixtureId, "Betano", "total_goals", 2.5, 2.10, DateTime.UtcNow);
+
+            Assert.Equal(first, second);
+            var rows = await store.GetOddsDetailAsync(ReportFixtureId);
+            var manual = Assert.Single(rows, r => r.Source == "manual");
+            Assert.Equal(2.10, manual.OddsValue);
+            Assert.Equal("Betano", manual.BookmakerName);
+
+            var otherLine = await store.UpsertManualOddsAsync(
+                ReportFixtureId, "Betano", "total_goals", 3.5, 1.70, DateTime.UtcNow);
+            Assert.NotEqual(first, otherLine);
+            Assert.Equal(2, (await store.GetOddsDetailAsync(ReportFixtureId)).Count);
+        }
+        finally
+        {
+            Microsoft.Data.Sqlite.SqliteConnection.ClearAllPools();
+            File.Delete(dbPath);
+        }
+    }
+
+    // P7-T3 bug found in validation: fm_outcome keeps the signal id of an older
+    // snapshot while the report reads the newest copy (ids drift per capture),
+    // so source_conflict/motivo were silently dropped. The loader now re-keys
+    // outcomes by (subject_type, subject_name, market, line).
+    [Fact]
+    public async Task Report_DataQuality_JoinsOutcomeFromOlderSnapshot()
+    {
+        var dbPath = Path.Combine(Path.GetTempPath(), $"fmtest_{Guid.NewGuid():N}.db");
+        try
+        {
+            var store = new FmSnapshotStore($"Data Source={dbPath}");
+            var outcomes = new FmOutcomeStore($"Data Source={dbPath}");
+
+            var draft = new List<FmSignalDraft>
+            {
+                new("team", "Portugal", "home_saves", 1.5, "over", 10, 10, 1.0,
+                    null, null, null, History(10, 5, 10))
+            };
+            foreach (var _ in new[] { 1, 2 })
+            {
+                var snap = await store.InsertSnapshotAsync(
+                    ReportFixtureId, "team-trends", "https://www.footymetrics.com/fixtures/1-x",
+                    DateTime.UtcNow, "p", "s", "fm-json-v1", "OK");
+                await store.InsertSignalsAsync(
+                    snap, ReportFixtureId, draft, "all", "all", DateTime.UtcNow,
+                    """{"location":"all"}""");
+            }
+
+            var ids = (await store.GetSignalIdentitiesAsync(ReportFixtureId)).Keys
+                .OrderBy(i => i).ToList();
+            Assert.Equal(2, ids.Count);
+            var olderId = ids[0];
+            var latestId = ids[1];
+
+            await outcomes.WriteAsync(new[]
+            {
+                new FmOutcomeDraft(olderId, ReportFixtureId, 5.0, 1, "RESOLVED", "test", null)
+            }, DateTime.UtcNow);
+            await outcomes.MarkSourceConflictsAsync(new[] { olderId });
+
+            var report = await BuildReportAsync(store, outcomes);
+            var entry = Assert.Single(report.Markets, m => m.Market == "home_saves");
+            Assert.True(entry.DataQuality.SourceConflict,
+                "outcome written against the older snapshot id must still be visible");
+        }
+        finally
+        {
+            Microsoft.Data.Sqlite.SqliteConnection.ClearAllPools();
+            File.Delete(dbPath);
+        }
+    }
+
+    // K4 regression: total_* signals arrive once per subject (the same
+    // fixture-level market seen from the home and the away view), which used
+    // to render two identical report entries, each one carrying a full copy
+    // of the odds table. One entry per fixture+market+line, subject is the
+    // fixture itself, and every bookmaker/side appears exactly once.
+    [Fact]
+    public async Task Report_DuplicateTotalSignals_ProduceSingleMarketEntryAndOdds()
+    {
+        var dbPath = Path.Combine(Path.GetTempPath(), $"fmtest_{Guid.NewGuid():N}.db");
+        try
+        {
+            var store = new FmSnapshotStore($"Data Source={dbPath}");
+            var outcomes = new FmOutcomeStore($"Data Source={dbPath}");
+            var snapshotId = await SeedReportDataAsync(
+                store, withTeamRows: true, withOdds: false);
+
+            var totalHistory = History(10, 2, 9);
+            await store.InsertSignalsAsync(
+                snapshotId, ReportFixtureId, new List<FmSignalDraft>
+                {
+                    new("team", "Wales", "total_goals", 1.5, "over", 9, 10, 0.9,
+                        null, null, null, totalHistory),
+                    new("team", "Portugal", "total_goals", 1.5, "over", 9, 10, 0.9,
+                        null, null, null, totalHistory)
+                }, "all", "all", DateTime.UtcNow, """{"location":"all"}""");
+
+            var oddsRows = new List<FmOddsDraft>();
+            foreach (var subject in new[] { "Wales", "Portugal" })
+            {
+                oddsRows.Add(new("team", subject, "total_goals", 1.5, "1", 1.90, "over"));
+                oddsRows.Add(new("team", subject, "total_goals", 1.5, "1", 2.10, "under"));
+                oddsRows.Add(new("team", subject, "total_goals", 1.5, "2", 1.85, "over"));
+                oddsRows.Add(new("team", subject, "total_goals", 1.5, "2", 2.20, "under"));
+            }
+            await store.InsertOddsAsync(
+                ReportFixtureId, oddsRows, snapshotId, DateTime.UtcNow);
+            await store.UpsertManualOddsAsync(
+                ReportFixtureId, "Betano", "total_goals", 1.5, 2.10, DateTime.UtcNow);
+
+            var report = await BuildReportAsync(store, outcomes);
+
+            var entry = Assert.Single(report.Markets,
+                m => m.Market == "total_goals" && m.Line == 1.5);
+            Assert.Equal("Portugal vs Wales", entry.Subject);
+            Assert.Null(entry.SubjectRole);
+            Assert.Equal(2.10, entry.ManualOdds.Value);
+
+            Assert.Equal(4, entry.MarketOddsFm.Count);
+            Assert.Equal(
+                entry.MarketOddsFm.Count,
+                entry.MarketOddsFm.Select(o => (o.Bookmaker, o.Side)).Distinct().Count());
+        }
+        finally
+        {
+            Microsoft.Data.Sqlite.SqliteConnection.ClearAllPools();
+            File.Delete(dbPath);
+        }
+    }
 }

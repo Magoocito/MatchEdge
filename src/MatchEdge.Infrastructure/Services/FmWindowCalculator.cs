@@ -13,6 +13,10 @@ public sealed record FmWindowStats(
     double? Max,
     string Status);
 
+// P7 E2: one point of a deterministic series. Met is null when the caller has
+// no line/direction to evaluate it (values are still reported, hits are not).
+public readonly record struct FmWindowPoint(double Value, bool? Met);
+
 public static class FmWindowCalculator
 {
     public const string StatusOk = "OK";
@@ -34,27 +38,44 @@ public static class FmWindowCalculator
         };
     }
 
-    private static FmWindowStats ComputeWindow(string label, List<(double V, bool Met)> slice, int min)
+    // P7 E2: same windows over an already-parsed series (own windows come from
+    // fm_team_matches / fm_player_matches instead of fm_signal history).
+    public static List<FmWindowStats> ComputeFromPoints(
+        string subjectType, IReadOnlyList<FmWindowPoint> points)
+    {
+        var min = MinSample(subjectType);
+        return new List<FmWindowStats>
+        {
+            ComputeWindow("5", points.Take(5).ToList(), min),
+            ComputeWindow("10", points.Take(10).ToList(), min),
+            ComputeWindow("all", points.ToList(), min)
+        };
+    }
+
+    private static FmWindowStats ComputeWindow(
+        string label, IReadOnlyList<FmWindowPoint> slice, int min)
     {
         if (slice.Count < min)
             return new FmWindowStats(label, slice.Count, null, null, null, null, null, null,
                 StatusInsufficient);
 
-        var hits = slice.Count(x => x.Met);
-        var values = slice.Select(x => x.V).OrderBy(v => v).ToList();
+        var hits = slice.Count(x => x.Met == true);
+        var hasMet = slice.All(x => x.Met.HasValue);
+        var values = slice.Select(x => x.Value).OrderBy(v => v).ToList();
         var mean = values.Average();
         var median = values.Count % 2 == 1
             ? values[values.Count / 2]
             : (values[values.Count / 2 - 1] + values[values.Count / 2]) / 2.0;
         return new FmWindowStats(
-            label, slice.Count, hits, (double)hits / slice.Count,
+            label, slice.Count, hasMet ? hits : null,
+            hasMet ? (double?)hits / slice.Count : null,
             mean, median, values[0], values[^1], StatusOk);
     }
 
-    private static List<(double V, bool Met)> ParseSeries(
+    private static List<FmWindowPoint> ParseSeries(
         string? historyJson, double? line, string? direction)
     {
-        var result = new List<(double, bool)>();
+        var result = new List<FmWindowPoint>();
         if (string.IsNullOrWhiteSpace(historyJson)) return result;
 
         List<JsonElement> elements;
@@ -89,7 +110,7 @@ public static class FmWindowCalculator
             {
                 continue;
             }
-            result.Add((v, met));
+            result.Add(new FmWindowPoint(v, met));
         }
         return result;
     }

@@ -139,6 +139,66 @@ public class FmSnapshotController : ControllerBase
         });
     }
 
+    // P7 E1: descriptive 360° report (JSON = source of truth). Persisted data
+    // only, 0 navigations, markets ordered by sample size (never by signal).
+    [HttpGet("fixtures/{fixtureId}/report")]
+    public async Task<IActionResult> Report(string fixtureId, CancellationToken ct)
+    {
+        var input = await FmConfluenceReportLoader.LoadAsync(_store, _outcomeStore, fixtureId, ct);
+        if (input is null)
+            return NotFound(new { error = $"fixture {fixtureId} has no OK/SUSPECT signals." });
+        return Ok(FmConfluenceReportBuilder.Build(fixtureId, input));
+    }
+
+    // P7 E5: same object, fixed-section markdown template (string templating only).
+    [HttpGet("fixtures/{fixtureId}/report.md")]
+    public async Task<IActionResult> ReportMarkdown(string fixtureId, CancellationToken ct)
+    {
+        var input = await FmConfluenceReportLoader.LoadAsync(_store, _outcomeStore, fixtureId, ct);
+        if (input is null)
+            return NotFound(new { error = $"fixture {fixtureId} has no OK/SUSPECT signals." });
+        var report = FmConfluenceReportBuilder.Build(fixtureId, input);
+        return Content(FmConfluenceReportMarkdown.Render(report), "text/markdown; charset=utf-8");
+    }
+
+    // P7 E4: PUT semantics — one manual row per (fixture, market, line, bookmaker).
+    [HttpPut("fixtures/{fixtureId}/manual-odds/{market}/{line}")]
+    public async Task<IActionResult> PutManualOdds(
+        string fixtureId, string market, string line,
+        [FromBody] FmReportManualOddsRequest request, CancellationToken ct)
+    {
+        if (!double.TryParse(line, System.Globalization.NumberStyles.Float,
+                System.Globalization.CultureInfo.InvariantCulture, out var parsedLine) ||
+            double.IsNaN(parsedLine) || double.IsInfinity(parsedLine))
+            return BadRequest(new { error = "line must be a finite number." });
+        if (request.Value is null || double.IsNaN(request.Value.Value) ||
+            double.IsInfinity(request.Value.Value) ||
+            request.Value.Value <= 0 || request.Value.Value > 10000)
+            return BadRequest(new { error = "value must be a number in (0, 10000]." });
+        if (string.IsNullOrWhiteSpace(market))
+            return BadRequest(new { error = "market is required." });
+
+        var bookmaker = string.IsNullOrWhiteSpace(request.Bookmaker)
+            ? "Betano" : request.Bookmaker.Trim();
+        var id = await _store.UpsertManualOddsAsync(
+            fixtureId, bookmaker, market.Trim(), parsedLine, request.Value!.Value,
+            DateTime.UtcNow, ct);
+
+        _logger.LogInformation(
+            "Manual odds {Id} fixture {FixtureId} {Bookmaker} {Market} {Line} {Odds} (PUT)",
+            id, fixtureId, bookmaker, market, parsedLine, request.Value);
+        return Ok(new
+        {
+            id,
+            fixtureId,
+            bookmaker,
+            market,
+            line = parsedLine,
+            value = request.Value,
+            source = "manual"
+        });
+    }
+
     [HttpPost("outcomes/resolve")]
     public async Task<IActionResult> ResolveOutcomes(
         [FromBody] FmResolveRequest? request, CancellationToken ct)
@@ -413,4 +473,10 @@ public sealed class FmManualOddsRequest
 
     [System.Text.Json.Serialization.JsonPropertyName("odds_value")]
     public double? OddsValue { get; set; }
+}
+
+public sealed class FmReportManualOddsRequest
+{
+    public string? Bookmaker { get; set; }
+    public double? Value { get; set; }
 }
