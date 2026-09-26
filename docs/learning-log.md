@@ -156,3 +156,38 @@
   `fm_player_matches` 48745 -> 51701; run2 con `includePositions` p15 ->
   `positionFetches 6` y `positions` tras el collect del mismo equipo.
   Regresion: el endpoint por equipo sigue con el mismo shape (status OK, written 30).
+
+## PBI 2.2 / P11 - Evidencia 360 estilo tipster en el reporte (sin picks) - 2026-09-26
+- Enricido de `GET /report` y `/report.md` con `player_evidence[]` y `team_evidence[]`:
+  secuencia cruda (ultimo maximo 10 valores, cronologico ascendente) + ventanas fijas
+  last5/last10/all (hits/n) + `rival_context` solo en equipos. Evidencia:
+  `tmp/fm/p11_360_report_33441811.{json,md}` y `tmp/fm/p11_360_check.json`.
+
+### Detalle de ejecucion
+- **Reutilizar, no recalcular**: `sequence` y `windows` salen de los MISMOS puntos que
+  `own_windows` (mismo `FmWindowCalculator.ComputeFromPoints`), reducidos a {hits,n}.
+  Asi un prop no puede contradecirse entre la seccion nueva y la vieja del mismo reporte.
+- **Orden de la secuencia**: elegi ascendente cronologico (lo mas reciente al final) porque
+  es como se lee una lista de tips y porque `last10` es exactamente el sufijo de esa
+  secuencia: mismo conjunto, dos formas de verlo.
+- **Sin ceros inventados**: una fila sin valor numerico no entra en la serie (mismo criterio
+  que `own_windows`), asi que la secuencia nunca miente con un 0 de relleno.
+- **Inclusion por datos, no por senales**: un mercado senalado pero sin valores observados
+  no genera entrada en evidence (decidido y documentado); las senales de P7 siguen
+  apareciendo con su motivo, asi que nada se pierde.
+- **rival_context asimetrico a proposito**: los equipos ya tenian logica de oponente en P7
+  (opponent_context) y los jugadores no, asi que en jugadores el campo ni se escribe
+  (JsonIgnore) en vez de inventar un rival que no existe en el modelo.
+- **Palabras prohibidas con bordes de palabra**: ampliar la lista con `edge`/`ev` tal cual
+  romperia el producto "MatchEdge" y palabras como "evento"; con `\bedge\b` y `\bev\b`
+  la regla protege el lenguaje de picks sin censurar el nombre propio.
+- **Leccion de mock**: el seed de tests comparte jugadores entre equipos (un mismo nombre
+  insertado bajo los dos apids por la forma en que `UpsertTeamMatchesAsync` filtra por
+  location, no por team del draft) -> empatias de timestamp legitimas; el recuento a mano
+  del test tiene que reflejar eso en vez de exigir estricta monotonia.
+- Tests: `dotnet build` 0 errores; `dotnet test --filter Fm` -> **72/72** (67 previos + 5 nuevos);
+  regresion completa FM intacta (149/149 UnitTests, 6 FAIL preexistentes sin relacion).
+- En vivo (D): doble GET de JSON y .md identicos, 0 palabras prohibidas fuera del literal
+  E5, y 6 props recontados a mano contra la DB con secuencia y ventanas identicas
+  (n=54/50/49 jugadores, 58/53 equipos) - el .md permite armar la lista sin que el
+  reporte diga que apostar.

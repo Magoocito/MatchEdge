@@ -22,9 +22,12 @@ public static class FmConfluenceReportMarkdown
         AppendHeader(sb, report);
         AppendMarkets(sb, report);
         AppendPlayers(sb, report);
+        // P11 B4: fixed evidence section, always between "Señales de jugadores"
+        // and "Cuotas" - the five pre-existing sections keep their order.
+        AppendEvidence(sb, report);
         AppendOdds(sb, report);
 
-        // Section 5 of 5: fixed closing note, verbatim (E5), never reworded.
+        // Closing note of the template: fixed wording (E5), never reworded.
         sb.Append('\n');
         sb.Append("## Nota de cierre\n");
         sb.Append(ClosingNote).Append('\n');
@@ -97,6 +100,71 @@ public static class FmConfluenceReportMarkdown
             AppendDataQuality(sb, p.DataQuality, "  ");
         }
     }
+
+    // P11 A2/B4: one line per prop, always the same template:
+    //   Nombre — market @ line: [secuencia] | last5 h/n | last10 h/n | all h/n
+    // The teams block adds an indented rival line only when the opponent has
+    // its own series (nothing is invented when it does not).
+    private static void AppendEvidence(StringBuilder sb, FmReport report)
+    {
+        sb.Append('\n');
+        sb.Append("## Evidencia histórica (ventanas fijas)\n");
+        sb.Append("- observaciones descriptivas: secuencia cruda (más antiguo -> más reciente) y hits de las ventanas fijas (last5/last10/all)\n");
+
+        sb.Append('\n');
+        sb.Append("### Jugadores — evidencia con ventanas fijas\n");
+        if (report.PlayerEvidence.Count == 0)
+        {
+            sb.Append("- sin señales de jugador con valores observados en la DB\n");
+        }
+        else
+        {
+            foreach (var e in report.PlayerEvidence)
+            {
+                AppendEvidenceLine(sb, e);
+            }
+        }
+
+        sb.Append('\n');
+        sb.Append("### Equipos — evidencia con ventanas fijas\n");
+        if (report.TeamEvidence.Count == 0)
+        {
+            sb.Append("- sin señales de equipo con valores observados en la DB\n");
+        }
+        else
+        {
+            foreach (var e in report.TeamEvidence)
+            {
+                AppendEvidenceLine(sb, e);
+                if (e.RivalContext is { } rival)
+                {
+                    sb.Append("  - Rival (").Append(rival.Subject).Append("): ")
+                        .Append(SequenceText(rival.Sequence))
+                        .Append(" | ").Append(EvidenceWindowsText(rival.Windows))
+                        .Append('\n');
+                }
+            }
+        }
+    }
+
+    private static void AppendEvidenceLine(StringBuilder sb, FmReportEvidence e)
+    {
+        sb.Append("- ").Append(e.Subject).Append(" — ").Append(e.Market);
+        if (e.Line is not null)
+            sb.Append(" @ ").Append(Num(e.Line, "0.##"));
+        sb.Append(": ").Append(SequenceText(e.Sequence))
+            .Append(" | ").Append(EvidenceWindowsText(e.Windows)).Append('\n');
+    }
+
+    private static string SequenceText(IEnumerable<double> sequence) =>
+        "[" + string.Join(",", sequence.Select(v =>
+            v.ToString("0.##", CultureInfo.InvariantCulture))) + "]";
+
+    private static string EvidenceWindowsText(Dictionary<string, FmReportEvidenceWindow> windows) =>
+        string.Join(" | ", new[] { "last5", "last10", "all" }.Select(key =>
+            key + " " + (windows.TryGetValue(key, out var w)
+                ? (w.Hits?.ToString(CultureInfo.InvariantCulture) ?? "-") + "/" + w.N
+                : "-/-")));
 
     private static void AppendOdds(StringBuilder sb, FmReport report)
     {
