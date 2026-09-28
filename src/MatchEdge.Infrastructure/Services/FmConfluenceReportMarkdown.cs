@@ -25,6 +25,9 @@ public static class FmConfluenceReportMarkdown
         // P11 B4: fixed evidence section, always between "Señales de jugadores"
         // and "Cuotas" - the five pre-existing sections keep their order.
         AppendEvidence(sb, report);
+        // P12: fixed confluence section, always between the evidence block and
+        // "Cuotas"; the pre-existing section order is untouched.
+        AppendConfluence(sb, report);
         AppendOdds(sb, report);
 
         // Closing note of the template: fixed wording (E5), never reworded.
@@ -122,6 +125,7 @@ public static class FmConfluenceReportMarkdown
             foreach (var e in report.PlayerEvidence)
             {
                 AppendEvidenceLine(sb, e);
+                AppendEvidenceContext(sb, e);
             }
         }
 
@@ -143,6 +147,61 @@ public static class FmConfluenceReportMarkdown
                         .Append(" | ").Append(EvidenceWindowsText(rival.Windows))
                         .Append('\n');
                 }
+                AppendEvidenceContext(sb, e);
+            }
+        }
+    }
+
+    // P12 B1/B4: extra context lines only when there is something to report,
+    // so a clean fixture keeps the exact P11 line template.
+    private static void AppendEvidenceContext(StringBuilder sb, FmReportEvidence e)
+    {
+        if (e.OverlapFlags.Count > 0)
+        {
+            sb.Append("  - overlap_flags:\n");
+            foreach (var flag in e.OverlapFlags) sb.Append("    - ").Append(flag).Append('\n');
+        }
+
+        var q = e.DataQuality;
+        if (q.Suspect || q.SourceConflict || !string.IsNullOrWhiteSpace(q.Motivo))
+        {
+            sb.Append("  - data_quality: suspect=").Append(q.Suspect ? "true" : "false")
+                .Append(", source_conflict=").Append(q.SourceConflict ? "true" : "false")
+                .Append(", motivo=\"").Append(q.Motivo).Append("\"\n");
+        }
+    }
+
+    // P12: explicit confluence block (team + rival + players) grouped by
+    // market family. Descriptive only: each strand shows its own line and the
+    // same fixed windows as the evidence block; nothing is scored or ranked.
+    private static void AppendConfluence(StringBuilder sb, FmReport report)
+    {
+        sb.Append('\n');
+        sb.Append("## Confluencia descriptiva (equipo + rival + jugadores)\n");
+        sb.Append("- familias de mercado con 2 o más series observadas en la DB; cada serie conserva su línea y sus ventanas fijas (last5/last10/all); sin score ni orden por fuerza\n");
+
+        if (report.Confluence.Count == 0)
+        {
+            sb.Append("- sin familias con 2 o más series observadas\n");
+            return;
+        }
+
+        foreach (var c in report.Confluence)
+        {
+            sb.Append('\n');
+            sb.Append("### ").Append(c.Family).Append('\n');
+            foreach (var t in c.Teams)
+            {
+                sb.Append("- ").Append(t.Subject);
+                if (t.Role is not null) sb.Append(" (").Append(t.Role).Append(')');
+                sb.Append(" @ ").Append(Num(t.Line, "0.##"))
+                    .Append(": ").Append(EvidenceWindowsText(t.Windows)).Append('\n');
+            }
+            foreach (var p in c.Players)
+            {
+                sb.Append("- jugador ").Append(p.Subject).Append(" — ").Append(p.Market);
+                sb.Append(" @ ").Append(Num(p.Line, "0.##"))
+                    .Append(": ").Append(EvidenceWindowsText(p.Windows)).Append('\n');
             }
         }
     }
@@ -200,20 +259,24 @@ public static class FmConfluenceReportMarkdown
         foreach (var m in report.Markets)
         {
             var manual = m.ManualOdds;
-            sb.Append("- Cuota manual ").Append(manual.Bookmaker)
-                .Append(" (").Append(m.Market);
-            if (m.Line is not null) sb.Append(" @ ").Append(Num(m.Line, "0.##"));
-            sb.Append("): ");
-            if (manual.Value is null)
+            if (manual.Count == 0)
             {
-                sb.Append("no cargada\n");
+                sb.Append("- Cuota manual Betano (").Append(m.Market);
+                if (m.Line is not null) sb.Append(" @ ").Append(Num(m.Line, "0.##"));
+                sb.Append("): no cargada\n");
+                continue;
             }
-            else
+            foreach (var entry in manual)
             {
-                sb.Append(Num(manual.Value, "0.###"))
-                    .Append(" (prob. impl. ").Append(Num(manual.ImpliedProb, "0.000"));
-                if (manual.CapturedAt is not null)
-                    sb.Append(", capturada ").Append(manual.CapturedAt);
+                sb.Append("- Cuota manual ").Append(entry.Bookmaker)
+                    .Append(" (").Append(m.Market);
+                if (m.Line is not null) sb.Append(" @ ").Append(Num(m.Line, "0.##"));
+                sb.Append(", ").Append(string.IsNullOrWhiteSpace(entry.Side) ? "-" : entry.Side)
+                    .Append("): ")
+                    .Append(Num(entry.Value, "0.###"))
+                    .Append(" (prob. impl. ").Append(Num(entry.ImpliedProb, "0.000"));
+                if (entry.CapturedAt is not null)
+                    sb.Append(", capturada ").Append(entry.CapturedAt);
                 sb.Append(")\n");
             }
         }

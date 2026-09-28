@@ -748,7 +748,7 @@ public class FmDeterministicTests
             Assert.Equal(2, await store.InsertOddsAsync("33441811", odds, snap2, DateTime.UtcNow));
 
             var manualId = await store.InsertManualOddsAsync(
-                "33441811", "Betano", "total_goals", 2.5, 1.90, DateTime.UtcNow);
+                "33441811", "Betano", "total_goals", "over", 2.5, 1.90, DateTime.UtcNow);
             Assert.True(manualId > 0);
 
             var rows = await store.GetOddsAsync("33441811");
@@ -756,7 +756,7 @@ public class FmDeterministicTests
             var manual = Assert.Single(rows, r => r.Source == "manual");
             Assert.Equal("Betano", manual.Bookmaker);
             Assert.Equal(1.90, manual.OddsValue);
-            Assert.Equal("manual", manual.Side);
+            Assert.Equal("over", manual.Side);
             Assert.All(rows.Where(r => r.Source == "fm"),
                 r => Assert.Equal("fm", r.Source));
         }
@@ -1152,9 +1152,9 @@ VALUES ('33441811', '4', NULL, 'total_corners', 1.9, 'over', 'fm', '2026-09-25 0
                 new("team", "Wales", "away_corners", 3.5, "1", 2.05, "over")
             }, snapshotId, DateTime.UtcNow);
             await store.UpsertManualOddsAsync(
-                ReportFixtureId, "Betano", "home_saves", 1.5, 2.00, DateTime.UtcNow);
+                ReportFixtureId, "Betano", "home_saves", "over", 1.5, 2.00, DateTime.UtcNow);
             await store.UpsertManualOddsAsync(
-                ReportFixtureId, "Betano", "away_corners", 3.5, 1.85, DateTime.UtcNow);
+                ReportFixtureId, "Betano", "away_corners", "over", 3.5, 1.85, DateTime.UtcNow);
         }
 
         if (!withTeamRows) return snapshotId;
@@ -1297,8 +1297,10 @@ VALUES ('33441811', '4', NULL, 'total_corners', 1.9, 'over', 'fm', '2026-09-25 0
                 var (manualValue, manualProb) = market == "home_saves"
                     ? (2.00, 0.5)
                     : (1.85, 0.541);
-                Assert.Equal(manualValue, entry.ManualOdds.Value);
-                Assert.Equal(manualProb, entry.ManualOdds.ImpliedProb);
+                var manual = Assert.Single(entry.ManualOdds);
+                Assert.Equal("over", manual.Side);
+                Assert.Equal(manualValue, manual.Value);
+                Assert.Equal(manualProb, manual.ImpliedProb);
             }
 
             var savesEntry = report.Markets.Single(m => m.Market == "home_saves");
@@ -1360,7 +1362,7 @@ VALUES ('33441811', '4', NULL, 'total_corners', 1.9, 'over', 'fm', '2026-09-25 0
             Assert.Equal(FmConfluenceReportBuilder.StatusInsufficient,
                 entry.OpponentContext.ConcededEquivalent.OwnWindows["all"]);
             Assert.Empty(entry.MarketOddsFm);
-            Assert.Null(entry.ManualOdds.Value);
+            Assert.Empty(entry.ManualOdds);
             Assert.Contains("no fm_team_matches rows", entry.DataQuality.Motivo);
 
             var md = FmConfluenceReportMarkdown.Render(report);
@@ -1413,20 +1415,36 @@ VALUES ('33441811', '4', NULL, 'total_corners', 1.9, 'over', 'fm', '2026-09-25 0
         {
             var store = new FmSnapshotStore($"Data Source={dbPath}");
             var first = await store.UpsertManualOddsAsync(
-                ReportFixtureId, "Betano", "total_goals", 2.5, 1.90, DateTime.UtcNow);
+                ReportFixtureId, "Betano", "total_goals", "over", 2.5, 1.90, DateTime.UtcNow);
             var second = await store.UpsertManualOddsAsync(
-                ReportFixtureId, "Betano", "total_goals", 2.5, 2.10, DateTime.UtcNow);
+                ReportFixtureId, "Betano", "total_goals", "over", 2.5, 2.10, DateTime.UtcNow);
 
             Assert.Equal(first, second);
             var rows = await store.GetOddsDetailAsync(ReportFixtureId);
             var manual = Assert.Single(rows, r => r.Source == "manual");
             Assert.Equal(2.10, manual.OddsValue);
             Assert.Equal("Betano", manual.BookmakerName);
+            Assert.Equal("over", manual.Side);
+
+            // P13: the other side of the same market+line is its own row.
+            var under = await store.UpsertManualOddsAsync(
+                ReportFixtureId, "Betano", "total_goals", "under", 2.5, 1.75, DateTime.UtcNow);
+            Assert.NotEqual(first, under);
+            rows = await store.GetOddsDetailAsync(ReportFixtureId);
+            Assert.Equal(2, rows.Count);
+            Assert.Equal(1.75, Assert.Single(rows, r => r.Side == "under").OddsValue);
+
+            await store.UpsertManualOddsAsync(
+                ReportFixtureId, "Betano", "total_goals", "under", 2.5, 1.70, DateTime.UtcNow);
+            rows = await store.GetOddsDetailAsync(ReportFixtureId);
+            Assert.Equal(2, rows.Count);
+            Assert.Equal(2.10, Assert.Single(rows, r => r.Side == "over").OddsValue);
+            Assert.Equal(1.70, Assert.Single(rows, r => r.Side == "under").OddsValue);
 
             var otherLine = await store.UpsertManualOddsAsync(
-                ReportFixtureId, "Betano", "total_goals", 3.5, 1.70, DateTime.UtcNow);
+                ReportFixtureId, "Betano", "total_goals", "over", 3.5, 1.70, DateTime.UtcNow);
             Assert.NotEqual(first, otherLine);
-            Assert.Equal(2, (await store.GetOddsDetailAsync(ReportFixtureId)).Count);
+            Assert.Equal(3, (await store.GetOddsDetailAsync(ReportFixtureId)).Count);
         }
         finally
         {
@@ -1524,7 +1542,9 @@ VALUES ('33441811', '4', NULL, 'total_corners', 1.9, 'over', 'fm', '2026-09-25 0
             await store.InsertOddsAsync(
                 ReportFixtureId, oddsRows, snapshotId, DateTime.UtcNow);
             await store.UpsertManualOddsAsync(
-                ReportFixtureId, "Betano", "total_goals", 1.5, 2.10, DateTime.UtcNow);
+                ReportFixtureId, "Betano", "total_goals", "over", 1.5, 2.10, DateTime.UtcNow);
+            await store.UpsertManualOddsAsync(
+                ReportFixtureId, "Betano", "total_goals", "under", 1.5, 1.75, DateTime.UtcNow);
 
             var report = await BuildReportAsync(store, outcomes);
 
@@ -1532,7 +1552,17 @@ VALUES ('33441811', '4', NULL, 'total_corners', 1.9, 'over', 'fm', '2026-09-25 0
                 m => m.Market == "total_goals" && m.Line == 1.5);
             Assert.Equal("Portugal vs Wales", entry.Subject);
             Assert.Null(entry.SubjectRole);
-            Assert.Equal(2.10, entry.ManualOdds.Value);
+            Assert.Equal(2.10, entry.ManualOdds.Single(o => o.Side == "over").Value);
+            Assert.Equal(1.75, entry.ManualOdds.Single(o => o.Side == "under").Value);
+            Assert.Equal(
+                new[] { "over", "under" },
+                entry.ManualOdds.Select(o => o.Side).ToArray());
+            Assert.Contains(
+                "total_goals @ 1.5, over): 2.1",
+                FmConfluenceReportMarkdown.Render(report));
+            Assert.Contains(
+                "total_goals @ 1.5, under): 1.75",
+                FmConfluenceReportMarkdown.Render(report));
 
             Assert.Equal(4, entry.MarketOddsFm.Count);
             Assert.Equal(
@@ -1930,6 +1960,171 @@ VALUES ('33441811', '4', NULL, 'total_corners', 1.9, 'over', 'fm', '2026-09-25 0
         foreach (var allowed in new[] { "MatchEdge", "evento", "valor", "value" })
         {
             Assert.False(Forbidden.IsMatch(allowed), $"expected allowed: {allowed}");
+        }
+    }
+
+    // P12 B1/B4: every evidence entry carries its competition, its overlap
+    // flags and its data_quality, so the block is as self-contained as
+    // markets/player_signals (same three fields, same wording).
+    [Fact]
+    public async Task Report_Evidence_CarriesCompetitionOverlapAndDataQuality()
+    {
+        var dbPath = Path.Combine(Path.GetTempPath(), $"fmtest_{Guid.NewGuid():N}.db");
+        try
+        {
+            var store = new FmSnapshotStore($"Data Source={dbPath}");
+            var outcomes = new FmOutcomeStore($"Data Source={dbPath}");
+            await SeedReportDataAsync(store, withTeamRows: true, withOdds: true);
+
+            var report = await BuildReportAsync(store, outcomes);
+            Assert.NotEmpty(report.TeamEvidence);
+            Assert.NotEmpty(report.PlayerEvidence);
+
+            foreach (var e in report.TeamEvidence.Concat(report.PlayerEvidence))
+            {
+                Assert.Equal("UEFA Nations League", e.Competition);
+                Assert.NotNull(e.OverlapFlags);
+                Assert.NotNull(e.DataQuality);
+            }
+            // the seeded series really do overlap their H2H (>50% of last5)
+            Assert.Contains(report.TeamEvidence, e => e.OverlapFlags.Count > 0);
+
+            var json = JsonSerializer.Serialize(report);
+            Assert.Contains("\"competition\"", json, StringComparison.Ordinal);
+            Assert.Contains("\"overlap_flags\"", json, StringComparison.Ordinal);
+            Assert.Contains("\"data_quality\"", json, StringComparison.Ordinal);
+
+            // clean entries keep the exact P11 line template (context lines
+            // are only rendered when there is something to report)
+            var md = FmConfluenceReportMarkdown.Render(report);
+            Assert.Contains("- Portugal — home_saves @ 1.5: [", md);
+            Assert.Contains("- C. Ronaldo — shots @ 1.5: [", md);
+            Assert.Contains("  - overlap_flags:\n", md); // flagged entries do render it
+            Assert.Contains("    - team_last5 shares >50% matches with H2H", md);
+        }
+        finally
+        {
+            Microsoft.Data.Sqlite.SqliteConnection.ClearAllPools();
+            File.Delete(dbPath);
+        }
+    }
+
+    // P12: explicit confluence groups team + rival strands by market family
+    // (home_/away_ stripped), excludes single-strand families and match
+    // totals, and renders as a fixed section between evidence and odds.
+    [Fact]
+    public async Task Report_Confluence_GroupsTeamRivalAndPlayerFamilies_WithoutScore()
+    {
+        var dbPath = Path.Combine(Path.GetTempPath(), $"fmtest_{Guid.NewGuid():N}.db");
+        try
+        {
+            var store = new FmSnapshotStore($"Data Source={dbPath}");
+            var outcomes = new FmOutcomeStore($"Data Source={dbPath}");
+            await SeedReportDataAsync(store, withTeamRows: true, withOdds: true);
+
+            var report = await BuildReportAsync(store, outcomes);
+            Assert.Equal(2, report.Confluence.Count);
+
+            var saves = Assert.Single(report.Confluence, c => c.Family == "saves");
+            Assert.Contains(saves.Teams, t => t.Subject == "Portugal" && t.Role == "home");
+            Assert.Contains(saves.Teams, t => t.Subject == "Wales"); // the rival strand
+
+            var corners = Assert.Single(report.Confluence, c => c.Family == "corners");
+            Assert.Contains(corners.Teams, t => t.Subject == "Wales" && t.Role == "away");
+            Assert.Contains(corners.Teams, t => t.Subject == "Portugal"); // the rival strand
+
+            // one observed strand (player "shots") is not confluence; match
+            // totals are fixture-level and never grouped
+            Assert.DoesNotContain(report.Confluence, c => c.Family == "shots");
+            Assert.DoesNotContain(report.Confluence, c => c.Family.StartsWith("total_"));
+            Assert.All(report.Confluence, c =>
+                Assert.True(c.Teams.Count + c.Players.Count >= 2, c.Family));
+
+            var md = FmConfluenceReportMarkdown.Render(report);
+            var evidenceIdx = md.IndexOf("## Evidencia histórica", StringComparison.Ordinal);
+            var confluenceIdx = md.IndexOf("## Confluencia descriptiva", StringComparison.Ordinal);
+            var oddsIdx = md.IndexOf("## Cuotas", StringComparison.Ordinal);
+            Assert.True(evidenceIdx >= 0 && confluenceIdx > evidenceIdx && oddsIdx > confluenceIdx);
+            Assert.Contains("### saves", md);
+            Assert.Contains("### corners", md);
+            Assert.False(Forbidden.IsMatch(md.Replace(FmConfluenceReportMarkdown.ClosingNote, "")),
+                "confluence wording must stay clear of the forbidden list");
+
+            // deterministic: same DB, same block, byte-identical JSON
+            var second = await BuildReportAsync(store, outcomes);
+            Assert.Equal(
+                JsonSerializer.Serialize(report.Confluence),
+                JsonSerializer.Serialize(second.Confluence));
+            Assert.Equal(md, FmConfluenceReportMarkdown.Render(second));
+        }
+        finally
+        {
+            Microsoft.Data.Sqlite.SqliteConnection.ClearAllPools();
+            File.Delete(dbPath);
+        }
+    }
+
+    // P12 B: a fixture that has not been played has no fm_team_matches row of
+    // its own, so home/away/competition come from the signals' venue_role plus
+    // the name -> apid map (opponent_apid), and evidence still renders.
+    // Kickoff stays null (C3 limitation, documented - never invented).
+    [Fact]
+    public async Task Report_PreMatchFixture_ResolvesSidesFromSignalsAndRendersEvidence()
+    {
+        const string preMatchId = "99999999";
+        var dbPath = Path.Combine(Path.GetTempPath(), $"fmtest_{Guid.NewGuid():N}.db");
+        try
+        {
+            var store = new FmSnapshotStore($"Data Source={dbPath}");
+            var outcomes = new FmOutcomeStore($"Data Source={dbPath}");
+            // played history for Portugal/Wales (rows of OTHER fixtures) + the
+            // P7 signals of the played fixture, which this report never reads
+            await SeedReportDataAsync(store, withTeamRows: true, withOdds: false);
+
+            var snapshotId = await store.InsertSnapshotAsync(
+                preMatchId, "team-trends",
+                "https://www.footymetrics.com/fixtures/9-pre-x",
+                DateTime.UtcNow, "p", "s", "fm-json-v1", "OK");
+            await store.InsertSignalsAsync(
+                snapshotId, preMatchId,
+                new List<FmSignalDraft>
+                {
+                    new("team", "Portugal", "home_saves", 1.5, "over", 10, 10, 1.0,
+                        null, null, null, History(10, 5, 10), null, null, null, "home"),
+                    new("team", "Wales", "away_corners", 3.5, "over", 8, 10, 0.8,
+                        null, null, null, History(10, 6, 8), null, null, null, "away"),
+                    new("player", "C. Ronaldo", "shots", 1.5, "over", 6, 8, 0.75,
+                        null, null, null, History(8, 3, 6))
+                }, "all", "all", DateTime.UtcNow, """{"location":"all"}""");
+
+            var input = await FmConfluenceReportLoader.LoadAsync(store, outcomes, preMatchId);
+            Assert.NotNull(input);
+            Assert.NotNull(input!.Sides);
+            Assert.Empty(input.FixtureRows);
+
+            var sides = input.Sides!;
+            Assert.Equal("Portugal", sides.HomeName);
+            Assert.Equal("Wales", sides.AwayName);
+            Assert.Equal(18701L, sides.HomeApid);   // opponent_apid of "Portugal"
+            Assert.Equal(18721L, sides.AwayApid);   // opponent_apid of "Wales"
+            Assert.Equal("UEFA Nations League", sides.Competition);
+
+            var report = FmConfluenceReportBuilder.Build(preMatchId, input);
+            Assert.Equal("Portugal", report.Fixture.Home);
+            Assert.Equal("Wales", report.Fixture.Away);
+            Assert.Equal("UEFA Nations League", report.Fixture.Competition);
+            Assert.Null(report.Fixture.KickoffUtc); // C3: unknown, never invented
+
+            Assert.Equal(2, report.TeamEvidence.Count);
+            Assert.Single(report.PlayerEvidence);
+            Assert.NotEmpty(report.Confluence);
+            Assert.All(report.TeamEvidence, e =>
+                Assert.Equal("UEFA Nations League", e.Competition));
+        }
+        finally
+        {
+            Microsoft.Data.Sqlite.SqliteConnection.ClearAllPools();
+            File.Delete(dbPath);
         }
     }
 }

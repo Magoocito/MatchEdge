@@ -16,7 +16,16 @@ public sealed record FmReportInput(
     IReadOnlyDictionary<long, IReadOnlyList<FmTeamMatchRow>> TeamRows,
     IReadOnlyDictionary<long, IReadOnlyList<FmPlayerMatchRow>> PlayerRows,
     IReadOnlyList<FmReportOddsRow> Odds,
-    bool LeakageFlag);
+    bool LeakageFlag,
+    // P12 B: sides resolved for a fixture with no fm_team_matches row yet
+    // (pre-match). Null for played fixtures - the rows are the source.
+    FmReportFixtureSides? Sides = null);
+
+// P12 B: home/away resolved by the loader from fm_signal.venue_role and the
+// name -> apid map of older fixtures. Every field is null when it could not
+// be resolved; nothing here is guessed by the builder.
+public sealed record FmReportFixtureSides(
+    string? HomeName, long? HomeApid, string? AwayName, long? AwayApid, string? Competition);
 
 public sealed record FmReportFixture(
     [property: JsonPropertyName("id")] string Id,
@@ -77,12 +86,8 @@ public sealed record FmReportOdds(
     [property: JsonPropertyName("implied_prob")] double ImpliedProb,
     [property: JsonPropertyName("captured_at")] string CapturedAt);
 
-public sealed record FmReportManualOdds(
-    [property: JsonPropertyName("bookmaker")] string Bookmaker,
-    [property: JsonPropertyName("value")] double? Value,
-    [property: JsonPropertyName("implied_prob")] double? ImpliedProb,
-    [property: JsonPropertyName("captured_at")] string? CapturedAt);
-
+// P13: manual (Betano) odds are stored per side, so the report carries one
+// entry per side loaded for the market; an empty list means "not loaded yet".
 public sealed record FmReportMarket(
     [property: JsonPropertyName("market")] string Market,
     [property: JsonPropertyName("line")] double? Line,
@@ -94,7 +99,7 @@ public sealed record FmReportMarket(
     [property: JsonPropertyName("overlap_flags")] List<string> OverlapFlags,
     [property: JsonPropertyName("data_quality")] FmReportDataQuality DataQuality,
     [property: JsonPropertyName("market_odds_fm")] List<FmReportOdds> MarketOddsFm,
-    [property: JsonPropertyName("manual_odds")] FmReportManualOdds ManualOdds);
+    [property: JsonPropertyName("manual_odds")] List<FmReportOdds> ManualOdds);
 
 public sealed record FmReportPlayerSignal(
     [property: JsonPropertyName("market")] string Market,
@@ -124,6 +129,8 @@ public sealed record FmReportEvidenceRival(
 
 // P11: descriptive observation only - raw sequence + fixed windows. Nothing
 // here implies a future probability; sort is by sample size (SortCriteria).
+// P12 B1/B4: competition + overlap_flags + data_quality travel with the
+// evidence so the block is self-contained (same fields as markets/player_signals).
 public sealed record FmReportEvidence(
     [property: JsonPropertyName("subject")] string Subject,
     [property: JsonPropertyName("market")] string Market,
@@ -134,7 +141,34 @@ public sealed record FmReportEvidence(
     [property: JsonPropertyName("windows")] Dictionary<string, FmReportEvidenceWindow> Windows,
     [property: JsonPropertyName("rival_context")]
     [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    FmReportEvidenceRival? RivalContext);
+    FmReportEvidenceRival? RivalContext,
+    [property: JsonPropertyName("competition")]
+    [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    string? Competition,
+    [property: JsonPropertyName("overlap_flags")] List<string> OverlapFlags,
+    [property: JsonPropertyName("data_quality")] FmReportDataQuality DataQuality);
+
+// P12: one strand of a confluence entry - a side (or the rival) observed on
+// a market family. Windows are the same fixed-window pair as team_evidence.
+public sealed record FmReportConfluenceTeam(
+    [property: JsonPropertyName("subject")] string Subject,
+    [property: JsonPropertyName("role")] string? Role,
+    [property: JsonPropertyName("line")] double? Line,
+    [property: JsonPropertyName("windows")] Dictionary<string, FmReportEvidenceWindow> Windows);
+
+// P12: player strand of the same family; keeps its own market and line.
+public sealed record FmReportConfluencePlayer(
+    [property: JsonPropertyName("subject")] string Subject,
+    [property: JsonPropertyName("market")] string Market,
+    [property: JsonPropertyName("line")] double? Line,
+    [property: JsonPropertyName("windows")] Dictionary<string, FmReportEvidenceWindow> Windows);
+
+// P12: explicit confluence (team + rival + players) grouped by market family
+// with NO score and no strength ordering: each strand keeps its own line.
+public sealed record FmReportConfluence(
+    [property: JsonPropertyName("family")] string Family,
+    [property: JsonPropertyName("teams")] List<FmReportConfluenceTeam> Teams,
+    [property: JsonPropertyName("players")] List<FmReportConfluencePlayer> Players);
 
 public sealed record FmReport(
     [property: JsonPropertyName("fixture")] FmReportFixture Fixture,
@@ -143,6 +177,7 @@ public sealed record FmReport(
     [property: JsonPropertyName("player_signals")] List<FmReportPlayerSignal> PlayerSignals,
     [property: JsonPropertyName("player_evidence")] List<FmReportEvidence> PlayerEvidence,
     [property: JsonPropertyName("team_evidence")] List<FmReportEvidence> TeamEvidence,
+    [property: JsonPropertyName("confluence")] List<FmReportConfluence> Confluence,
     [property: JsonPropertyName("notes")] List<string> Notes);
 
 public static class FmConfluenceReportBuilder
@@ -163,6 +198,15 @@ public static class FmConfluenceReportBuilder
     // P11 A3: per-section row cap so the markdown cannot explode; the JSON and
     // the markdown always render the same (already capped) list.
     public const int EvidenceCap = 30;
+
+    // P12: same idea for the confluence block (families, not rows).
+    public const int ConfluenceCap = 30;
+
+    // P12: the confluence block groups observed series, it never scores them.
+    public const string NoteConfluence =
+        "confluence agrupa por familia de mercado las series observadas de equipo, " +
+        "rival y jugadores (cada una con su línea y sus ventanas fijas); " +
+        "es una suma de observaciones descriptivas, no un score ni una valoración.";
 
     // P11 B2: sequence carries the newest 10 values (the same set counted by
     // windows.last10), ordered oldest -> newest (the newest value closes it).
@@ -214,13 +258,18 @@ public static class FmConfluenceReportBuilder
             string.Equals(r.Location, "away", StringComparison.OrdinalIgnoreCase));
 
         // fm_team_matches stores the row's own name only as the *opponent* of the
-        // other side, so home/away names come from the opposite row.
-        var homeName = awayRow?.Opponent;
-        var awayName = homeRow?.Opponent;
-        var homeApid = homeRow?.TeamApid;
-        var awayApid = awayRow?.TeamApid;
+        // other side, so home/away names come from the opposite row. P12: a
+        // pre-match fixture has no rows at all, so the loader's sides (from
+        // fm_signal.venue_role + name -> apid) fill every gap, field by field.
+        var sides = input.Sides;
+        var homeName = awayRow?.Opponent ?? sides?.HomeName;
+        var awayName = homeRow?.Opponent ?? sides?.AwayName;
+        var homeApid = homeRow?.TeamApid ?? sides?.HomeApid;
+        var awayApid = awayRow?.TeamApid ?? sides?.AwayApid;
+        // C3: kickoff stays null pre-match (kickoff is not stored in fm_signal).
         var kickoff = homeRow?.TsUtc ?? awayRow?.TsUtc;
-        var competition = homeRow?.League ?? awayRow?.League ?? input.Signals
+        var competition = homeRow?.League ?? awayRow?.League ?? sides?.Competition
+            ?? input.Signals
             .Select(s => s.CompetitionScope)
             .FirstOrDefault(c => !string.IsNullOrWhiteSpace(c));
 
@@ -318,7 +367,10 @@ public static class FmConfluenceReportBuilder
                                 opponentName,
                                 oppBasis,
                                 BuildSequence(oppPoints),
-                                BuildEvidenceWindows(oppPoints, "team"))),
+                                BuildEvidenceWindows(oppPoints, "team")),
+                        competition,
+                        BuildOverlapFlags(subjectRows, opponentApid, opponentName),
+                        dataQuality),
                     points.Count));
             }
         }
@@ -378,7 +430,10 @@ public static class FmConfluenceReportBuilder
                         basis,
                         BuildSequence(points),
                         BuildEvidenceWindows(points, "player"),
-                        null),
+                        null,
+                        competition,
+                        BuildPlayerOverlapFlags(playerRows, h2h),
+                        BuildDataQuality(s, input.Outcomes, skipReason)),
                     points.Count));
             }
         }
@@ -411,6 +466,10 @@ public static class FmConfluenceReportBuilder
         var orderedPlayerEvidence = OrderEvidence(playerEvidence);
         var orderedTeamEvidence = OrderEvidence(teamEvidence);
 
+        // P12: explicit confluence built from the already-capped evidence
+        // lists, so JSON and markdown always agree on what is shown.
+        var confluence = BuildConfluence(orderedTeamEvidence, orderedPlayerEvidence);
+
         return new FmReport(
             fixture,
             SortCriteria,
@@ -418,8 +477,79 @@ public static class FmConfluenceReportBuilder
             orderedPlayers,
             orderedPlayerEvidence,
             orderedTeamEvidence,
-            new List<string> { NoteDescriptive, NoteEvidence });
+            confluence,
+            new List<string> { NoteDescriptive, NoteEvidence, NoteConfluence });
     }
+
+    // P12: groups observed evidence by market family (home_/away_ stripped,
+    // match totals excluded). An entry is written only when the family holds
+    // 2+ observed strands (team + rival, or team + player). No score, no
+    // ranking by strength: families sort by name, strands keep evidence order.
+    private static List<FmReportConfluence> BuildConfluence(
+        List<FmReportEvidence> teams, List<FmReportEvidence> players)
+    {
+        var teamStrands = new Dictionary<string, List<FmReportConfluenceTeam>>(StringComparer.Ordinal);
+        var playerStrands = new Dictionary<string, List<FmReportConfluencePlayer>>(StringComparer.Ordinal);
+        var seen = new HashSet<(string Family, string Subject, double? Line)>();
+
+        foreach (var e in teams)
+        {
+            if (e.Market.StartsWith("total_", StringComparison.Ordinal)) continue;
+            var family = MarketFamily(e.Market);
+            if (!teamStrands.TryGetValue(family, out var list))
+                teamStrands[family] = list = new List<FmReportConfluenceTeam>();
+
+            if (seen.Add((family, e.Subject, e.Line)))
+                list.Add(new FmReportConfluenceTeam(e.Subject, e.Role, e.Line, e.Windows));
+            if (e.RivalContext is { } rival &&
+                seen.Add((family, rival.Subject, e.Line)))
+            {
+                list.Add(new FmReportConfluenceTeam(
+                    rival.Subject, OppositeRole(e.Role), e.Line, rival.Windows));
+            }
+        }
+
+        foreach (var e in players)
+        {
+            if (e.Market.StartsWith("total_", StringComparison.Ordinal)) continue;
+            var family = MarketFamily(e.Market);
+            if (!playerStrands.TryGetValue(family, out var list))
+                playerStrands[family] = list = new List<FmReportConfluencePlayer>();
+            if (seen.Add((family, e.Subject, e.Line)))
+                list.Add(new FmReportConfluencePlayer(e.Subject, e.Market, e.Line, e.Windows));
+        }
+
+        var families = teamStrands.Keys
+            .Concat(playerStrands.Keys)
+            .Distinct(StringComparer.Ordinal)
+            .OrderBy(f => f, StringComparer.Ordinal);
+
+        var result = new List<FmReportConfluence>();
+        foreach (var family in families)
+        {
+            var teamList = teamStrands.TryGetValue(family, out var t)
+                ? t : new List<FmReportConfluenceTeam>();
+            var playerList = playerStrands.TryGetValue(family, out var p)
+                ? p : new List<FmReportConfluencePlayer>();
+            if (teamList.Count + playerList.Count < 2) continue;
+            result.Add(new FmReportConfluence(family, teamList, playerList));
+        }
+        return result.Take(ConfluenceCap).ToList();
+    }
+
+    // "home_corners" / "away_corners" -> "corners"; "shots" -> "shots".
+    private static string MarketFamily(string market)
+    {
+        var m = market.Trim().ToLowerInvariant();
+        if (m.StartsWith("home_", StringComparison.Ordinal)) m = m["home_".Length..];
+        else if (m.StartsWith("away_", StringComparison.Ordinal)) m = m["away_".Length..];
+        return m;
+    }
+
+    private static string? OppositeRole(string? role) =>
+        string.Equals(role, "home", StringComparison.OrdinalIgnoreCase) ? "away"
+        : string.Equals(role, "away", StringComparison.OrdinalIgnoreCase) ? "home"
+        : null;
 
     private static List<FmReportEvidence> OrderEvidence(
         List<(FmReportEvidence Evidence, int AllN)> entries) =>
@@ -937,25 +1067,47 @@ public static class FmConfluenceReportBuilder
             .ToList();
     }
 
-    private static FmReportManualOdds BuildManualOdds(
+    // P13: one entry per side (over/under/...), latest row wins per side. Rows
+    // written before sides existed carry side="manual" and are reported as is.
+    private static List<FmReportOdds> BuildManualOdds(
         IReadOnlyList<FmReportOddsRow> odds, string market, double? line)
     {
-        var row = odds
+        var rows = odds
             .Where(o =>
                 string.Equals(o.Source, "manual", StringComparison.OrdinalIgnoreCase) &&
                 NameMatches(o.Market, market) &&
                 LineEquals(o.Line, line))
-            .OrderBy(o => o.SourceTimestampUtc, StringComparer.Ordinal)
-            .ThenBy(o => o.Id)
-            .LastOrDefault();
+            .ToList();
+        if (rows.Count == 0) return new List<FmReportOdds>();
 
-        if (row is null) return new FmReportManualOdds("Betano", null, null, null);
-        return new FmReportManualOdds(
-            row.BookmakerName ?? row.Bookmaker,
-            row.OddsValue,
-            Math.Round(1.0 / row.OddsValue, 3),
-            FormatCapturedAt(row.SourceTimestampUtc));
+        var latest = new Dictionary<string, FmReportOddsRow>(StringComparer.Ordinal);
+        foreach (var row in rows)
+        {
+            var side = string.IsNullOrWhiteSpace(row.Side) ? "manual" : row.Side;
+            if (!latest.TryGetValue(side, out var current))
+            {
+                latest[side] = row;
+                continue;
+            }
+            var byTs = string.CompareOrdinal(row.SourceTimestampUtc, current.SourceTimestampUtc);
+            if (byTs > 0 || (byTs == 0 && row.Id > current.Id)) latest[side] = row;
+        }
+
+        return latest
+            .OrderBy(kv => SideRank(kv.Key))
+            .ThenBy(kv => kv.Key, StringComparer.Ordinal)
+            .Select(kv => new FmReportOdds(
+                kv.Value.BookmakerName ?? kv.Value.Bookmaker,
+                kv.Key,
+                kv.Value.OddsValue,
+                Math.Round(1.0 / kv.Value.OddsValue, 3),
+                FormatCapturedAt(kv.Value.SourceTimestampUtc)))
+            .ToList();
     }
+
+    private static int SideRank(string side) =>
+        side.Equals("over", StringComparison.OrdinalIgnoreCase) ? 0 :
+        side.Equals("under", StringComparison.OrdinalIgnoreCase) ? 1 : 2;
 
     private static long? FindPlayerTeamApid(FmReportInput input, string? playerName)
     {

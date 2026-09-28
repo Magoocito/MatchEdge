@@ -5,6 +5,16 @@ namespace MatchEdge.Infrastructure.Services;
 
 public sealed record FmSignalInsertResult(int Inserted, int Suspect, string? FirstMotivo);
 
+// P13 GAP1: timing de captura de un fixture. FirstSnapshotUtc es la MIN(source_timestamp_utc)
+// de fm_snapshot (la primera captura que existe del partido) y OverviewRawPath apunta al
+// snapshot overview persistido, que es donde vive el kickoff del fixture
+// (JSON-LD SportsEvent.startDate de la pagina).
+public sealed record FmSnapshotTiming(
+    DateTime? FirstSnapshotUtc,
+    DateTime? LastSnapshotUtc,
+    int SnapshotCount,
+    string? OverviewRawPath);
+
 public sealed record FmPlayerMatchRow(
     long TeamApid,
     long PlayerApid,
@@ -75,7 +85,11 @@ public sealed record FmSignalDetailRow(
     string? VenueScope,
     string? CompetitionScope,
     string? Status = "OK",
-    string? Motivo = null);
+    string? Motivo = null,
+    // P12 B: side this signal was captured from (home/away). Pre-match
+    // fixtures have no fm_team_matches row, so the loader reads the sides
+    // from here instead of inventing them.
+    string? VenueRole = null);
 
 // P7 E1: odds row with the capture timestamp (report shows captured_at).
 public sealed record FmReportOddsRow(
@@ -430,7 +444,7 @@ VALUES ($fixtureId, $bookmaker,
     }
 
     public async Task<long> InsertManualOddsAsync(
-        string fixtureId, string bookmaker, string market,
+        string fixtureId, string bookmaker, string market, string side,
         double? line, double oddsValue, DateTime sourceTimestampUtc,
         CancellationToken ct = default)
     {
@@ -443,7 +457,7 @@ VALUES ($fixtureId, $bookmaker,
 INSERT INTO fm_market_odds
     (fixture_id, bookmaker, bookmaker_name, market, line, odds_value, side,
      source, source_timestamp_utc, snapshot_id)
-VALUES ($fixtureId, $bookmaker, $bookmakerName, $market, $line, $oddsValue, 'manual',
+VALUES ($fixtureId, $bookmaker, $bookmakerName, $market, $line, $oddsValue, $side,
         'manual', $ts, NULL);
 SELECT last_insert_rowid();";
         cmd.Parameters.AddWithValue("$fixtureId", fixtureId);
@@ -452,6 +466,7 @@ SELECT last_insert_rowid();";
         cmd.Parameters.AddWithValue("$market", market);
         cmd.Parameters.AddWithValue("$line", (object?)line ?? DBNull.Value);
         cmd.Parameters.AddWithValue("$oddsValue", oddsValue);
+        cmd.Parameters.AddWithValue("$side", side);
         cmd.Parameters.AddWithValue("$ts", sourceTimestampUtc.ToString("yyyy-MM-dd HH:mm:ss.fff"));
         var id = await cmd.ExecuteScalarAsync(ct);
         return Convert.ToInt64(id);
@@ -565,8 +580,11 @@ FROM fm_market_odds WHERE fixture_id = $fixtureId ORDER BY id;";
     }
 
     // P7 E4: PUT semantics — one manual row per (fixture, market, line, bookmaker).
+    // P13: manual rows are keyed by side too, so over/under can coexist for the
+    // same (fixture, market, line). Rows written before sides existed carry
+    // side='manual' and are adopted (renamed) by the first update of a side.
     public async Task<long> UpsertManualOddsAsync(
-        string fixtureId, string bookmaker, string market,
+        string fixtureId, string bookmaker, string market, string side,
         double? line, double oddsValue, DateTime sourceTimestampUtc,
         CancellationToken ct = default)
     {
@@ -579,9 +597,11 @@ FROM fm_market_odds WHERE fixture_id = $fixtureId ORDER BY id;";
         {
             cmd.CommandText = @"
 UPDATE fm_market_odds
-SET odds_value = $oddsValue, source_timestamp_utc = $ts, bookmaker_name = $bookmakerName
+SET odds_value = $oddsValue, source_timestamp_utc = $ts, bookmaker_name = $bookmakerName,
+    side = $side
 WHERE fixture_id = $fixtureId AND bookmaker = $bookmaker AND market = $market
   AND source = 'manual'
+  AND (side = $side OR side = 'manual')
   AND (($line IS NULL AND line IS NULL) OR line = $line);";
             cmd.Parameters.AddWithValue("$oddsValue", oddsValue);
             cmd.Parameters.AddWithValue("$ts", ts);
@@ -589,6 +609,7 @@ WHERE fixture_id = $fixtureId AND bookmaker = $bookmaker AND market = $market
             cmd.Parameters.AddWithValue("$fixtureId", fixtureId);
             cmd.Parameters.AddWithValue("$bookmaker", bookmaker);
             cmd.Parameters.AddWithValue("$market", market);
+            cmd.Parameters.AddWithValue("$side", side);
             cmd.Parameters.AddWithValue("$line", (object?)line ?? DBNull.Value);
             if (await cmd.ExecuteNonQueryAsync(ct) > 0)
             {
@@ -596,11 +617,13 @@ WHERE fixture_id = $fixtureId AND bookmaker = $bookmaker AND market = $market
                 sel.CommandText = @"
 SELECT id FROM fm_market_odds
 WHERE fixture_id = $fixtureId AND bookmaker = $bookmaker AND market = $market
-  AND source = 'manual' AND (($line IS NULL AND line IS NULL) OR line = $line)
+  AND source = 'manual' AND side = $side
+  AND (($line IS NULL AND line IS NULL) OR line = $line)
 ORDER BY id DESC LIMIT 1;";
                 sel.Parameters.AddWithValue("$fixtureId", fixtureId);
                 sel.Parameters.AddWithValue("$bookmaker", bookmaker);
                 sel.Parameters.AddWithValue("$market", market);
+                sel.Parameters.AddWithValue("$side", side);
                 sel.Parameters.AddWithValue("$line", (object?)line ?? DBNull.Value);
                 return Convert.ToInt64(await sel.ExecuteScalarAsync(ct));
             }
@@ -612,7 +635,7 @@ ORDER BY id DESC LIMIT 1;";
 INSERT INTO fm_market_odds
     (fixture_id, bookmaker, bookmaker_name, market, line, odds_value, side,
      source, source_timestamp_utc, snapshot_id)
-VALUES ($fixtureId, $bookmaker, $bookmakerName, $market, $line, $oddsValue, 'manual',
+VALUES ($fixtureId, $bookmaker, $bookmakerName, $market, $line, $oddsValue, $side,
         'manual', $ts, NULL);
 SELECT last_insert_rowid();";
             ins.Parameters.AddWithValue("$fixtureId", fixtureId);
@@ -621,6 +644,7 @@ SELECT last_insert_rowid();";
             ins.Parameters.AddWithValue("$market", market);
             ins.Parameters.AddWithValue("$line", (object?)line ?? DBNull.Value);
             ins.Parameters.AddWithValue("$oddsValue", oddsValue);
+            ins.Parameters.AddWithValue("$side", side);
             ins.Parameters.AddWithValue("$ts", ts);
             return Convert.ToInt64(await ins.ExecuteScalarAsync(ct));
         }
@@ -672,7 +696,7 @@ ORDER BY s.id;";
 SELECT s.id, s.subject_type, s.subject_name, s.market, s.line, s.direction,
        s.hits, s.sample_size, s.observed_hit_rate, s.opp_hits, s.opp_sample_size,
        s.recent_values_json, s.params_json, s.venue_scope, s.competition_scope,
-       s.status, s.motivo
+       s.status, s.motivo, s.venue_role
 FROM fm_signal s
 JOIN (
     SELECT tab, MAX(id) AS mid FROM fm_snapshot
@@ -703,9 +727,51 @@ ORDER BY s.id;";
                 reader.IsDBNull(13) ? null : reader.GetString(13),
                 reader.IsDBNull(14) ? null : reader.GetString(14),
                 reader.IsDBNull(15) ? null : reader.GetString(15),
-                reader.IsDBNull(16) ? null : reader.GetString(16)));
+                reader.IsDBNull(16) ? null : reader.GetString(16),
+                reader.IsDBNull(17) ? null : reader.GetString(17)));
         }
         return rows;
+    }
+
+    // P12 B: name -> apid. fm_team_matches never stores the row team's own
+    // name, so the mapping comes from the opponent columns of the rows that
+    // played against this name (opponent_apid is the apid of that name).
+    public async Task<long?> GetTeamApidByNameAsync(string name, CancellationToken ct = default)
+    {
+        if (string.IsNullOrWhiteSpace(name)) return null;
+        try { await EnsureOnceAsync(ct); }
+        catch { ResetEnsureFailure(); throw; }
+        await using var conn = Open();
+        await conn.OpenAsync(ct);
+        await using var cmd = conn.CreateCommand();
+        cmd.CommandText = @"
+SELECT opponent_apid
+FROM fm_team_matches
+WHERE opponent COLLATE NOCASE = $name AND opponent_apid IS NOT NULL
+ORDER BY ts_utc DESC, id DESC
+LIMIT 1;";
+        cmd.Parameters.AddWithValue("$name", name.Trim());
+        var value = await cmd.ExecuteScalarAsync(ct);
+        return value is long apid ? apid : null;
+    }
+
+    // P12 B: competition of a team's most recent persisted fixture. Used as
+    // the pre-match competition fallback (no fixture row exists yet).
+    public async Task<string?> GetLatestLeagueAsync(long teamApid, CancellationToken ct = default)
+    {
+        try { await EnsureOnceAsync(ct); }
+        catch { ResetEnsureFailure(); throw; }
+        await using var conn = Open();
+        await conn.OpenAsync(ct);
+        await using var cmd = conn.CreateCommand();
+        cmd.CommandText = @"
+SELECT league FROM fm_team_matches
+WHERE team_apid = $team AND league IS NOT NULL AND league <> ''
+ORDER BY ts_utc DESC, fixture_id
+LIMIT 1;";
+        cmd.Parameters.AddWithValue("$team", teamApid);
+        var value = await cmd.ExecuteScalarAsync(ct);
+        return value as string;
     }
 
     // P7 T3: identity of EVERY fm_signal copy of a fixture (all snapshots).
@@ -772,6 +838,49 @@ ORDER BY id DESC LIMIT 1;";
         var result = await cmd.ExecuteScalarAsync(ct);
         return result as string;
     }
+
+    // P13 GAP1: primera/ultima captura del fixture, cantidad de snapshots y la
+    // ruta del overview persistido (de ahi sale el kickoff para la deteccion
+    // automatica de captura post-kickoff). Solo lectura, 0 navegaciones.
+    public async Task<FmSnapshotTiming> GetSnapshotTimingAsync(
+        string fixtureId, CancellationToken ct = default)
+    {
+        try { await EnsureOnceAsync(ct); }
+        catch { ResetEnsureFailure(); throw; }
+        await using var conn = Open();
+        await conn.OpenAsync(ct);
+        await using var cmd = conn.CreateCommand();
+        cmd.CommandText = @"
+SELECT MIN(source_timestamp_utc), MAX(source_timestamp_utc), COUNT(*),
+       (SELECT raw_path FROM fm_snapshot
+        WHERE fixture_id = $fixtureId AND tab = 'overview' AND raw_path <> ''
+        ORDER BY id LIMIT 1)
+FROM fm_snapshot WHERE fixture_id = $fixtureId;";
+        cmd.Parameters.AddWithValue("$fixtureId", fixtureId);
+        DateTime? first = null;
+        DateTime? last = null;
+        var count = 0;
+        string? overviewRawPath = null;
+        await using (var reader = await cmd.ExecuteReaderAsync(ct))
+        {
+            if (await reader.ReadAsync(ct))
+            {
+                first = ParseSnapshotTs(reader, 0);
+                last = ParseSnapshotTs(reader, 1);
+                count = reader.IsDBNull(2) ? 0 : Convert.ToInt32(reader.GetValue(2));
+                overviewRawPath = reader.IsDBNull(3) ? null : reader.GetString(3);
+            }
+        }
+        return new FmSnapshotTiming(first, last, count, overviewRawPath);
+    }
+
+    private static DateTime? ParseSnapshotTs(Microsoft.Data.Sqlite.SqliteDataReader reader,
+        int ordinal) =>
+        reader.IsDBNull(ordinal) ||
+        !DateTime.TryParse(reader.GetString(ordinal), CultureInfo.InvariantCulture,
+            DateTimeStyles.AdjustToUniversal | DateTimeStyles.AssumeUniversal, out var dt)
+            ? null
+            : dt;
 
     public async Task<Dictionary<string, int>> GetLastOkSignalCountsAsync(
         string fixtureId, string tab, CancellationToken ct = default)
