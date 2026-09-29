@@ -11,14 +11,27 @@ public static class P13ProxyEvReportMarkdown
     public const string Title =
         "Analisis 360 + Diferencia modelo-mercado - UEFA Nations League - 28/09/2026";
 
-    public static string Render(P13Report report)
+    private const string Scope =
+        "los 8 partidos del 28/09/2026 (Nations League).";
+
+    private const string NotesHeader =
+        "Notas de implementacion del P13";
+
+    // P14: header parameterised so another matchday can reuse the exact same
+    // rendering without touching the tables, Delta% or candidate logic below.
+    // Render(report) keeps the frozen P13 wording used by its tests/controller.
+    public static string Render(P13Report report) =>
+        Render(report, Title, Scope, NotesHeader);
+
+    public static string Render(
+        P13Report report, string title, string scope, string notesHeader)
     {
         var sb = new StringBuilder();
 
-        sb.AppendLine("# " + Title);
+        sb.AppendLine("# " + title);
         sb.AppendLine();
         sb.AppendLine($"- Generado: {report.GeneratedAtUtc}");
-        sb.AppendLine("- Alcance: los 8 partidos del 28/09/2026 (Nations League).");
+        sb.AppendLine("- Alcance: " + scope);
         sb.AppendLine("- Salida analitica descriptiva: modelo Poisson bivariado con " +
                       "correccion Dixon-Coles, Cuota FM real y diferencia modelo-mercado. " +
                       "No contiene seleccion de mercados ni instrucciones de uso.");
@@ -133,7 +146,7 @@ public static class P13ProxyEvReportMarkdown
                       "momento del partido.");
         sb.AppendLine();
 
-        sb.AppendLine("## Notas de implementacion del P13");
+        sb.AppendLine("## " + notesHeader);
         sb.AppendLine();
         sb.AppendLine("- Wording del estado sin cuota: \"" +
                       P13ProxyEvReportBuilder.NoOddsStatus + "\" (variante DELTA en el " +
