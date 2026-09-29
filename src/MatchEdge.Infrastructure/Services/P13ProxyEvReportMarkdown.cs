@@ -179,6 +179,11 @@ public static class P13ProxyEvReportMarkdown
                       "kickoff.");
         sb.AppendLine("- En modo post-partido no se calculan mercados de jugador (cuotas de " +
                       "cierre): " + P13ProxyEvReportBuilder.PlayerPostCloseNote);
+        sb.AppendLine("- Fail-closed sin overview: si el fixture no tiene el tab overview " +
+                      "persistido (o el startDate del JSON-LD no se puede leer) no hay kickoff " +
+                      "que comparar, asi que con datos de captura la seccion queda tambien en " +
+                      "modo \"" + P13ProxyEvReportBuilder.PostMatchText + "\" (kickoff n/d) en " +
+                      "vez de calcular modelo, candidatos y mercados de jugador a ciegas.");
         sb.AppendLine();
 
         return sb.ToString();

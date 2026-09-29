@@ -52,7 +52,8 @@ public sealed record P13Report(
 // P13: el orden de los 8 partidos y su volumen vienen del brief; el builder no
 // los infiere de la base de datos. No hay flag manual de post-partido: ese
 // estado se decide solo comparando MIN(source_timestamp_utc) de fm_snapshot
-// con el kickoff del fixture (ver IsPostKickoff).
+// con el kickoff del fixture (ver IsPostKickoff) y, si el kickoff no se puede
+// leer del overview, la seccion se cierra igualmente (fail-closed).
 public sealed record P13FixtureSpec(
     string FixtureId,
     string Home,
@@ -185,6 +186,19 @@ public static class P13ProxyEvReportBuilder
                 continue;
             }
 
+            // P13 GAP1 fail-closed: sin kickoff legible (fixture sin tab
+            // 'overview' persistido o sin startDate en el JSON-LD) no se puede
+            // descartar que la primera captura sea posterior al partido, asi que
+            // con datos de captura la seccion queda en modo registro (sin
+            // modelo, sin candidatos y sin jugadores) en vez de fallar abierto.
+            // Es el caso del matchday siguiente: fixtures nuevos capturados
+            // antes de tener su overview.
+            if (kickoff is null && input is not null)
+            {
+                sections.Add(BuildPostMatch(spec, input, timing, null));
+                continue;
+            }
+
             sections.Add(input is null
                 ? BuildWithoutData(spec)
                 : await BuildSectionAsync(
@@ -208,22 +222,26 @@ public static class P13ProxyEvReportBuilder
             new[] { NoDataText });
 
     // P13 GAP1: modo post-partido automatico. La primera captura del fixture es
-    // posterior a su kickoff, asi que el informe queda como registro historico:
-    // sin Delta%, sin candidatos y sin mercados de jugador, con la evidencia de
-    // captura (ventana, snapshots, senales y filas de cuota) en las notas.
+    // posterior a su kickoff (o no se puede descartar, ver el fail-closed de
+    // BuildAsync), asi que el informe queda como registro historico: sin Delta%,
+    // sin candidatos y sin mercados de jugador, con la evidencia de captura
+    // (ventana, snapshots, senales y filas de cuota) en las notas.
     private static P13FixtureSection BuildPostMatch(
         P13FixtureSpec spec,
         FmReportInput? input,
         FmSnapshotTiming timing,
-        DateTime kickoff)
+        DateTime? kickoff)
     {
-        var notes = new List<string>
-        {
-            PostMatchText,
-            $"Captura posterior al kickoff {FormatKickoff(kickoff)} (primera captura " +
-            $"{FormatKickoff(timing.FirstSnapshotUtc)}): sin Delta%, sin candidatos y " +
-            "sin mercados de jugador; solo registro historico."
-        };
+        var notes = new List<string> { PostMatchText };
+
+        if (kickoff is DateTime k)
+            notes.Add($"Captura posterior al kickoff {FormatKickoff(k)} (primera captura " +
+                      $"{FormatKickoff(timing.FirstSnapshotUtc)}): sin Delta%, sin candidatos y " +
+                      "sin mercados de jugador; solo registro historico.");
+        else
+            notes.Add("Sin snapshot overview persistido no se puede determinar el kickoff: " +
+                      "la seccion queda en modo fail-closed, sin Delta%, sin candidatos y sin " +
+                      "mercados de jugador, hasta poder comparar la captura con el kickoff.");
 
         if (timing.FirstSnapshotUtc is DateTime first && timing.LastSnapshotUtc is DateTime last)
             notes.Add($"Captura: {FormatKickoff(first)} - {FormatKickoff(last)} " +
@@ -243,7 +261,8 @@ public static class P13ProxyEvReportBuilder
 
     // P13 GAP1: kickoff del fixture leido del snapshot overview persistido
     // (JSON-LD SportsEvent.startDate de la pagina del partido). Sin overview no
-    // hay kickoff y la deteccion post-kickoff queda desactivada para ese fixture.
+    // hay kickoff: BuildAsync no puede comparar la captura con el partido y
+    // cierra la seccion (fail-closed) en vez de calcular candidatos a ciegas.
     private static readonly System.Text.RegularExpressions.Regex KickoffPattern = new(
         "\"startDate\"\\s*:\\s*\"(?<ts>\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}" +
         "(?:\\.\\d+)?Z)\"",

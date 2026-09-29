@@ -11,7 +11,8 @@ namespace MatchEdge.InfrastructureTests;
 // umbral por volumen, HomeAdv provisional, ausencia de las palabras del regex
 // F2 en el markdown), la extension de mercados de jugadores (ventana last10,
 // muestra minima, fila exacta de cuota) y la deteccion automatica de
-// post-partido del GAP1 (kickoff del overview vs primera captura, sin flag).
+// post-partido del GAP1 (kickoff del overview vs primera captura, sin flag,
+// con fail-closed cuando no hay overview que leer).
 public class P13ProxyEvReportBuilderTests
 {
     private const string FixtureWithOdds = "33662307";
@@ -69,6 +70,8 @@ public class P13ProxyEvReportBuilderTests
             var outcomes = new FmOutcomeStore($"Data Source={dbPath}");
             await SeedAsync(store, FixtureWithOdds, withSignals: true, withOdds: true);
             await SeedAsync(store, FixtureNoOdds, withSignals: true, withOdds: false);
+            await SeedPreMatchOverviewAsync(store, FixtureWithOdds);
+            await SeedPreMatchOverviewAsync(store, FixtureNoOdds);
 
             var report = await P13ProxyEvReportBuilder.BuildAsync(Specs, store, outcomes);
             var md = P13ProxyEvReportMarkdown.Render(report);
@@ -104,6 +107,8 @@ public class P13ProxyEvReportBuilderTests
             var outcomes = new FmOutcomeStore($"Data Source={dbPath}");
             await SeedAsync(store, FixtureWithOdds, withSignals: true, withOdds: true);
             await SeedAsync(store, FixtureNoOdds, withSignals: true, withOdds: false);
+            await SeedPreMatchOverviewAsync(store, FixtureWithOdds);
+            await SeedPreMatchOverviewAsync(store, FixtureNoOdds);
 
             var report = await P13ProxyEvReportBuilder.BuildAsync(Specs, store, outcomes);
 
@@ -179,6 +184,7 @@ public class P13ProxyEvReportBuilderTests
             var store = new FmSnapshotStore($"Data Source={dbPath}");
             var outcomes = new FmOutcomeStore($"Data Source={dbPath}");
             await SeedAsync(store, FixtureNoOdds, withSignals: true, withOdds: false);
+            await SeedPreMatchOverviewAsync(store, FixtureNoOdds);
 
             var report = await P13ProxyEvReportBuilder.BuildAsync(
                 new[] { Specs[1] }, store, outcomes);
@@ -284,6 +290,7 @@ public class P13ProxyEvReportBuilderTests
             await SeedPlayersAsync(store, FixtureWithOdds,
                 new[] { PlayerSignal("K. Demo", "shots", 0.5, values) },
                 new[] { PlayerOdds("K. Demo", "shots", 0.5, 1.90) });
+            await SeedPreMatchOverviewAsync(store, FixtureWithOdds);
 
             var report = await P13ProxyEvReportBuilder.BuildAsync(
                 new[] { Specs[0] }, store, outcomes);
@@ -336,6 +343,7 @@ public class P13ProxyEvReportBuilderTests
             await SeedPlayersAsync(store, FixtureWithOdds,
                 new[] { PlayerSignal("R. Corto", "tackles", 0.5, new double[] { 2, 1, 3, 1 }) },
                 new[] { PlayerOdds("R. Corto", "tackles", 0.5, 2.00) });
+            await SeedPreMatchOverviewAsync(store, FixtureWithOdds);
 
             var report = await P13ProxyEvReportBuilder.BuildAsync(
                 new[] { Specs[0] }, store, outcomes);
@@ -374,6 +382,7 @@ public class P13ProxyEvReportBuilderTests
                 new[] { PlayerSignal("T. SinCuota", "home_saves", 1.5,
                     new double[] { 2, 1, 2, 2, 1, 3 }) },
                 Array.Empty<FmOddsDraft>());
+            await SeedPreMatchOverviewAsync(store, FixtureWithOdds);
 
             var report = await P13ProxyEvReportBuilder.BuildAsync(
                 new[] { Specs[0] }, store, outcomes);
@@ -417,6 +426,7 @@ public class P13ProxyEvReportBuilderTests
                 odds.Add(PlayerOdds(name, "shots", 0.5, 1.50));
             }
             await SeedPlayersAsync(store, FixtureWithOdds, signals, odds);
+            await SeedPreMatchOverviewAsync(store, FixtureWithOdds);
 
             var report = await P13ProxyEvReportBuilder.BuildAsync(
                 new[] { Specs[0] }, store, outcomes);
@@ -542,6 +552,61 @@ public class P13ProxyEvReportBuilderTests
             Microsoft.Data.Sqlite.SqliteConnection.ClearAllPools();
             File.Delete(dbPath);
             File.Delete(overview);
+        }
+    }
+
+    // P13 GAP1 fail-closed: fixture con captura pero sin tab overview (sin
+    // kickoff legible). No se puede comparar la primera captura con el partido,
+    // asi que la seccion se cierra en modo registro en vez de calcular modelo,
+    // candidatos y mercados de jugador a ciegas (caso del matchday siguiente,
+    // con fixtures capturados antes de tener su overview).
+    [Fact]
+    public async Task Report_WithoutOverviewSnapshot_FailsClosedAsPostMatch()
+    {
+        var dbPath = Path.Combine(Path.GetTempPath(), $"fmtest_{Guid.NewGuid():N}.db");
+        try
+        {
+            var store = new FmSnapshotStore($"Data Source={dbPath}");
+            var outcomes = new FmOutcomeStore($"Data Source={dbPath}");
+            await SeedAsync(store, FixtureWithOdds, withSignals: true, withOdds: true);
+            await SeedPlayersAsync(store, FixtureWithOdds,
+                new[] { PlayerSignal("K. Demo", "shots", 0.5,
+                    new double[] { 2, 1, 1, 1, 3, 2 }) },
+                new[] { PlayerOdds("K. Demo", "shots", 0.5, 1.90) });
+
+            // A proposito: sin SeedOverviewKickoffAsync no hay kickoff que leer.
+            var report = await P13ProxyEvReportBuilder.BuildAsync(
+                new[] { Specs[0] }, store, outcomes);
+            var section = Assert.Single(report.Fixtures);
+
+            Assert.True(section.IsPostMatch);
+            Assert.True(section.HasData);
+            Assert.Null(section.KickoffUtc);
+            Assert.Null(section.LambdaHome);
+            Assert.Empty(section.Rows);
+            Assert.Empty(section.PlayerRows);
+            Assert.Empty(section.Candidates);
+            Assert.Contains(P13ProxyEvReportBuilder.PostMatchText, section.Notes);
+            Assert.Contains(section.Notes,
+                n => n.Contains("Sin snapshot overview persistido"));
+            Assert.Contains(section.Notes, n => n.Contains("fail-closed"));
+            Assert.Contains(section.Notes,
+                n => n.Contains(P13ProxyEvReportBuilder.PlayerPostCloseNote));
+
+            var md = P13ProxyEvReportMarkdown.Render(report);
+            Assert.Contains(P13ProxyEvReportBuilder.PostMatchText, md);
+            Assert.Contains("Kickoff: n/d", md);
+            Assert.Contains($"| Portugal vs Wales | " +
+                            $"{P13ProxyEvReportBuilder.PostMatchText}", md);
+            Assert.DoesNotContain("#### Mercados", md);
+            Assert.DoesNotContain("| Equipo | Jugador | Mercado |", md);
+            Assert.DoesNotMatch(Forbidden, md);
+            Assert.DoesNotMatch(Forbidden, JsonSerializer.Serialize(report));
+        }
+        finally
+        {
+            Microsoft.Data.Sqlite.SqliteConnection.ClearAllPools();
+            File.Delete(dbPath);
         }
     }
 
@@ -760,6 +825,16 @@ public class P13ProxyEvReportBuilderTests
             await store.InsertOddsAsync(fixtureId, odds, snapshotId, DateTime.UtcNow);
         return snapshotId;
     }
+
+    // P13 GAP1 fail-closed: los tests de modelo, candidatos y mercados de
+    // jugador siembran ademas un overview PRE-partido (kickoff posterior a la
+    // primera captura), que es el estado real de un fixture capturado antes del
+    // partido. Sin ese overview el builder cierra la seccion y no habria filas
+    // que verificar.
+    private static Task<string> SeedPreMatchOverviewAsync(
+        FmSnapshotStore store, string fixtureId) =>
+        SeedOverviewKickoffAsync(
+            store, fixtureId, DateTime.UtcNow.AddHours(2), DateTime.UtcNow);
 
     // P13 GAP1: snapshot overview persistido con el kickoff del fixture dentro
     // (JSON-LD SportsEvent.startDate), que es como el builder decide pre/post.
