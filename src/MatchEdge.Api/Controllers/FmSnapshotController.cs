@@ -117,16 +117,19 @@ public class FmSnapshotController : ControllerBase
         if (request.Line is not null &&
             (double.IsNaN(request.Line.Value) || double.IsInfinity(request.Line.Value)))
             return BadRequest(new { error = "line must be a finite number." });
+        var side = NormalizeSide(request.Side);
+        if (side is null)
+            return BadRequest(new { error = "side must be a short token (e.g. over/under)." });
 
         var bookmaker = string.IsNullOrWhiteSpace(request.Bookmaker)
             ? "Betano" : request.Bookmaker.Trim();
         var id = await _store.InsertManualOddsAsync(
-            fixtureId, bookmaker, request.Market.Trim(),
+            fixtureId, bookmaker, request.Market.Trim(), side,
             request.Line, request.OddsValue!.Value, DateTime.UtcNow, ct);
 
         _logger.LogInformation(
-            "Manual odds {Id} fixture {FixtureId} {Bookmaker} {Market} {Line} {Odds}",
-            id, fixtureId, bookmaker, request.Market, request.Line, request.OddsValue);
+            "Manual odds {Id} fixture {FixtureId} {Bookmaker} {Market} {Line} {Side} {Odds}",
+            id, fixtureId, bookmaker, request.Market, request.Line, side, request.OddsValue);
         return Ok(new
         {
             id,
@@ -134,9 +137,22 @@ public class FmSnapshotController : ControllerBase
             bookmaker,
             market = request.Market,
             line = request.Line,
+            side,
             oddsValue = request.OddsValue,
             source = "manual"
         });
+    }
+
+    // P13: one manual row per (fixture, bookmaker, market, line, side), so a
+    // Betano over and under of the same market never overwrite each other.
+    // Empty/absent side defaults to "over"; legacy rows used side="manual".
+    private static string? NormalizeSide(string? side)
+    {
+        var value = string.IsNullOrWhiteSpace(side) ? "over" : side.Trim().ToLowerInvariant();
+        if (value.Length is 0 or > 16) return null;
+        foreach (var ch in value)
+            if (!char.IsAsciiLetterOrDigit(ch) && ch != '_') return null;
+        return value;
     }
 
     // P7 E1: descriptive 360° report (JSON = source of truth). Persisted data
@@ -161,7 +177,7 @@ public class FmSnapshotController : ControllerBase
         return Content(FmConfluenceReportMarkdown.Render(report), "text/markdown; charset=utf-8");
     }
 
-    // P7 E4: PUT semantics — one manual row per (fixture, market, line, bookmaker).
+    // P7 E4: PUT semantics — one manual row per (fixture, market, line, side).
     [HttpPut("fixtures/{fixtureId}/manual-odds/{market}/{line}")]
     public async Task<IActionResult> PutManualOdds(
         string fixtureId, string market, string line,
@@ -177,16 +193,19 @@ public class FmSnapshotController : ControllerBase
             return BadRequest(new { error = "value must be a number in (0, 10000]." });
         if (string.IsNullOrWhiteSpace(market))
             return BadRequest(new { error = "market is required." });
+        var side = NormalizeSide(request.Side);
+        if (side is null)
+            return BadRequest(new { error = "side must be a short token (e.g. over/under)." });
 
         var bookmaker = string.IsNullOrWhiteSpace(request.Bookmaker)
             ? "Betano" : request.Bookmaker.Trim();
         var id = await _store.UpsertManualOddsAsync(
-            fixtureId, bookmaker, market.Trim(), parsedLine, request.Value!.Value,
+            fixtureId, bookmaker, market.Trim(), side, parsedLine, request.Value!.Value,
             DateTime.UtcNow, ct);
 
         _logger.LogInformation(
-            "Manual odds {Id} fixture {FixtureId} {Bookmaker} {Market} {Line} {Odds} (PUT)",
-            id, fixtureId, bookmaker, market, parsedLine, request.Value);
+            "Manual odds {Id} fixture {FixtureId} {Bookmaker} {Market} {Line} {Side} {Odds} (PUT)",
+            id, fixtureId, bookmaker, market, parsedLine, side, request.Value);
         return Ok(new
         {
             id,
@@ -194,6 +213,7 @@ public class FmSnapshotController : ControllerBase
             bookmaker,
             market,
             line = parsedLine,
+            side,
             value = request.Value,
             source = "manual"
         });
@@ -469,6 +489,7 @@ public sealed class FmManualOddsRequest
 {
     public string? Bookmaker { get; set; }
     public string? Market { get; set; }
+    public string? Side { get; set; }
     public double? Line { get; set; }
 
     [System.Text.Json.Serialization.JsonPropertyName("odds_value")]
@@ -478,5 +499,6 @@ public sealed class FmManualOddsRequest
 public sealed class FmReportManualOddsRequest
 {
     public string? Bookmaker { get; set; }
+    public string? Side { get; set; }
     public double? Value { get; set; }
 }
