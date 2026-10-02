@@ -37,6 +37,54 @@ public class FmP14Controller : ControllerBase
         new P13FixtureSpec("33700900", "Eslovenia", "Macedonia del Norte", "bajo")
     };
 
+    // 01/10/2026 Nations League matchday (league apid 1538): same engine, own
+    // specs so the 29/09 report stays byte-reproducible. Volumes come from the
+    // matchday brief: Germany-Serbia, Denmark-Portugal and Wales-Norway are
+    // "medio" (5% threshold, Media confidence) and Greece-Netherlands is
+    // "bajo" (5%, Baja). Same technical debt as P14Fixtures: hardcoded specs.
+    public static readonly IReadOnlyList<P13FixtureSpec> P14FixturesOct1 = new[]
+    {
+        new P13FixtureSpec("33940967", "Grecia", "Paises Bajos", "bajo"),
+        new P13FixtureSpec("33940968", "Alemania", "Serbia", "medio"),
+        new P13FixtureSpec("33940966", "Dinamarca", "Portugal", "medio"),
+        new P13FixtureSpec("33940965", "Gales", "Noruega", "medio")
+    };
+
+    private const string ReportTitleOct1 =
+        "Analisis 360 + Diferencia modelo-mercado - UEFA Nations League - 01/10/2026";
+
+    private const string ReportScopeOct1 =
+        "los 4 partidos del 01/10/2026 (Nations League).";
+
+    // 02/10/2026 Nations League matchday (league apid 1538): same engine, own
+    // specs so previous matchdays stay byte-reproducible. Volumes come from the
+    // 02/10 brief: France-Italy, Belgium-Turkey, Poland-Romania and
+    // Bosnia-Herzegovina-Sweden are "medio" (5% threshold, Media confidence);
+    // the other six are "bajo" (5%, Baja). PASO A: the markdown endpoint adds
+    // the descriptive referee note (name, referee_id, cards per game from the
+    // persisted overview) next to the cards section without touching lambda,
+    // Delta%, confidence, candidates or F1/F2. Same technical debt as the
+    // other spec lists: hardcoded fixtures.
+    public static readonly IReadOnlyList<P13FixtureSpec> P14FixturesOct2 = new[]
+    {
+        new P13FixtureSpec("34122611", "Kazajistan", "Moldavia", "bajo"),
+        new P13FixtureSpec("34122612", "Letonia", "Montenegro", "bajo"),
+        new P13FixtureSpec("34122613", "Chipre", "Armenia", "bajo"),
+        new P13FixtureSpec("34122615", "Francia", "Italia", "medio"),
+        new P13FixtureSpec("34122616", "Belgica", "Turquia", "medio"),
+        new P13FixtureSpec("34122617", "Polonia", "Rumania", "medio"),
+        new P13FixtureSpec("34122618", "Bosnia y Herzegovina", "Suecia", "medio"),
+        new P13FixtureSpec("34122619", "Ucrania", "Irlanda del Norte", "bajo"),
+        new P13FixtureSpec("34122620", "Hungria", "Georgia", "bajo"),
+        new P13FixtureSpec("34122621", "Islas Feroe", "Eslovaquia", "bajo")
+    };
+
+    private const string ReportTitleOct2 =
+        "Analisis 360 + Diferencia modelo-mercado - UEFA Nations League - 02/10/2026";
+
+    private const string ReportScopeOct2 =
+        "los 10 partidos del 02/10/2026 (Nations League).";
+
     private const string ReportTitle =
         "Analisis 360 + Diferencia modelo-mercado - UEFA Nations League - 29/09/2026";
 
@@ -77,6 +125,57 @@ public class FmP14Controller : ControllerBase
             report, ReportTitle, ReportScope, ReportNotesHeader);
         _logger.LogInformation(
             "P14 report rendered: {Fixtures} fixtures, {Chars} chars",
+            report.Fixtures.Count, md.Length);
+        return Content(md, "text/markdown; charset=utf-8");
+    }
+
+    [HttpGet("p14/report-20261001")]
+    public async Task<IActionResult> ReportOct1(CancellationToken ct)
+    {
+        var report = await P13ProxyEvReportBuilder.BuildAsync(
+            P14FixturesOct1, _store, _outcomeStore, ct);
+        return Ok(report);
+    }
+
+    [HttpGet("p14/report-20261001.md")]
+    public async Task<IActionResult> ReportMarkdownOct1(CancellationToken ct)
+    {
+        var report = await P13ProxyEvReportBuilder.BuildAsync(
+            P14FixturesOct1, _store, _outcomeStore, ct);
+        var md = P13ProxyEvReportMarkdown.Render(
+            report, ReportTitleOct1, ReportScopeOct1, ReportNotesHeader);
+        _logger.LogInformation(
+            "P14 01/10 report rendered: {Fixtures} fixtures, {Chars} chars",
+            report.Fixtures.Count, md.Length);
+        return Content(md, "text/markdown; charset=utf-8");
+    }
+
+    [HttpGet("p14/report-20261002")]
+    public async Task<IActionResult> ReportOct2(CancellationToken ct)
+    {
+        var report = await P13ProxyEvReportBuilder.BuildAsync(
+            P14FixturesOct2, _store, _outcomeStore, ct);
+        return Ok(report);
+    }
+
+    // PASO A: el markdown del 02/10 anade la nota descriptiva de arbitro por
+    // fixture (0 navegaciones: lee el overview ya persistido). El JSON no la
+    // lleva: es solo presentacion, el motor no cambia.
+    [HttpGet("p14/report-20261002.md")]
+    public async Task<IActionResult> ReportMarkdownOct2(CancellationToken ct)
+    {
+        var report = await P13ProxyEvReportBuilder.BuildAsync(
+            P14FixturesOct2, _store, _outcomeStore, ct);
+        var refereeNotes = new Dictionary<string, string>(report.Fixtures.Count);
+        foreach (var section in report.Fixtures)
+            refereeNotes[section.FixtureId] =
+                await FmRefereeOverview.LoadNoteAsync(
+                    _store, section.FixtureId, ct);
+        var md = P13ProxyEvReportMarkdown.Render(
+            report, ReportTitleOct2, ReportScopeOct2, ReportNotesHeader,
+            refereeNotes);
+        _logger.LogInformation(
+            "P14 02/10 report rendered: {Fixtures} fixtures, {Chars} chars",
             report.Fixtures.Count, md.Length);
         return Content(md, "text/markdown; charset=utf-8");
     }

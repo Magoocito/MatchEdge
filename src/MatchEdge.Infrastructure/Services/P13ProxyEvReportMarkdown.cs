@@ -24,7 +24,15 @@ public static class P13ProxyEvReportMarkdown
         Render(report, Title, Scope, NotesHeader);
 
     public static string Render(
-        P13Report report, string title, string scope, string notesHeader)
+        P13Report report, string title, string scope, string notesHeader) =>
+        Render(report, title, scope, notesHeader, refereeNotes: null);
+
+    // PASO A (brief 02/10): nota descriptiva de arbitro por fixture_id. Con
+    // diccionario null (los matchdays anteriores) la salida queda byte identica:
+    // lambda, Delta%, confianza, candidatos y F1/F2 no se tocan.
+    public static string Render(
+        P13Report report, string title, string scope, string notesHeader,
+        IReadOnlyDictionary<string, string>? refereeNotes)
     {
         var sb = new StringBuilder();
 
@@ -68,18 +76,24 @@ public static class P13ProxyEvReportMarkdown
             if (!section.HasData)
             {
                 sb.AppendLine("- " + P13ProxyEvReportBuilder.NoDataText);
+                AppendRefereeNote(sb, refereeNotes, section.FixtureId);
                 sb.AppendLine();
                 continue;
             }
 
             foreach (var note in section.Notes)
                 sb.AppendLine("- " + note);
-            sb.AppendLine();
 
             // P13 GAP1: modo automatico post-partido: solo las notas de la
             // seccion, sin tabla de mercados, sin jugadores y sin candidatos.
             if (section.IsPostMatch)
+            {
+                AppendRefereeNote(sb, refereeNotes, section.FixtureId);
+                sb.AppendLine();
                 continue;
+            }
+
+            sb.AppendLine();
 
             sb.AppendLine("#### Mercados");
             sb.AppendLine();
@@ -89,6 +103,11 @@ public static class P13ProxyEvReportMarkdown
             foreach (var row in section.Rows)
                 sb.AppendLine(MarketRow(row));
             sb.AppendLine();
+
+            // PASO A: la nota queda junto a la tabla de mercados (donde estan
+            // las filas de tarjetas); solo si se dibuja se anade su blanco.
+            if (AppendRefereeNote(sb, refereeNotes, section.FixtureId))
+                sb.AppendLine();
 
             if (section.PlayerRows.Count > 0)
             {
@@ -200,6 +219,20 @@ public static class P13ProxyEvReportMarkdown
         sb.AppendLine();
 
         return sb.ToString();
+    }
+
+    // PASO A: inyecta la linea de arbitro de la seccion. Diccionario null o
+    // fixture sin entrada = nada que anadir (salida byte identica a la de los
+    // matchdays sin Paso A).
+    private static bool AppendRefereeNote(
+        StringBuilder sb,
+        IReadOnlyDictionary<string, string>? refereeNotes,
+        string fixtureId)
+    {
+        if (refereeNotes is null) return false;
+        if (!refereeNotes.TryGetValue(fixtureId, out var note)) return false;
+        sb.AppendLine("- " + note);
+        return true;
     }
 
     private static string SummaryRow(P13FixtureSection section)
