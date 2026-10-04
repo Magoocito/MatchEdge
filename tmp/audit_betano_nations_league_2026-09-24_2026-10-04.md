@@ -6,6 +6,8 @@
 
 Moneda en pantalla: **S/**. Fechas y horas como aparecen, `DD/MM/YYYY - HH:mm`. La zona horaria no está etiquetada.
 
+El contraste con la evidencia previa de FootyMetrics está en [Contraste con FootyMetrics](#contraste-con-footymetrics).
+
 ## Resumen financiero
 
 Cada importe cuenta una vez por ticket. El retorno real es dinero acreditado, incluido cashout o devolución.
@@ -1614,6 +1616,434 @@ Categoría Primera A (Colombia)
 Detalle de mercados no incluido en la extracción de este ticket.
 
 </details>
+
+## Contraste con FootyMetrics
+
+Solo entran las selecciones de UEFA Nations League del historial, incluidos los dos partidos de esa competición del ticket mixto. Cada línea se consulta una vez por partido. Los tickets que la repiten quedan en la misma fila.
+
+**Delta%**, tal como lo definen los informes P13/P14 y `P13ProxyEvReportBuilder`: `(P_modelo × Cuota FM) − 1`, expresado en porcentaje. Cuota FM es la mejor cuota de ese lado entre las casas con fila. Sin cuota, el delta no se calcula. La reproducción de esta sección usa el P_modelo ya impreso, redondeado al 0.1%. Una diferencia dentro de `0.1 × cuota + 0.15` cabe en ese redondeo y no se cuenta como error de cálculo.
+
+La hora de apuesta es la del ticket. El historial no etiqueta zona horaria; este contraste la trata como America/Lima (UTC−5) porque el propio informe constató que el reloj coincide con esa zona. Kickoff y capturas están en UTC.
+
+Una captura solo cuenta como señal previa si su archivo es anterior a la apuesta. El hit rate del snapshot (`loc=all`, ventana destacada `bestCount/bestTotal`) no es la ventana del modelo. El modelo de goles usa HomeAwaySplit; el de conteos, last10 por sede o toda la serie si no hay last10. Ese N y su hit rate no aparecen en el informe.
+
+`2+` o `1+` no se equipara a una línea `.5`. Primer tiempo no se equipara al partido completo. Otro local-visitante, aunque sean las mismas selecciones, es otro partido.
+
+### Grecia - Alemania
+
+Kickoff del snapshot: 2026-10-04T18:45:00Z. Captura team-trends: 2026-10-04 18:20:50 UTC. Informe: `tmp/p14_uefa_2026-10-04.md`, generado 2026-10-04 18:28 UTC.
+
+| Línea apostada | Tickets, momento y cuota | Evidencia previa | Delta% | Valor real y liquidación |
+| --- | --- | --- | --- | --- |
+| Goles totales Más/Menos · Menos 1.5 | 20196727099 · 04/10/2026 - 15:20 · en vivo · captura anterior a la apuesta · cuota — | Línea no comparable. El informe tiene el lado contrario (total_goals @ 1.5 (over)), no esta línea. | — | Marcador 0-0: la línea se cumple. La liquidación Betano coincide con ese marcador. |
+| Tarjetas Totales Más/Menos · Menos 6.5 | 20196727099 · 04/10/2026 - 15:20 · en vivo · captura anterior a la apuesta · cuota — | Línea no comparable. Esa línea exacta no está en el snapshot ni en el informe. | — | Resultado real no disponible. El marcador de goles no verifica este mercado. |
+| Grecia - Goles totales Más/Menos · Más de 0.5 | 20196582057 · 04/10/2026 - 13:42 · prepartido · captura anterior a la apuesta · cuota — | Hit rate: No visible en el snapshot para esta línea. | home_goals @ 0.5 (over): P 86.4%, justa 1.16, FM 1.36 (Ladbrokes), Delta% +17.4; reproducido +17.5 (dentro del redondeo) | Marcador 0-0: la línea no se cumple. La liquidación Betano coincide con ese marcador. |
+| Alemania - Goles totales Más/Menos · Menos 2.5 | 20196582057 · 04/10/2026 - 13:42 · prepartido · captura anterior a la apuesta · cuota — | Germany · loc=all · party=for · hit 5/5 (100%) · opp 9/10 (90.0%) · cuota snapshot 1.34 (Kambi) | away_goals @ 2.5 (under): P 84.0%, justa 1.19, FM 1.34 (Kambi), Delta% +12.5; reproducido +12.6 (dentro del redondeo) | Marcador 0-0: la línea se cumple. La liquidación Betano coincide con ese marcador. |
+| Tarjetas Totales Más/Menos · Menos 3.5 | 20196569291 · 04/10/2026 - 13:39 · prepartido · captura anterior a la apuesta · cuota — | Línea no comparable. Esa línea exacta no está en el snapshot ni en el informe. | — | Resultado real no disponible. El marcador de goles no verifica este mercado. |
+| Tiros al Arco · Menos 9.5 | 20196569291 · 04/10/2026 - 13:39 · prepartido · captura anterior a la apuesta · cuota — | Greece · loc=all · party=total · hit 7/8 (88%) · opp 6/10 (60.0%) · cuota snapshot 1.92 (Kambi) | total_shots_on_target @ 9.5 (under): P 99.9%, justa 1.00, FM 1.92 (Kambi), Delta% +91.8; reproducido +91.8 (dentro del redondeo) | Resultado real no disponible. El marcador de goles no verifica este mercado. |
+
+### Países Bajos - Serbia
+
+Kickoff del snapshot: 2026-10-04T18:45:00Z. Captura team-trends: 2026-10-04 18:21:29 UTC. Informe: `tmp/p14_uefa_2026-10-04.md`, generado 2026-10-04 18:28 UTC.
+
+| Línea apostada | Tickets, momento y cuota | Evidencia previa | Delta% | Valor real y liquidación |
+| --- | --- | --- | --- | --- |
+| Más/Menos Córners · Menos 10.5 | 20196727099 · 04/10/2026 - 15:20 · en vivo · captura anterior a la apuesta · cuota — | Línea no comparable. Esa línea exacta no está en el snapshot ni en el informe. | — | Resultado real no disponible. El marcador de goles no verifica este mercado. |
+| Goles totales Más/Menos · Menos 3.5 | 20196727099 · 04/10/2026 - 15:20 · en vivo · captura anterior a la apuesta · cuota —<br>20196582057 · 04/10/2026 - 13:42 · prepartido · captura anterior a la apuesta · cuota — | Serbia · loc=all · party=total · hit 8/9 (89%) · opp 6/10 (60.0%) · cuota snapshot 1.9 (Bet365) | total_goals @ 3.5 (under): P 58.6%, justa 1.71, FM 1.90 (Bet365), Delta% +11.4; reproducido +11.3 (dentro del redondeo) | Marcador 2-1: la línea se cumple. La liquidación Betano coincide con ese marcador. |
+| Serbia - Goles totales Más/Menos · Más de 0.5 | 20196582057 · 04/10/2026 - 13:42 · prepartido · captura anterior a la apuesta · cuota — | Hit rate: No visible en el snapshot para esta línea. | away_goals @ 0.5 (over): P 59.8%, justa 1.67, FM 1.83 (Ladbrokes), Delta% +9.3; reproducido +9.4 (dentro del redondeo) | Marcador 2-1: la línea se cumple. La liquidación Betano coincide con ese marcador. |
+
+### Gales - Dinamarca
+
+Kickoff del snapshot: 2026-10-04T18:45:00Z. Captura team-trends: 2026-10-04 18:23:01 UTC. Informe: `tmp/p14_uefa_2026-10-04.md`, generado 2026-10-04 18:28 UTC.
+
+| Línea apostada | Tickets, momento y cuota | Evidencia previa | Delta% | Valor real y liquidación |
+| --- | --- | --- | --- | --- |
+| Más/Menos Córners · Más de 7.5 | 20196727099 · 04/10/2026 - 15:20 · en vivo · captura anterior a la apuesta · cuota — | Denmark · loc=all · party=total · hit 8/9 (89%) · opp 7/10 (70.0%) · cuota snapshot 1.36 (Ladbrokes) | total_corners @ 7.5 (over): P 91.0%, justa 1.10, FM 1.36 (Ladbrokes), Delta% +23.8; reproducido +23.8 (dentro del redondeo) | Resultado real no disponible. El marcador de goles no verifica este mercado. |
+| Tarjetas Totales Más/Menos · Menos 3.5 | 20196727099 · 04/10/2026 - 15:20 · en vivo · captura anterior a la apuesta · cuota — | Hay más de una fila FM para esta línea; no se promedian.<br>Wales · loc=all · party=total · hit 6/7 (86%) · opp 6/10 (60.0%) · cuota snapshot 1.87 (Kambi)<br>Denmark · loc=all · party=total · hit 4/5 (80%) · opp 8/10 (80.0%) · cuota snapshot 1.87 (Kambi) | total_cards @ 3.5 (under): P 64.7%, justa 1.55, FM 1.87 (Kambi), Delta% +21.0; reproducido +21.0 (dentro del redondeo) | Resultado real no disponible. El marcador de goles no verifica este mercado. |
+| Goles totales Más/Menos · Más de 2.5 | 20196582057 · 04/10/2026 - 13:42 · prepartido · captura anterior a la apuesta · cuota 1.93 | Denmark · loc=all · party=total · hit 8/10 (80%) · opp 5/10 (50.0%) · cuota snapshot 1.85 (Bet365) | Over/Under 2.5 goles - over: P 62.8%, justa 1.59, FM 1.85 (Bet365), Delta% +16.1; reproducido +16.2 (dentro del redondeo) | Marcador 0-1: la línea no se cumple. La liquidación Betano coincide con ese marcador. |
+
+### Portugal - Noruega
+
+Kickoff del snapshot: 2026-10-04T18:45:00Z. Captura team-trends: 2026-10-04 18:22:07 UTC. Informe: `tmp/p14_uefa_2026-10-04.md`, generado 2026-10-04 18:28 UTC.
+
+| Línea apostada | Tickets, momento y cuota | Evidencia previa | Delta% | Valor real y liquidación |
+| --- | --- | --- | --- | --- |
+| Goles totales Más/Menos · Más de 2.5 | 20196602193 · 04/10/2026 - 13:48 · en vivo · captura anterior a la apuesta · cuota — | Norway · loc=all · party=total · hit 8/8 (100%) · opp 6/10 (60.0%) · cuota snapshot 1.4 (Bet365) | Over/Under 2.5 goles - over: P 76.5%, justa 1.31, FM 1.40 (Bet365), Delta% +7.1; reproducido +7.1 (dentro del redondeo) | Marcador 2-1: la línea se cumple. La liquidación Betano coincide con ese marcador. |
+| Noruega - Goles totales Más/Menos · Más de 0.5 | 20196602193 · 04/10/2026 - 13:48 · en vivo · captura anterior a la apuesta · cuota — | Norway · loc=all · party=for · hit 10/10 (100%) · opp 7/10 (70.0%) · cuota snapshot 1.3 (Bet365) | away_goals @ 0.5 (over): P 81.0%, justa 1.23, FM 1.30 (Bet365), Delta% +5.3; reproducido +5.3 (dentro del redondeo) | Marcador 2-1: la línea se cumple. La liquidación Betano coincide con ese marcador. |
+| Tarjetas Totales Más/Menos · Menos 5.5 | 20196602193 · 04/10/2026 - 13:48 · en vivo · captura anterior a la apuesta · cuota — | Portugal · loc=all · party=total · hit 9/10 (90%) · opp 8/10 (80.0%) · cuota snapshot 1.35 (Ladbrokes) | total_cards @ 5.5 (under): P 100.0%, justa 1.00, FM 1.35 (Ladbrokes), Delta% +35.0; reproducido +35.0 (dentro del redondeo) | Resultado real no disponible. El marcador de goles no verifica este mercado. |
+
+### Suiza - Eslovenia
+
+Sin snapshot previo. No hay informe P13/P14 ni carpeta de snapshot con este local y este visitante.
+
+| Línea apostada | Tickets | Cuota individual | Liquidación Betano |
+| --- | --- | --- | --- |
+| Goles totales Más/Menos · Menos 4.5 | 20195461755 · 03/10/2026 - 15:17 | — | ✅ Ganado |
+| Más/Menos Córners · Menos 7.5 | 20195461755 · 03/10/2026 - 15:17 | — | ✅ Ganado |
+| Tarjetas Totales Más/Menos · Menos 6.5 | 20195461755 · 03/10/2026 - 15:17 | — | ✅ Ganado |
+| Tarjetas Totales Más/Menos · Menos 3.5 | 20195359167 · 03/10/2026 - 13:58 | 1.62 | ❌ Perdido |
+
+Momento prepartido o en vivo: No verificable. No hay kickoff de este cruce en los archivos.
+
+### Macedonia del Norte - Escocia
+
+Sin snapshot previo. No hay informe P13/P14 ni carpeta de snapshot con este local y este visitante.
+
+| Línea apostada | Tickets | Cuota individual | Liquidación Betano |
+| --- | --- | --- | --- |
+| Más/Menos Córners · Menos 13.5 | 20195461755 · 03/10/2026 - 15:17 | — | ✅ Ganado |
+| Goles totales Más/Menos · Menos 3.5 | 20195461755 · 03/10/2026 - 15:17 | — | ✅ Ganado |
+| Tarjetas Totales Más/Menos · Menos 6.5 | 20195461755 · 03/10/2026 - 15:17 | — | ❌ Perdido |
+| Tarjetas Totales Más/Menos · Menos 5.5 | 20195359167 · 03/10/2026 - 13:58 | 1.75 | ❌ Perdido |
+
+Momento prepartido o en vivo: No verificable. No hay kickoff de este cruce en los archivos.
+
+### España - República Checa
+
+Sin snapshot previo. No hay informe P13/P14 ni carpeta de snapshot con este local y este visitante.
+
+| Línea apostada | Tickets | Cuota individual | Liquidación Betano |
+| --- | --- | --- | --- |
+| Goles totales Más/Menos · Menos 4.5 | 20195461755 · 03/10/2026 - 15:17 | — | ✅ Ganado |
+| Tarjetas Totales Más/Menos · Menos 1.5 | 20195461755 · 03/10/2026 - 15:17 | — | ❌ Perdido |
+| República Checa Más/Menos Córners · Menos 1.5 | 20195461755 · 03/10/2026 - 15:17<br>20195313253 · 03/10/2026 - 13:34 · cashout del ticket<br>20195309015 · 03/10/2026 - 13:32 | — | ✅ Ganado |
+| Tarjetas Totales Más/Menos · Menos 3.5 | 20195359167 · 03/10/2026 - 13:58 | 1.34 | ❌ Perdido |
+| Goles totales Más/Menos · Más de 3.5 | 20195313253 · 03/10/2026 - 13:34 · cashout del ticket<br>20195309015 · 03/10/2026 - 13:32 | — | ✅ Ganado |
+| España Tarjetas Totales Más/Menos · Menos 1.5 | 20195313253 · 03/10/2026 - 13:34 · cashout del ticket | — | ✅ Ganado |
+
+Momento prepartido o en vivo: No verificable. No hay kickoff de este cruce en los archivos.
+
+### Croacia - Inglaterra
+
+Sin snapshot previo. No hay informe P13/P14 ni carpeta de snapshot con este local y este visitante.
+
+| Línea apostada | Tickets | Cuota individual | Liquidación Betano |
+| --- | --- | --- | --- |
+| Goles totales Más/Menos · Menos 6.5 | 20195188295 · 03/10/2026 - 12:39 | — | ❌ Perdido |
+| Tarjetas Totales Más/Menos · Menos 1.5 | 20195188295 · 03/10/2026 - 12:39 | — | ✅ Ganado |
+| Más/Menos Córners · Menos 8.5 | 20195188295 · 03/10/2026 - 12:39 | — | ✅ Ganado |
+| Anthony Gordon Tiros al Arco · 2+ | 20195011439 · 03/10/2026 - 10:46 | 2.52 | ✅ Ganado |
+| Resultado del partido · Inglaterra | 20194994117 · 03/10/2026 - 10:35 · cashout del ticket | — | ✅ Ganado |
+| Tarjetas Totales Más/Menos · Más de 1.5 | 20194994117 · 03/10/2026 - 10:35 · cashout del ticket | — | ❌ Perdido |
+| Primer Tiempo Inglaterra Más/Menos Córners · Más de 1.5 | 20194994117 · 03/10/2026 - 10:35 · cashout del ticket | — | ✅ Ganado |
+| Anthony Gordon Tiros al Arco · 1+ | 20194994117 · 03/10/2026 - 10:35 · cashout del ticket | — | ✅ Ganado |
+| Myles Lewis-Skelly Faltas Cometidas · 2+ | 20194959663 · 03/10/2026 - 10:09 | — | ⚪ Anulado |
+| Ezri Konsa Faltas ganadas · 2+ | 20194959663 · 03/10/2026 - 10:09 | — | ✅ Ganado |
+| Elliot Anderson Remates totales · Morgan Gibbs-White: 2+ | 20194959663 · 03/10/2026 - 10:09 | — | ❌ Perdido |
+| Tarjetas Totales Más/Menos · Menos 3.5 | 20194945551 · 03/10/2026 - 09:55 | 1.7 | ✅ Ganado |
+
+Momento prepartido o en vivo: No verificable. No hay kickoff de este cruce en los archivos.
+
+### Islandia - Bulgaria
+
+Sin snapshot previo. No hay informe P13/P14 ni carpeta de snapshot con este local y este visitante.
+
+| Línea apostada | Tickets | Cuota individual | Liquidación Betano |
+| --- | --- | --- | --- |
+| Tarjetas Totales Más/Menos · Menos 4.5 | 20194945551 · 03/10/2026 - 09:55 | 2.07 | ❌ Perdido |
+
+Momento prepartido o en vivo: No verificable. No hay kickoff de este cruce en los archivos.
+
+### Francia - Italia
+
+Kickoff del snapshot: 2026-10-02T18:45:00Z. Captura team-trends: 2026-10-01 23:43:18 UTC. Informe: `tmp/p14_uefa_2026-10-02.md`, generado 2026-10-02 00:36 UTC.
+
+| Línea apostada | Tickets, momento y cuota | Evidencia previa | Delta% | Valor real y liquidación |
+| --- | --- | --- | --- | --- |
+| Goles totales Más/Menos · Menos 2.5 | 20194174617 · 02/10/2026 - 14:47 · en vivo · captura anterior a la apuesta · cuota 1.3 | Hit rate: No visible en el snapshot para esta línea. | Over/Under 2.5 goles - under: P 33.8%, justa 2.96, FM —, Delta% SIN CUOTA FM - DELTA NO CALCULABLE; Delta no calculable: falta P_modelo o cuota FM. | Marcador 1-1: la línea se cumple. La liquidación Betano coincide con ese marcador. |
+| Francia - Goles totales Más/Menos · Menos 2.5 | 20194101297 · 02/10/2026 - 13:48 · en vivo · captura anterior a la apuesta · cuota — | Hit rate: No visible en el snapshot para esta línea. | home_goals @ 2.5 (under): P 68.0%, justa 1.47, FM 1.65 (Kambi), Delta% +12.2; reproducido +12.2 (dentro del redondeo) | Marcador 1-1: la línea se cumple. La liquidación Betano coincide con ese marcador. |
+| Más/Menos Córners · Menos 10.5 | 20194101297 · 02/10/2026 - 13:48 · en vivo · captura anterior a la apuesta · cuota — | France · loc=all · party=total · hit 5/5 (100%) · opp 6/10 (60.0%) · cuota snapshot 1.45 (Kambi) | total_corners @ 10.5 (under): P 98.6%, justa 1.01, FM 1.45 (Kambi), Delta% +43.0; reproducido +43.0 (dentro del redondeo) | Resultado real no disponible. El marcador de goles no verifica este mercado. |
+| Pio Esposito Tiros al Arco · Antonio Vergara: 2+ | 20193626637 · 02/10/2026 - 03:12 · prepartido · captura anterior a la apuesta · cuota 2.4 | Línea no comparable. El texto del mercado y el de la selección no nombran al mismo jugador. No se asigna una fila. | — | Resultado real no disponible |
+
+### Bélgica - Turquía
+
+Kickoff del snapshot: 2026-10-02T18:45:00Z. Captura team-trends: 2026-10-01 23:43:41 UTC. Informe: `tmp/p14_uefa_2026-10-02.md`, generado 2026-10-02 00:36 UTC.
+
+| Línea apostada | Tickets, momento y cuota | Evidencia previa | Delta% | Valor real y liquidación |
+| --- | --- | --- | --- | --- |
+| Ambos equipos anotan · Sí | 20194174617 · 02/10/2026 - 14:47 · en vivo · captura anterior a la apuesta · cuota — | Hit rate: No visible en el snapshot para esta línea. | BTTS - si: P 64.2%, justa 1.56, FM —, Delta% SIN CUOTA FM - DELTA NO CALCULABLE; Delta no calculable: falta P_modelo o cuota FM. | Marcador 3-0: la línea no se cumple. La liquidación Betano coincide con ese marcador. |
+| Bélgica - Goles totales Más/Menos · Menos 2.5 | 20194174617 · 02/10/2026 - 14:47 · en vivo · captura anterior a la apuesta · cuota — | Hit rate: No visible en el snapshot para esta línea. | home_goals @ 2.5 (under): P 65.6%, justa 1.53, FM 1.64 (Kambi), Delta% +7.5; reproducido +7.6 (dentro del redondeo) | Marcador 3-0: la línea no se cumple. La liquidación Betano coincide con ese marcador. |
+
+### Kazajistán - Moldavia
+
+Kickoff del snapshot: 2026-10-02T14:00:00Z. Captura team-trends: 2026-10-01 23:42:07 UTC. Informe: `tmp/p14_uefa_2026-10-02.md`, generado 2026-10-02 00:36 UTC.
+
+| Línea apostada | Tickets, momento y cuota | Evidencia previa | Delta% | Valor real y liquidación |
+| --- | --- | --- | --- | --- |
+| Tarjetas Totales Más/Menos · Menos 4.5 | 20193626637 · 02/10/2026 - 03:12 · prepartido · captura anterior a la apuesta · cuota 1.75 | Moldova · loc=all · party=total · hit 6/6 (100%) · opp 6/10 (60.0%) · cuota snapshot 1.85 (Kambi) | total_cards @ 4.5 (under): P 28.5%, justa 3.51, FM 1.85 (Kambi), Delta% -47.3; reproducido -47.3 (dentro del redondeo) | Resultado real no disponible. El marcador de goles no verifica este mercado. |
+
+### Hungría - Georgia
+
+Kickoff del snapshot: 2026-10-02T18:45:00Z. Captura team-trends: 2026-10-01 23:45:33 UTC. Informe: `tmp/p14_uefa_2026-10-02.md`, generado 2026-10-02 00:36 UTC.
+
+| Línea apostada | Tickets, momento y cuota | Evidencia previa | Delta% | Valor real y liquidación |
+| --- | --- | --- | --- | --- |
+| Georgia Tarjetas Totales Más/Menos · Menos 2.5 | 20193626637 · 02/10/2026 - 03:12 · prepartido · captura anterior a la apuesta · cuota 1.82 | Georgia · loc=all · party=for · hit 10/10 (100%) · opp 5/10 (50.0%) · cuota snapshot 1.73 (Bet365) | away_cards @ 2.5 (under): P 92.0%, justa 1.09, FM 1.73 (Bet365), Delta% +59.1; reproducido +59.2 (dentro del redondeo) | Resultado real no disponible. El marcador de goles no verifica este mercado. |
+
+### Grecia - Países Bajos
+
+Kickoff del snapshot: 2026-10-01T18:45:00Z. Captura team-trends: 2026-10-01 01:25:30 UTC. Informe: `tmp/p14_uefa_2026-10-01.md`, generado 2026-10-01 01:52 UTC.
+
+| Línea apostada | Tickets, momento y cuota | Evidencia previa | Delta% | Valor real y liquidación |
+| --- | --- | --- | --- | --- |
+| Remates totales · Más de 25.5 | 20192385591 · 30/09/2026 - 22:16 · prepartido · captura anterior a la apuesta · cuota 1.7; el ticket se cobró por cashout, la liquidación de la fila es posterior | Netherlands · loc=all · party=total · hit 4/4 (100%) · opp 5/10 (50.0%) · cuota snapshot 1.5 (Kambi) | total_shots @ 25.5 (over): P 100.0%, justa 1.00, FM 1.50 (Kambi), Delta% +50.0; reproducido +50.0 (dentro del redondeo) | Resultado real no disponible. El marcador de goles no verifica este mercado. Cashout del ticket aparte: no es el resultado deportivo. |
+| Tarjetas Totales Más/Menos · Menos 3.5 | 20192361443 · 30/09/2026 - 21:41 · prepartido · captura anterior a la apuesta · cuota 1.91 | Netherlands · loc=all · party=total · hit 9/10 (90%) · opp 5/10 (50.0%) · cuota snapshot 1.91 (Ladbrokes) | total_cards @ 3.5 (under): P 99.7%, justa 1.00, FM 1.91 (Ladbrokes), Delta% +90.4; reproducido +90.4 (dentro del redondeo) | Resultado real no disponible. El marcador de goles no verifica este mercado. |
+| Tarjetas Totales Más/Menos · Menos 4.5 | 20192359527 · 30/09/2026 - 21:38 · prepartido · captura anterior a la apuesta · cuota 1.45 | Hay más de una fila FM para esta línea; no se promedian.<br>Netherlands · loc=all · party=total · hit 10/10 (100%) · opp 7/10 (70.0%) · cuota snapshot 1.44 (Kambi)<br>Greece · loc=all · party=total · hit 6/7 (86%) · opp 10/10 (100.0%) · cuota snapshot 1.44 (Kambi) | total_cards @ 4.5 (under): P 100.0%, justa 1.00, FM 1.44 (Kambi), Delta% +43.9; reproducido +44.0 (dentro del redondeo) | Resultado real no disponible. El marcador de goles no verifica este mercado. |
+
+### Alemania - Serbia
+
+Kickoff del snapshot: 2026-10-01T18:45:00Z. Captura team-trends: 2026-10-01 01:26:00 UTC. Informe: `tmp/p14_uefa_2026-10-01.md`, generado 2026-10-01 01:52 UTC.
+
+| Línea apostada | Tickets, momento y cuota | Evidencia previa | Delta% | Valor real y liquidación |
+| --- | --- | --- | --- | --- |
+| Más/Menos Córners · Más de 9.5 | 20192385591 · 30/09/2026 - 22:16 · prepartido · captura anterior a la apuesta · cuota 2.15; el ticket se cobró por cashout, la liquidación de la fila es posterior | Hit rate: No visible en el snapshot para esta línea. | Over/Under 9.5 corners - over: P 88.1%, justa 1.14, FM 2.20 (Paddy Power), Delta% +93.8; reproducido +93.8 (dentro del redondeo) | Resultado real no disponible. El marcador de goles no verifica este mercado. Cashout del ticket aparte: no es el resultado deportivo. |
+| Tarjetas Totales Más/Menos · Menos 3.5 | 20192361443 · 30/09/2026 - 21:41 · prepartido · captura anterior a la apuesta · cuota 1.78 | Línea no comparable. Esa línea exacta no está en el snapshot ni en el informe. | — | Resultado real no disponible. El marcador de goles no verifica este mercado. |
+| Tarjetas Totales Más/Menos · Menos 4.5 | 20192359527 · 30/09/2026 - 21:38 · prepartido · captura anterior a la apuesta · cuota 1.38 | Hay más de una fila FM para esta línea; no se promedian.<br>Germany · loc=all · party=total · hit 9/10 (90%) · opp 7/10 (70.0%) · cuota snapshot 1.38 (Kambi)<br>Serbia · loc=all · party=total · hit 7/8 (88%) · opp 9/10 (90.0%) · cuota snapshot 1.38 (Kambi) | total_cards @ 4.5 (under): P 70.6%, justa 1.42, FM 1.38 (Kambi), Delta% -2.5; reproducido -2.6 (dentro del redondeo) | Resultado real no disponible. El marcador de goles no verifica este mercado. |
+
+### Gales - Noruega
+
+Kickoff del snapshot: 2026-10-01T18:45:00Z. Captura team-trends: 2026-10-01 01:27:03 UTC. Informe: `tmp/p14_uefa_2026-10-01.md`, generado 2026-10-01 01:52 UTC.
+
+| Línea apostada | Tickets, momento y cuota | Evidencia previa | Delta% | Valor real y liquidación |
+| --- | --- | --- | --- | --- |
+| Noruega Remates totales · Menos 17.5 | 20192385591 · 30/09/2026 - 22:16 · prepartido · captura anterior a la apuesta · cuota 1.93; el ticket se cobró por cashout, la liquidación de la fila es posterior | Norway · loc=all · party=for · hit 7/8 (88%) · opp 7/10 (70.0%) · cuota snapshot 1.8 (Bet365) | away_shots @ 17.5 (under): P 97.8%, justa 1.02, FM 1.80 (Bet365), Delta% +76.0; reproducido +76.0 (dentro del redondeo) | Resultado real no disponible. El marcador de goles no verifica este mercado. Cashout del ticket aparte: no es el resultado deportivo. |
+| Tarjetas Totales Más/Menos · Menos 4.5 | 20192361443 · 30/09/2026 - 21:41 · prepartido · captura anterior a la apuesta · cuota 1.42 | Wales · loc=all · party=total · hit 6/6 (100%) · opp 8/10 (80.0%) · cuota snapshot 1.49 (Kambi) | total_cards @ 4.5 (under): P 100.0%, justa 1.00, FM 1.49 (Kambi), Delta% +49.0; reproducido +49.0 (dentro del redondeo) | Resultado real no disponible. El marcador de goles no verifica este mercado. |
+| Tarjetas Totales Más/Menos · Menos 5.5 | 20192359527 · 30/09/2026 - 21:38 · prepartido · captura anterior a la apuesta · cuota 1.2 | Línea no comparable. Esa línea exacta no está en el snapshot ni en el informe. | — | Resultado real no disponible. El marcador de goles no verifica este mercado. |
+
+### Dinamarca - Portugal
+
+Kickoff del snapshot: 2026-10-01T18:45:00Z. Captura team-trends: 2026-10-01 01:26:29 UTC. Informe: `tmp/p14_uefa_2026-10-01.md`, generado 2026-10-01 01:52 UTC.
+
+| Línea apostada | Tickets, momento y cuota | Evidencia previa | Delta% | Valor real y liquidación |
+| --- | --- | --- | --- | --- |
+| Dinamarca Remates totales · Más de 12.5 | 20192385591 · 30/09/2026 - 22:16 · prepartido · captura anterior a la apuesta · cuota 1.72; el ticket se cobró por cashout, la liquidación de la fila es posterior | Denmark · loc=all · party=for · hit 5/6 (83%) · opp 4/10 (40.0%) · cuota snapshot 1.83 (Bet365) | home_shots @ 12.5 (over): P 96.1%, justa 1.04, FM 1.83 (Bet365), Delta% +75.9; reproducido +75.9 (dentro del redondeo) | Resultado real no disponible. El marcador de goles no verifica este mercado. Cashout del ticket aparte: no es el resultado deportivo. |
+| Tarjetas Totales Más/Menos · Menos 3.5 | 20192361443 · 30/09/2026 - 21:41 · prepartido · captura anterior a la apuesta · cuota 1.9 | Portugal · loc=all · party=total · hit 5/6 (83%) · opp 5/10 (50.0%) · cuota snapshot 2 (Paddy Power) | total_cards @ 3.5 (under): P 32.6%, justa 3.07, FM 2.00 (Paddy Power), Delta% -34.9; reproducido -34.8 (dentro del redondeo) | Resultado real no disponible. El marcador de goles no verifica este mercado. |
+| Tarjetas Totales Más/Menos · Menos 4.5 | 20192359527 · 30/09/2026 - 21:38 · prepartido · captura anterior a la apuesta · cuota 1.45 | Portugal · loc=all · party=total · hit 9/10 (90%) · opp 6/10 (60.0%) · cuota snapshot 1.48 (Kambi) | total_cards @ 4.5 (under): P 51.3%, justa 1.95, FM 1.48 (Kambi), Delta% -24.0; reproducido -24.1 (dentro del redondeo) | Resultado real no disponible. El marcador de goles no verifica este mercado. |
+
+### España - Croacia
+
+Kickoff del snapshot: 2026-09-29T18:45:00Z. Captura team-trends: 2026-09-29 04:39:41 UTC. Informe: `tmp/p14_uefa_2026-09-29.md`, generado 2026-09-29 17:28 UTC.
+
+| Línea apostada | Tickets, momento y cuota | Evidencia previa | Delta% | Valor real y liquidación |
+| --- | --- | --- | --- | --- |
+| Croacia Tarjetas Totales Más/Menos · Más de 4.5 | 20191015725 · 29/09/2026 - 15:22 · en vivo · captura anterior a la apuesta · cuota 2.05 | Línea no comparable. Esa línea exacta no está en el snapshot ni en el informe. | — | Resultado real no disponible. El marcador de goles no verifica este mercado. |
+| Tarjetas Totales Más/Menos · Menos 3.5 | 20190891455 · 29/09/2026 - 13:45 · en vivo · captura anterior a la apuesta · cuota 1.75<br>20190888061 · 29/09/2026 - 13:44 · prepartido · captura anterior a la apuesta · cuota 1.75 | Croatia · loc=all · party=total · hit 6/6 (100%) · opp 7/10 (70.0%) · cuota snapshot 1.85 (Kambi) | total_cards @ 3.5 (under): P 98.1%, justa 1.02, FM 1.85 (Kambi), Delta% +81.5; reproducido +81.5 (dentro del redondeo) | Resultado real no disponible. El marcador de goles no verifica este mercado. |
+
+### Escocia - Suiza
+
+Kickoff del snapshot: 2026-09-29T18:45:00Z. Captura team-trends: 2026-09-29 04:41:09 UTC. Informe: `tmp/p14_uefa_2026-09-29.md`, generado 2026-09-29 17:28 UTC.
+
+| Línea apostada | Tickets, momento y cuota | Evidencia previa | Delta% | Valor real y liquidación |
+| --- | --- | --- | --- | --- |
+| Suiza Tarjetas Totales Más/Menos · Menos 1.5 | 20190889555 · 29/09/2026 - 13:45 · en vivo · captura anterior a la apuesta · cuota 2.35<br>20190888061 · 29/09/2026 - 13:44 · prepartido · captura anterior a la apuesta · cuota 2.35 | Switzerland · loc=all · party=for · hit 5/5 (100%) · opp 3/10 (30.0%) · cuota snapshot 2.5 (Bet365) | away_cards @ 1.5 (under): P 100.0%, justa 1.00, FM 2.50 (Bet365), Delta% +150.0; reproducido +150.0 (dentro del redondeo) | Resultado real no disponible. El marcador de goles no verifica este mercado. |
+
+### Suecia - Polonia
+
+Kickoff del snapshot: 2026-09-28T18:45:00Z. Captura team-trends: 2026-09-28 02:40:21 UTC. Informe: `tmp/p13_uefa_2026-09-28.md`, generado 2026-09-29 00:17 UTC.
+
+| Línea apostada | Tickets, momento y cuota | Evidencia previa | Delta% | Valor real y liquidación |
+| --- | --- | --- | --- | --- |
+| Tarjetas Totales Más/Menos · Menos 3.5 | 20189359317 · 27/09/2026 - 23:47 · prepartido · captura anterior a la apuesta · cuota 2.15<br>20189359057 · 27/09/2026 - 23:46 · prepartido · captura anterior a la apuesta · cuota 2.15 | Sweden · loc=all · party=total · hit 6/7 (86%) · opp 3/10 (30.0%) · cuota snapshot 2.1 (Kambi) | total_cards @ 3.5 (under): P 69.2%, justa 1.45, FM 2.10 (Kambi), Delta% +45.3; reproducido +45.3 (dentro del redondeo) | Resultado real no disponible. El marcador de goles no verifica este mercado. |
+
+### Turquía - Italia
+
+Kickoff del snapshot: 2026-09-28T18:45:00Z. Captura team-trends: 2026-09-28 02:39:48 UTC. Informe: `tmp/p13_uefa_2026-09-28.md`, generado 2026-09-29 00:17 UTC.
+
+| Línea apostada | Tickets, momento y cuota | Evidencia previa | Delta% | Valor real y liquidación |
+| --- | --- | --- | --- | --- |
+| Tarjetas Totales Más/Menos · Menos 3.5 | 20189359159 · 27/09/2026 - 23:47 · prepartido · captura anterior a la apuesta · cuota 2.7<br>20189359057 · 27/09/2026 - 23:46 · prepartido · captura anterior a la apuesta · cuota 2.7 | Türkiye · loc=all · party=total · hit 5/6 (83%) · opp 5/10 (50.0%) · cuota snapshot 2.63 (Kambi) | total_cards @ 3.5 (under): P 64.7%, justa 1.55, FM 2.63 (Kambi), Delta% +70.2; reproducido +70.2 (dentro del redondeo) | Resultado real no disponible. El marcador de goles no verifica este mercado. |
+
+### Noruega - Portugal
+
+Kickoff del snapshot: 2026-09-27T18:45:00Z. Captura team-trends: 2026-09-27 05:12:04 UTC. Sin informe P13/P14 de este partido: no hay Delta% publicado. El snapshot sí existe.
+
+| Línea apostada | Tickets, momento y cuota | Evidencia previa | Delta% | Valor real y liquidación |
+| --- | --- | --- | --- | --- |
+| Más/Menos Córners · Menos 9.5 | 20188937741 · 27/09/2026 - 15:25 · en vivo · captura anterior a la apuesta · cuota — | Línea no comparable. Esa línea exacta no está en el snapshot ni en el informe. | — | Resultado real no disponible. El marcador de goles no verifica este mercado. |
+| Goles totales Más/Menos · Más de 3.5 | 20188937741 · 27/09/2026 - 15:25 · en vivo · captura anterior a la apuesta · cuota — | Línea no comparable. Esa línea exacta no está en el snapshot ni en el informe. | — | Marcador 1-2: la línea no se cumple. La liquidación Betano coincide con ese marcador. |
+| Tarjetas Totales Más/Menos · Más de 8.5 | 20188937741 · 27/09/2026 - 15:25 · en vivo · captura anterior a la apuesta · cuota — | Línea no comparable. Esa línea exacta no está en el snapshot ni en el informe. | — | Resultado real no disponible. El marcador de goles no verifica este mercado. |
+| Goles totales Más/Menos · Menos 2.5 | 20188836341 · 27/09/2026 - 14:19 · en vivo · captura anterior a la apuesta · cuota 2.65 | Línea no comparable. Esa línea exacta no está en el snapshot ni en el informe. | — | Marcador 1-2: la línea no se cumple. La liquidación Betano coincide con ese marcador. |
+| Noruega Remates totales · Menos 13.5 | 20188780973 · 27/09/2026 - 13:44 · prepartido · captura anterior a la apuesta · cuota 1.85 | Norway · loc=all · party=for · hit 7/7 (100%) · opp 8/10 (80.0%) · cuota snapshot 1.57 (Kambi) | Sin informe de Delta% para este partido, o la línea no está en la tabla del informe. | Resultado real no disponible. El marcador de goles no verifica este mercado. |
+
+### Alemania - Grecia
+
+Kickoff del snapshot: 2026-09-27T18:45:00Z. Captura team-trends: 2026-09-27 05:12:47 UTC. Sin informe P13/P14 de este partido: no hay Delta% publicado. El snapshot sí existe.
+
+| Línea apostada | Tickets, momento y cuota | Evidencia previa | Delta% | Valor real y liquidación |
+| --- | --- | --- | --- | --- |
+| Más/Menos Córners · Más de 9.5 | 20188937741 · 27/09/2026 - 15:25 · en vivo · captura anterior a la apuesta · cuota — | Línea no comparable. Esa línea exacta no está en el snapshot ni en el informe. | — | Resultado real no disponible. El marcador de goles no verifica este mercado. |
+| Goles totales Más/Menos · Más de 1.5 | 20188937741 · 27/09/2026 - 15:25 · en vivo · captura anterior a la apuesta · cuota — | Germany · loc=all · party=total · hit 10/10 (100%) · opp 6/10 (60.0%) · cuota snapshot 1.14 (Bet365) | Sin informe de Delta% para este partido, o la línea no está en la tabla del informe. | Marcador 0-1: la línea no se cumple. La liquidación Betano coincide con ese marcador. |
+| Tarjetas Totales Más/Menos · Menos 6.5 | 20188937741 · 27/09/2026 - 15:25 · en vivo · captura anterior a la apuesta · cuota — | Línea no comparable. Esa línea exacta no está en el snapshot ni en el informe. | — | Resultado real no disponible. El marcador de goles no verifica este mercado. |
+| Goles totales Más/Menos · Menos 2.5 | 20188836341 · 27/09/2026 - 14:19 · en vivo · captura anterior a la apuesta · cuota — | Línea no comparable. Esa línea exacta no está en el snapshot ni en el informe. | — | Marcador 0-1: la línea se cumple. La liquidación Betano coincide con ese marcador. |
+| Más/Menos Córners · Menos 8.5 | 20188836341 · 27/09/2026 - 14:19 · en vivo · captura anterior a la apuesta · cuota — | Línea no comparable. Esa línea exacta no está en el snapshot ni en el informe. | — | Resultado real no disponible. El marcador de goles no verifica este mercado. |
+| Grecia Más/Menos Córners · Más de 3.5 | 20188780973 · 27/09/2026 - 13:44 · prepartido · captura anterior a la apuesta · cuota 2.35 | Greece · loc=all · party=for · hit 8/9 (89%) · opp 4/10 (40.0%) · cuota snapshot 2.45 (Ladbrokes) | Sin informe de Delta% para este partido, o la línea no está en la tabla del informe. | Resultado real no disponible. El marcador de goles no verifica este mercado. |
+
+### Inglaterra - España
+
+Sin snapshot previo. No hay informe P13/P14 ni carpeta de snapshot con este local y este visitante.
+
+| Línea apostada | Tickets | Cuota individual | Liquidación Betano |
+| --- | --- | --- | --- |
+| Resultado del partido · Empate | 20187481665 · 26/09/2026 - 14:45 | 3.55 | ❌ Perdido |
+| Harry Kane Tiros al Arco · 1+ | 20187360167 · 26/09/2026 - 13:34 | — | ✅ Ganado |
+| Lamine Yamal Tiros al Arco · 1+ | 20187360167 · 26/09/2026 - 13:34 | — | ✅ Ganado |
+| Unai Simón Atajadas de Arquero · 2+ | 20187347523 · 26/09/2026 - 13:28 · cashout del ticket | — | ✅ Ganado |
+| Goles totales Más/Menos · Más de 2.5 | 20187347523 · 26/09/2026 - 13:28 · cashout del ticket | — | ✅ Ganado |
+| Inglaterra Total de Offsides · Menos 1.5 | 20187347523 · 26/09/2026 - 13:28 · cashout del ticket | — | ✅ Ganado |
+| España Total de Offsides · Menos 1.5 | 20187347523 · 26/09/2026 - 13:28 · cashout del ticket | — | ✅ Ganado |
+
+Momento prepartido o en vivo: No verificable. No hay kickoff de este cruce en los archivos.
+
+### República Checa - Croacia
+
+Sin snapshot previo. No hay informe P13/P14 ni carpeta de snapshot con este local y este visitante.
+
+| Línea apostada | Tickets | Cuota individual | Liquidación Betano |
+| --- | --- | --- | --- |
+| Resultado del partido · Empate | 20187481665 · 26/09/2026 - 14:45 | 2.57 | ❌ Perdido |
+| Total de Faltas Cometidas · Más de 23.5 | 20187360167 · 26/09/2026 - 13:34 | 1.8 | ❌ Perdido |
+
+Momento prepartido o en vivo: No verificable. No hay kickoff de este cruce en los archivos.
+
+### Turquía - Francia
+
+Sin snapshot previo. No hay informe P13/P14 ni carpeta de snapshot con este local y este visitante.
+
+| Línea apostada | Tickets | Cuota individual | Liquidación Betano |
+| --- | --- | --- | --- |
+| Goles totales Más/Menos · Menos 1.5 | 20186492629 · 25/09/2026 - 15:36 | 1.47 | ✅ Ganado |
+| Goles totales Más/Menos · Menos 2.5 | 20186476189 · 25/09/2026 - 15:21 | — | ✅ Ganado |
+| Más/Menos Córners · Menos 8.5 | 20186476189 · 25/09/2026 - 15:21 | — | ✅ Ganado |
+| Tarjetas Totales Más/Menos · Menos 4.5 | 20186476189 · 25/09/2026 - 15:21 | — | ❌ Perdido |
+| Goles totales Más/Menos · Menos 3.5 | 20186459349 · 25/09/2026 - 15:05 | — | ✅ Ganado |
+| Más/Menos Córners · Menos 10.5 | 20186459349 · 25/09/2026 - 15:05 | — | ✅ Ganado |
+| Tarjetas Totales Más/Menos · Menos 2.5 | 20186459349 · 25/09/2026 - 15:05 | — | ❌ Perdido |
+| Francia - Goles totales Más/Menos · Más de 1.5 | 20186354419 · 25/09/2026 - 13:43 | — | ❌ Perdido |
+| Francia Más/Menos Córners · Más de 3.5 | 20186354419 · 25/09/2026 - 13:43 | — | ❌ Perdido |
+| Tarjetas Totales Más/Menos · Menos 3.5 | 20186354419 · 25/09/2026 - 13:43 | — | ❌ Perdido |
+
+Momento prepartido o en vivo: No verificable. No hay kickoff de este cruce en los archivos.
+
+### Italia - Bélgica
+
+Sin snapshot previo. No hay informe P13/P14 ni carpeta de snapshot con este local y este visitante.
+
+| Línea apostada | Tickets | Cuota individual | Liquidación Betano |
+| --- | --- | --- | --- |
+| Goles totales Más/Menos · Menos 2.5 | 20186492629 · 25/09/2026 - 15:36<br>20186459349 · 25/09/2026 - 15:05 | 1.05, — | ✅ Ganado |
+| Goles totales Más/Menos · Menos 3.5 | 20186476189 · 25/09/2026 - 15:21 | — | ✅ Ganado |
+| Más/Menos Córners · Menos 13.5 | 20186476189 · 25/09/2026 - 15:21 | — | ✅ Ganado |
+| Tarjetas Totales Más/Menos · Menos 4.5 | 20186476189 · 25/09/2026 - 15:21 | — | ❌ Perdido |
+| Más/Menos Córners · Más de 13.5 | 20186459349 · 25/09/2026 - 15:05 | — | ❌ Perdido |
+| Tarjetas Totales Más/Menos · Menos 3.5 | 20186459349 · 25/09/2026 - 15:05 | — | ❌ Perdido |
+| Italia Más/Menos Córners · Más de 3.5 | 20186354419 · 25/09/2026 - 13:43 | — | ✅ Ganado |
+| Ambos equipos anotan · Sí | 20186354419 · 25/09/2026 - 13:43 | — | ❌ Perdido |
+| Tarjetas Totales Más/Menos · Más de 1.5 | 20186354419 · 25/09/2026 - 13:43 | — | ✅ Ganado |
+
+Momento prepartido o en vivo: No verificable. No hay kickoff de este cruce en los archivos.
+
+### Noruega - Dinamarca
+
+Sin snapshot previo. No hay informe P13/P14 ni carpeta de snapshot con este local y este visitante.
+
+| Línea apostada | Tickets | Cuota individual | Liquidación Betano |
+| --- | --- | --- | --- |
+| Goles totales Más/Menos · Más de 2.5 | 20185123513 · 24/09/2026 - 12:55 | — | ✅ Ganado |
+| Dinamarca Remates totales · Más de 9.5 | 20185123513 · 24/09/2026 - 12:55 | — | ✅ Ganado |
+
+Momento prepartido o en vivo: No verificable. No hay kickoff de este cruce en los archivos.
+
+### Portugal - Gales
+
+Sin snapshot previo. No hay informe P13/P14 ni carpeta de snapshot con este local y este visitante.
+
+| Línea apostada | Tickets | Cuota individual | Liquidación Betano |
+| --- | --- | --- | --- |
+| Gales Más/Menos Córners · Más de 3.5 | 20185123513 · 24/09/2026 - 12:55 | 2.35 | ❌ Perdido |
+
+Momento prepartido o en vivo: No verificable. No hay kickoff de este cruce en los archivos.
+
+### Países Bajos - Alemania
+
+Sin snapshot previo. No hay informe P13/P14 ni carpeta de snapshot con este local y este visitante.
+
+| Línea apostada | Tickets | Cuota individual | Liquidación Betano |
+| --- | --- | --- | --- |
+| Goles totales Más/Menos · Más de 2.5 | 20185123513 · 24/09/2026 - 12:55 | — | ❌ Perdido |
+| Más/Menos Córners · Más de 7.5 | 20185123513 · 24/09/2026 - 12:55 | — | ✅ Ganado |
+
+Momento prepartido o en vivo: No verificable. No hay kickoff de este cruce en los archivos.
+
+### Fuera de este contraste
+
+Estas selecciones están en el historial y no son UEFA Nations League. No se cruzan con FootyMetrics en esta sección. Los tickets excluidos y el pendiente no traen desglose de mercados, así que tampoco entran.
+
+| Ticket y partido | Clasificación en el historial |
+| --- | --- |
+| 20187481665 · México - Colombia | Mixto |
+| 20187481665 · EE. UU. - Perú | Mixto |
+| 20187481665 · Canadá - Chile | Mixto |
+
+## Validación del contraste
+
+### 1. Extracción y cálculo
+
+Se reprodujo Delta% con la fórmula del builder a partir del P_modelo y la cuota FM impresos. El hit rate del snapshot no entra en esa fórmula.
+
+No apareció una diferencia de Delta% fuera del redondeo del 0.1%, ni una cuota FM del informe distinta de la mejor cuota del mismo lado en el snapshot, en las líneas comparadas.
+
+### 2. Resultado de la señal
+
+Un acierto o un fallo de la liquidación no valida el cálculo de Delta%. Las líneas distintas del mismo partido comparten un solo evento y no son observaciones independientes. Dentro de un Bet Builder no hay cuota individual: no se evalúa rentabilidad de esa selección.
+
+Selecciones con evidencia previa y línea exacta: **33**. En 30 el informe publica Delta%. En 3 solo hay hit rate del snapshot, porque no existe informe P13/P14 de ese partido: Alemania - Grecia (goles más de 1.5 y córners de Grecia más de 3.5) y Noruega - Portugal (remates de Noruega menos de 13.5).
+
+Sin snapshot previo para el partido: **60**.
+
+Línea no comparable o sin fila exacta: **18**.
+
+Entre las comparables, la liquidación del mercado en Betano queda ganada en **21** líneas y fallada en **12**. Ese recuento es el resultado de la selección. No suma el dinero del ticket ni el cobro de un cashout. Si el ticket se cobró antes, la liquidación de la fila sigue siendo el resultado deportivo posterior.
+
+El marcador del ticket solo verifica goles, 1X2 y ambos equipos anotan. En córners, tarjetas, tiros, faltas y offsidas el valor real no está en los archivos: queda como resultado real no disponible. No se consultó una fuente externa para rellenar esas cifras.
+
+Ganadas:
+
+- Grecia - Alemania · Alemania - Goles totales Más/Menos · Menos 2.5
+- Grecia - Alemania · Tiros al Arco · Menos 9.5
+- Países Bajos - Serbia · Goles totales Más/Menos · Menos 3.5
+- Países Bajos - Serbia · Serbia - Goles totales Más/Menos · Más de 0.5
+- Portugal - Noruega · Goles totales Más/Menos · Más de 2.5
+- Portugal - Noruega · Noruega - Goles totales Más/Menos · Más de 0.5
+- Portugal - Noruega · Tarjetas Totales Más/Menos · Menos 5.5
+- Francia - Italia · Francia - Goles totales Más/Menos · Menos 2.5
+- Francia - Italia · Más/Menos Córners · Menos 10.5
+- Kazajistán - Moldavia · Tarjetas Totales Más/Menos · Menos 4.5
+- Hungría - Georgia · Georgia Tarjetas Totales Más/Menos · Menos 2.5
+- Grecia - Países Bajos · Remates totales · Más de 25.5
+- Grecia - Países Bajos · Tarjetas Totales Más/Menos · Menos 3.5
+- Grecia - Países Bajos · Tarjetas Totales Más/Menos · Menos 4.5
+- Alemania - Serbia · Más/Menos Córners · Más de 9.5
+- Alemania - Serbia · Tarjetas Totales Más/Menos · Menos 4.5
+- Gales - Noruega · Noruega Remates totales · Menos 17.5
+- Dinamarca - Portugal · Tarjetas Totales Más/Menos · Menos 3.5
+- Dinamarca - Portugal · Tarjetas Totales Más/Menos · Menos 4.5
+- Escocia - Suiza · Suiza Tarjetas Totales Más/Menos · Menos 1.5
+- Turquía - Italia · Tarjetas Totales Más/Menos · Menos 3.5
+
+Falladas:
+
+- Grecia - Alemania · Grecia - Goles totales Más/Menos · Más de 0.5
+- Gales - Dinamarca · Más/Menos Córners · Más de 7.5
+- Gales - Dinamarca · Tarjetas Totales Más/Menos · Menos 3.5
+- Gales - Dinamarca · Goles totales Más/Menos · Más de 2.5
+- Bélgica - Turquía · Bélgica - Goles totales Más/Menos · Menos 2.5
+- Gales - Noruega · Tarjetas Totales Más/Menos · Menos 4.5
+- Dinamarca - Portugal · Dinamarca Remates totales · Más de 12.5
+- España - Croacia · Tarjetas Totales Más/Menos · Menos 3.5
+- Suecia - Polonia · Tarjetas Totales Más/Menos · Menos 3.5
+- Noruega - Portugal · Noruega Remates totales · Menos 13.5
+- Alemania - Grecia · Goles totales Más/Menos · Más de 1.5
+- Alemania - Grecia · Grecia Más/Menos Córners · Más de 3.5
 
 ## Notas y limitaciones
 
