@@ -128,11 +128,11 @@ This document records the verified baseline state of `main` at commit `8858588` 
 
 | Claim | Verification | Status |
 |-------|--------------|--------|
-| "75/75 tests" | **NOT VERIFIED** — dotnet not available in this environment | UNVERIFIED |
-| "149/149 MatchEdge.UnitTests" | **NOT VERIFIED** | UNVERIFIED |
-| "103/109 InfrastructureTests (6 FAIL preexisting)" | **NOT VERIFIED** | UNVERIFIED |
+| "75/75 tests" | No project printed a total of 75. See §8. | DOES NOT MATCH |
+| "149/149 MatchEdge.UnitTests" | `MatchEdge.UnitTests`: total 162, passed 162, failed 0. See §8. | DOES NOT MATCH |
+| "103/109 InfrastructureTests (6 FAIL preexisting)" | `MatchEdge.InfrastructureTests`: total 135, passed 129, failed 6. The six failures are PREEXISTING (§8). The counts 103/109 do not match 129/135. | COUNTS DO NOT MATCH; 6 failures PREEXISTING |
 
-**Note**: Tests were not executed in this reconciliation because the .NET SDK is not installed in the cloud agent environment. The test claims from STATE.md remain unverified.
+**Note**: Executed on this branch at `569c9b5a18d94c9fa5312046d9918244d5a5c1cc`, 2026-11-03 11:45:03–11:46:16 America/Lima, SDK 9.0.320, host 9.0.22. Full totals and the failure classification are in §8.
 
 ### 3.5 Hardcoded Database Path
 
@@ -281,7 +281,7 @@ These items are flagged for decision, not for automatic documentation updates pe
 
 | Claim | Status |
 |-------|--------|
-| 6 failing DateTeamMatchingIntegrationTests | **NOT VERIFIED** — dotnet unavailable |
+| 6 failing DateTeamMatchingIntegrationTests | CONFIRMED. This branch: 6 failed, all in `DateTeamMatchingIntegrationTests`. The same 6 fail on `main` `8858588c1a2c2e7a4927649b7fa56b36b2527e3c` with the same messages. Classification: PREEXISTING (§8). |
 
 ### 6.6 Hygiene Issues
 
@@ -317,25 +317,55 @@ During verification against the codebase, the following corrections were identif
 | Original Claim | Correction | Evidence |
 |----------------|------------|----------|
 | "FmGlobalCollectOrchestrator.cs (P10)" | Logic is embedded in FmTeamController, not a separate file | `find . -name "FmGlobalCollectOrchestrator.cs"` returns nothing |
-| Test counts (75/75, 149/149, 103/109) | **Cannot be verified** — dotnet SDK not installed | Marked as UNVERIFIED |
-| "6 FAIL preexistentes" | **Cannot be verified** — no test execution | Marked as UNVERIFIED |
+| Test counts (75/75, 149/149, 103/109) | Executed. No run printed 75, 149, or 103/109. Observed: UnitTests 162 passed / 162 total; InfrastructureTests 129 passed / 6 failed / 135 total. SDK 9.0.320, 2026-11-03 11:45:03–11:46:16 America/Lima | COUNTS DO NOT MATCH |
+| "6 FAIL preexistentes" | The six `DateTeamMatchingIntegrationTests` failures on this branch also fail on `main` `8858588` with the same assertion messages when `src/MatchEdge.Api/matchedge.db` is present | PREEXISTING |
 
 ---
 
 ## 8. Test Evidence
 
-**Build Status**: NOT EXECUTED
+**Commit under test**: `569c9b5a18d94c9fa5312046d9918244d5a5c1cc` on `cursor/docs-base-001-baseline-1caf`.
 
-**Test Execution**: NOT EXECUTED
+**When**: 2026-11-03 11:45:03–11:46:16 America/Lima.
 
-**Reason**: The .NET SDK is not installed in the cloud agent environment. The `dotnet` command is unavailable.
+**SDK**: 9.0.320 (commit `af2c1d1c15`). **Host**: 9.0.22. **RID**: win-x64. `global.json`: not found.
+
+Commands, from the repository root:
 
 ```
-$ which dotnet && dotnet --version
-dotnet not installed
+dotnet --info
+dotnet build
+dotnet test --logger "console;verbosity=normal"
 ```
 
-All test-related claims from STATE.md and the original analysis remain **UNVERIFIED** as of this reconciliation.
+**Build**: exit code 0. Console text: `Compilación correcta.` `0 Errores`. `16 Advertencia(s)`. `Tiempo transcurrido 00:00:55.66`.
+
+**Test**: exit code 1. The console logger did not print an `Omitido` / skipped line. In both projects, passed + failed equals the printed total, so skipped is 0.
+
+| Project | Total | Passed | Failed | Skipped | Result line |
+|---------|------:|-------:|-------:|--------:|-------------|
+| `MatchEdge.UnitTests` (`net8.0`) | 162 | 162 | 0 | 0 | `La serie de pruebas se ejecutó correctamente.` `Tiempo total: 4.1513 Segundos` |
+| `MatchEdge.InfrastructureTests` (`net9.0`) | 135 | 129 | 6 | 0 | `No se pudo ejecutar la serie de pruebas.` `Tiempo total: 8.0172 Segundos` |
+
+### Failure classification
+
+Compared with `main` at `8858588c1a2c2e7a4927649b7fa56b36b2527e3c` (`origin/main`). `git diff 8858588c1a2c2e7a4927649b7fa56b36b2527e3c HEAD -- tests src` is empty.
+
+`src/MatchEdge.Api/matchedge.db` is gitignored (`*.db`). It is present in this working tree and absent from a clean checkout of `8858588`.
+
+- Clean worktree of `8858588`, full `dotnet test`, 2026-11-03 11:47:53–11:48:18 America/Lima: `MatchEdge.UnitTests` total 162, passed 162. `MatchEdge.InfrastructureTests` total 135, passed 127, failed 8. All 8 are `DateTeamMatchingIntegrationTests`, each `System.IO.FileNotFoundException : Database not found at ...\src\MatchEdge.Api\matchedge.db. Run DataImporter first.`
+- Same worktree after copying that gitignored `matchedge.db` from this working tree, filter `FullyQualifiedName~DateTeamMatchingIntegrationTests`, log written 2026-11-03 11:49:27 America/Lima: total 8, passed 2, failed 6. The six messages match the branch run below. `Matching_WrongDate_ReturnsNull` and `Matching_NonexistentTeam_ReturnsNull` passed, as they did on the branch.
+
+| Test | Error on this branch | On `main` `8858588` with the same `matchedge.db` | Class |
+|------|----------------------|--------------------------------------------------|-------|
+| `DateTeamMatchingIntegrationTests.Matching_AccentedNames_FindsOdds` | `Assert.NotNull() Failure: Value is null` at `DateTeamMatchingIntegrationTests.cs:91` | Same message | PREEXISTING |
+| `DateTeamMatchingIntegrationTests.Matching_CalculatesProbabilitiesCorrectly` | `Assert.NotNull() Failure: Value is null` at `DateTeamMatchingIntegrationTests.cs:147` | Same message | PREEXISTING |
+| `DateTeamMatchingIntegrationTests.Matching_2024Season_WorksCorrectly` | `Assert.NotNull() Failure: Value is null` at `DateTeamMatchingIntegrationTests.cs:207` | Same message | PREEXISTING |
+| `DateTeamMatchingIntegrationTests.Matching_AlianzaUniversidadVsSportingCristal_FindsOdds` | `Assert.NotNull() Failure: Value is null` at `DateTeamMatchingIntegrationTests.cs:71` | Same message | PREEXISTING |
+| `DateTeamMatchingIntegrationTests.Matching_MultipleMatchesOnSameDate_FindsAll` | `Expected at least 2 matches on 2023-10-08, found 0` at `DateTeamMatchingIntegrationTests.cs:175` | Same message | PREEXISTING |
+| `DateTeamMatchingIntegrationTests.Matching_AlianzaLimaVsRealGarcilaso_FindsOdds` | `Assert.NotNull() Failure: Value is null` at `DateTeamMatchingIntegrationTests.cs:48` | Same message | PREEXISTING |
+
+No failed test is INTRODUCED_BY_CHANGE. No failed test is UNKNOWN.
 
 ---
 
@@ -343,7 +373,7 @@ All test-related claims from STATE.md and the original analysis remain **UNVERIF
 
 Per the analysis, the following reconciliation actions are recommended before the next development cycle:
 
-1. **STATE.md Update**: Rewrite to reflect actual main state (tests "not verified" until executed).
+1. **STATE.md Update**: Rewrite to reflect actual main state. Test totals executed in §8 do not match the 75/75, 149/149, or 103/109 claims.
 
 2. **ADR Required**:
    - (a) P13 Proxy-EV: label as EXPERIMENTAL or retire
@@ -351,7 +381,7 @@ Per the analysis, the following reconciliation actions are recommended before th
    
 3. **REPORT_FINAL_MODELS_VS_MARKET.md**: Mark "Home wins" segment as invalid per selection bias (report already acknowledges this at line 161).
 
-4. **Build + Tests**: Execute `dotnet build` and `dotnet test`; classify failures as INTRODUCED_BY_CHANGE/PREEXISTING/UNKNOWN with evidence; move to CI (#51).
+4. **Build + Tests**: Executed and classified in §8 (build exit 0; test exit 1; six PREEXISTING failures). Remaining work is the CI gate (#51).
 
 5. **Phase 2 Queue**: Close 108 NO_HISTORY_ELEMENT/UNAVAILABLE items by cause.
 
