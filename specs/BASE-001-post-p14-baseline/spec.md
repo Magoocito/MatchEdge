@@ -414,7 +414,7 @@ Per the analysis, the following reconciliation actions are recommended before th
 | 19. SDD Convergence | **FAIL** | No convergence check for P13/P14 |
 | 20. Governance | PASS | Constitution exists and is followed for new work |
 
-**Global Baseline Status**: **FAIL** (7 principles failing, 6 partial, 4 passing, 3 N/A)
+**Global Baseline Status**: **FAIL** (9 principles failing, 6 partial, 3 passing, 2 N/A)
 
 **Note**: The baseline assessment reflects the state of `main` at commit `8858588`, not the compliance of this documentation-only PR. Issue #49 acceptance criterion "Constitution Check = PASS" remains unmet because the baseline itself fails; the issue remains open.
 
