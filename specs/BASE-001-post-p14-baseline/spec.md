@@ -4,7 +4,7 @@
 
 **Created**: 2026-11-03
 
-**Status**: Draft
+**Status**: In Review
 
 **Input**: Baseline analysis reconciliation per issue #49
 
@@ -401,8 +401,8 @@ Per the analysis, the following reconciliation actions are recommended before th
 | 6. Small Changes | PASS (partial) | PR history shows incremental work |
 | 7. Explicit Architecture | **FAIL** | Large classes, logic in controllers |
 | 8. Opportunistic Refactor | N/A | No refactor in scope |
-| 9. Testing as Evidence | **FAIL** | Tests not executed; claims unverified |
-| 10. Fail Closed | PASS (partial) | P13 implements; P12 does not |
+| 9. Testing as Evidence | PASS (partial) | Build exit 0 (16 warnings); UnitTests 162/162 pass; InfrastructureTests 129/135 pass, 6 fail PREEXISTING. Evidence in §8. Partial because no CI gate exists yet. |
+| 10. Fail Closed | PASS (partial) | P13 implements fail-closed for post-kickoff detection (`IsPostKickoff` in P13ProxyEvReportBuilder.cs:277-280); P12 allows null kickoff with fallback. Six preexisting integration test failures do not block analysis — they fail on data-dependent assertions, not on critical uncertainty handling. |
 | 11. Observability | PASS (partial) | Logging exists; some gaps |
 | 12. Boundaries | **FAIL** | Controllers contain business logic |
 | 13. Model Validation | PASS (with exception) | No models claimed as VALIDATED; "Home wins" report acknowledged as biased |
@@ -414,7 +414,9 @@ Per the analysis, the following reconciliation actions are recommended before th
 | 19. SDD Convergence | **FAIL** | No convergence check for P13/P14 |
 | 20. Governance | PASS | Constitution exists and is followed for new work |
 
-**Global Baseline Status**: **FAIL** (8 principles failing, 5 partial, 4 passing, 3 N/A)
+**Global Baseline Status**: **FAIL** (7 principles failing, 6 partial, 4 passing, 3 N/A)
+
+**Note**: The baseline assessment reflects the state of `main` at commit `8858588`, not the compliance of this documentation-only PR. Issue #49 acceptance criterion "Constitution Check = PASS" remains unmet because the baseline itself fails; the issue remains open.
 
 ---
 
@@ -422,8 +424,12 @@ Per the analysis, the following reconciliation actions are recommended before th
 
 - This reconciliation is documentation-only per issue #49 instructions
 - No application code changes are in scope
-- Tests could not be executed due to environment constraints
 - STATE.md and VISION.md are not modified per instructions
+
+## Provenance
+
+- **Initial cloud agent run (2026-11-03)**: did not execute tests (dotnet SDK unavailable in cloud environment)
+- **Local execution (2026-11-03 11:45–11:49 America/Lima)**: tests executed by Daniel on Windows with SDK 9.0.320; evidence added in commit `e86dbd832ac380c0cd701f6acc075cf033dc0ce5`
 
 ---
 
